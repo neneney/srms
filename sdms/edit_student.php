@@ -10,16 +10,12 @@ if(isset($_POST['submit']))
   $regno=$_POST['regno'];
   $sex=$_POST['sex'];
   $age=$_POST['age'];
-  $stream=$_POST['stream'];
-  $class=$_POST['class'];
-  $sql="update students set studentName=:studentname,studentno=:regno,gender=:sex,age=:age,class=:class,stream=:stream where id='$sid'";
+  $sql="update students set studentName=:studentname,studentno=:regno,gender=:sex,age=:age where id='$sid'";
   $query = $dbh->prepare($sql);
   $query->bindParam(':studentname',$studentname,PDO::PARAM_STR);
   $query->bindParam(':regno',$regno,PDO::PARAM_STR);
   $query->bindParam(':sex',$sex,PDO::PARAM_STR);
   $query->bindParam(':age',$age,PDO::PARAM_STR);
-  $query->bindParam(':stream',$stream,PDO::PARAM_STR);
-  $query->bindParam(':class',$class,PDO::PARAM_STR);
   $query->execute();
   if ($query->execute()) {
     echo "<script>alert('updated successfuly.');</script>";
@@ -62,7 +58,7 @@ if(isset($_POST['pass']))
   $district=$_POST['district'];
   $state=$_POST['state'];
   $village=$_POST['village'];
-  $sql="update students set country=:country,district=:district,state=:state,village=:village where id='$sid'";
+  $sql="update students set province=:country,city=:district,barangay=:state,village=:village where id='$sid'";
   $query = $dbh->prepare($sql);
   $query->bindParam(':country',$country,PDO::PARAM_STR);
   $query->bindParam(':district',$district,PDO::PARAM_STR);
@@ -186,19 +182,6 @@ if(isset($_POST['save2']))
                         <input class="form-control" name="age" value="<?php  echo $row['age'];?>" required>
                       </div>        
                     </div>
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label>Class</label>
-                        <input class="form-control" name="class" value="<?php  echo $row['class'];?>" required>
-                      </div>        
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label>Stream</label>
-                        <input class="form-control" name="stream" value="<?php  echo $row['stream'];?>" required>
-                      </div>        
-                    </div>
                     <!-- /.col --> 
                   </div>
                   <!-- /.card-body -->
@@ -288,40 +271,40 @@ if(isset($_POST['save2']))
             <form role="form" id=""  method="post" enctype="multipart/form-data" >
               <div class="row">
                 <div class="form-group col-md-6">
-                  <label for="inputName" class="col-sm-2 col-md-6 col-form-label">Country</label>
+                  <label for="inputName" class="col-sm-2 col-md-6 col-form-label">Province</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="country" name="country" value="<?php  echo $row['country'];?>">
+                    <input type="text" class="form-control" id="province" name="province" value="<?php  echo $row['province'];?>">
                   </div>
                 </div>
                 <div class="form-group col-md-6">
-                  <label for="inputEmail" class="col-sm-2 col-md-6 col-form-label">District</label>
+                  <label for="inputEmail" class="col-sm-2 col-md-6 col-form-label">City</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" name="district" id="district" value="<?php  echo $row['district'];?>">
+                    <input type="text" class="form-control" name="city" id="city" value="<?php  echo $row['city'];?>">
                   </div>
                 </div>
               </div>
 
               <div class="row">
                 <div class="form-group col-md-6">
-                  <label for="inputEmail" class="col-sm-2 col-md-6 col-form-label">State</label>
+                  <label for="inputEmail" class="col-sm-2 col-md-6 col-form-label">Barangay</label>
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" name="state" id="state" value="<?php  echo $row['state'];?>">
+                    <input type="text" class="form-control" name="barangay" id="barangay" value="<?php  echo $row['barangay'];?>">
                   </div>
                 </div>
                 <div class="form-group col-md-6">
-                  <label for="inputName2" class="col-sm-2 col-md-6 col-form-label">Village</label>
+                  <label for="inputName2" class="col-sm-2 col-md-6 col-form-label">Village & House No.</label>
                   <div class="col-sm-10">
                     <input type="text" class="form-control" name="village" id="village" value="<?php  echo $row['village'];?>">
                   </div>
                 </div>
               </div>
-              <div class="form-group row">
-                <div class="offset-sm-2 col-sm-10">
+              <div class="modal-footer text-right">
                   <button type="submit" name="pass" class="btn btn-primary">Update</button>
-                </div>
               </div>
+             
             </form>
           </div>
+       
           <!-- /.tab-pane -->
           <?php  
         }?>

@@ -15,7 +15,9 @@
   <!-- Right navbar links -->
   <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-      <a class="nav-link" data-toggle="dropdown" href="#"><i class="fa-solid fa-user"></i> </a>
+      <a class="nav-link" data-toggle="dropdown" href="#"><i class="fa-solid fa-user"></i> 
+      <?php echo $_SESSION['name']; ?>
+     </a>
       <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
         <div class="dropdown-divider"></div>
         <a href="profile.php" class="dropdown-item">

@@ -5,6 +5,9 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['sid']==0)) {
   header('location:logout.php');
 } 
+if($_SESSION['permission'] !== "Admin"){
+  header('location: dashboard.php');
+}
 if(isset($_GET['delid']))
 {
   $rid=intval($_GET['delid']);
