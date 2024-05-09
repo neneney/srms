@@ -83,7 +83,7 @@ if (strlen($_SESSION['sid']==0)) {
                         <div class="d-flex justify-content-between align-items-center mb-3">
                           <div class="d-flex flex-row align-items-center back"><i class="fa fa-long-arrow-left mr-1 mb-1"></i>
                           </div>
-                          <h6 class="text-right">Edit Profile</h6>
+                          <a href="changepassword.php" class="text-right">Change Password</a>
                         </div>
                         <div class="row mt-2">
                           <div class="col-md-6"><input type="text" class="form-control" name="firstname" value="<?php echo $row->name; ?>" required='true'></div>

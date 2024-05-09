@@ -48,7 +48,7 @@ if (strlen($_SESSION['sid']==0))
       <!-- Content Wrapper. Contains page content -->
       <div class="content-wrapper">
         <br>
-        <div class="card">
+        <div class="card" style="display: flex; align-items: center; justify-content: center">
           <div class="col-md-10">
             <div class="card card-primary">
               <div class="card-header">

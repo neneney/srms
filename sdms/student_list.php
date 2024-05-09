@@ -120,16 +120,16 @@ if(isset($_GET['del']))
                       while($row=mysqli_fetch_array($query))
                       {
                         ?>                  
-                        <tr>
+                        <tr >
                           <td><?php echo htmlentities($cnt);?></td>
-                          <td class="align-middle"><a href="#"><img src="studentimages/<?php echo htmlentities($row['studentImage']);?>" width="40" height="40"> </a></td>
-                          <td><?php echo htmlentities($row['studentno']);?></td>
-                          <td><?php echo htmlentities($row['studentName']);?></td>
+                          <td style="text-align: center;" class="align-middle"><a href="#"><img src="studentimages/<?php echo htmlentities($row['studentImage']);?>" width="40" height="40"> </a></td>
+                          <td style="text-align: center;"><?php echo htmlentities($row['studentno']);?></td>
+                          <td style="text-align: center;"><?php echo htmlentities($row['studentName']);?></td>
                        
-                          <td>
-                            <button  class=" btn btn-primary btn-xs edit_data" id="<?php echo  $row['id']; ?>" title="click for edit">Edit</i></button>
-                            <button  class=" btn btn-success btn-xs edit_data2" id="<?php echo  $row['id']; ?>" title="click for edit">View</i></button>
-                            <a href="student_list.php?id=<?php echo $row['id']?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-xs ">Delete</a>
+                          <td style="text-align: center;">
+                            <button  class=" btn btn-primary btn-sm edit_data" id="<?php echo  $row['id']; ?>" title="click for edit">Edit</i></button>
+                            <button  class=" btn btn-success btn-sm edit_data2" id="<?php echo  $row['id']; ?>" title="click for edit">View</i></button>
+                            <a href="student_list.php?id=<?php echo $row['id']?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
 
                           </td>
                         </tr>
@@ -151,7 +151,6 @@ if(isset($_GET['del']))
       <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    <?php @include("includes/footer.php"); ?>
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
