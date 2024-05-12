@@ -24,19 +24,20 @@ if(isset($_POST['login']))
 
     }
 
-    if(!empty($_POST["remember"])) {
-      //COOKIES for username
-      setcookie ("user_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
-      //COOKIES for password
-      setcookie ("userpassword",$_POST["password"],time()+ (10 * 365 * 24 * 60 * 60));
-    } else {
-      if(isset($_COOKIE["user_login"])) {
-        setcookie ("user_login","");
-        if(isset($_COOKIE["userpassword"])) {
-          setcookie ("userpassword","");
-        }
-      }
-    }
+    // if(!empty($_POST["remember"])) {
+    //   //COOKIES for username
+    //   setcookie ("user_login",$_POST["username"],time()+ (10 * 365 * 24 * 60 * 60));
+    //   //COOKIES for password
+    //   setcookie ("userpassword",$_POST["password"],time()+ (10 * 365 * 24 * 60 * 60));
+    // } else {
+    //   if(isset($_COOKIE["user_login"])) {
+    //     setcookie ("user_login","");
+    //     if(isset($_COOKIE["userpassword"])) {
+    //       setcookie ("userpassword","");
+    //     }
+    //   }
+    // }
+    
     $aa= $_SESSION['sid'];
     $sql="SELECT * from tblusers  where id=:aa";
     $query = $dbh -> prepare($sql);
@@ -121,16 +122,15 @@ if(isset($_POST['login']))
               <input type="text" name="username" class="form-control" placeholder="Username" required value="<?php if(isset($_COOKIE["user_login"])) { echo $_COOKIE["user_login"]; } ?>">
               <div class="input-group-append">
                 <div class="input-group-text">
-                  <span class="fas fa-envelope"></span>
+                   <span class="fas fa-envelope"></span>
                 </div>
-              </div>
+            </div> 
             </div>
             <div class="input-group mb-3">
               <input id="passwordField" type="password" name="password" class="form-control" placeholder="Password" required value="<?php if(isset($_COOKIE["userpassword"])) { echo $_COOKIE["userpassword"]; } ?>">
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span id="toggleButton" style="cursor: pointer;" class="fas fa-eye"></span>
-                  
                 </div>
               </div>
             </div>
@@ -160,22 +160,27 @@ if(isset($_POST['login']))
     <script src="assets/js/core/js.cookie.min.js"></script>
     <script>
     // Get elements
-    const passwordField = document.getElementById('passwordField');
-    const toggleButton = document.getElementById('toggleButton');
-    
-    // Add event listener to the toggle button
-    toggleButton.addEventListener('click', function() {
-      // Toggle the type attribute of the password field
-      if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleButton.classList.remove('fa-eye');
-        toggleButton.classList.add('fa-eye-slash');
-      } else {
-        passwordField.type = 'password';
-        toggleButton.classList.remove('fa-eye-slash');
-        toggleButton.classList.add('fa-eye');
-      }
-    });
+    document.addEventListener("DOMContentLoaded", e => {
+  const passwordField = document.getElementById('passwordField');
+  const toggleButton = document.getElementById('toggleButton');
+  passwordField.type = "password";
+  
+  // Add event listener to the toggle button
+  toggleButton.addEventListener('click', function() {
+    // Toggle the type attribute of the password field
+    if (passwordField.type === 'password') {
+      passwordField.type = 'text';
+      toggleButton.classList.remove('fa-eye');
+      toggleButton.classList.add('fa-eye-slash');
+    } else {
+      passwordField.type = 'password';
+      toggleButton.classList.remove('fa-eye-slash');
+      toggleButton.classList.add('fa-eye');
+    }
+  });
+});
+
+   
   </script>
   </body>
   </html>

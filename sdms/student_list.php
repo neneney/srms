@@ -2,18 +2,18 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['sid']==0)) {
- header('location:logout.php');
-} 
-if(isset($_GET['del']))
-{
-  mysqli_query($con,"delete from students where id = '".$_GET['id']."'");
-  $_SESSION['delmsg']="student deleted !!";
+if (strlen($_SESSION['sid'] == 0)) {
+  header('location:logout.php');
+}
+if (isset($_GET['del'])) {
+  mysqli_query($con, "delete from students where id = '" . $_GET['id'] . "'");
+  $_SESSION['delmsg'] = "student deleted !!";
 }
 ?>
 <!DOCTYPE html>
 <html>
 <?php @include("includes/head.php"); ?>
+
 <body class="hold-transition sidebar-mini">
   <div class="wrapper">
     <!-- Navbar -->
@@ -51,8 +51,8 @@ if(isset($_GET['del']))
                 <div class="card-header">
                   <h3 class="card-title">Manage Students</h3>
                   <div class="card-tools">
-                    <a href="add_student.php"><button type="button" class="btn btn-sm btn-primary"  ><span style="color: #fff;"><i class="fas fa-plus" ></i>  New Students</span>
-                    </button> </a>                  
+                    <a href="add_student.php"><button type="button" class="btn btn-sm btn-primary"><span style="color: #fff;"><i class="fas fa-plus"></i> New Students</span>
+                      </button> </a>
                   </div>
                 </div>
                 <!-- /.card-header -->
@@ -66,7 +66,7 @@ if(isset($_GET['del']))
                         </button>
                       </div>
                       <div class="modal-body" id="info_update">
-                        <?php @include("edit_student.php");?>
+                        <?php @include("edit_student.php"); ?>
                       </div>
                       <div class="modal-footer ">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -78,9 +78,9 @@ if(isset($_GET['del']))
                   <!-- /.modal -->
                 </div>
                 <!--   end modal -->
-               
+
                 <div id="editData2" class="modal fade">
-                  <div class="modal-dialog ">
+                  <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title">Student Details</h5>
@@ -89,7 +89,7 @@ if(isset($_GET['del']))
                         </button>
                       </div>
                       <div class="modal-body" id="info_update2">
-                        <?php @include("view_student_info.php");?>
+                        <?php @include("view_student_info.php"); ?>
                       </div>
                       <div class="modal-footer ">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -102,38 +102,37 @@ if(isset($_GET['del']))
                 </div>
                 <!--   end modal -->
 
-                <div class="card-body mt-2 " >
+                <div class="card-body mt-2 ">
                   <table id="example1" class="table table-bordered table-hover">
-                    <thead> 
-                      <tr> 
+                    <thead>
+                      <tr>
                         <th>#</th>
                         <th>Student Image</th>
                         <th>Student Number</th>
                         <th>Student Name</th>
-                       
+
                         <th>Action</th>
-                      </tr> 
-                    </thead> 
+                      </tr>
+                    </thead>
                     <tbody>
-                      <?php $query=mysqli_query($con,"select * from students");
-                      $cnt=1;
-                      while($row=mysqli_fetch_array($query))
-                      {
-                        ?>                  
-                        <tr >
-                          <td><?php echo htmlentities($cnt);?></td>
-                          <td style="text-align: center;" class="align-middle"><a href="#"><img src="studentimages/<?php echo htmlentities($row['studentImage']);?>" width="40" height="40"> </a></td>
-                          <td style="text-align: center;"><?php echo htmlentities($row['studentno']);?></td>
-                          <td style="text-align: center;"><?php echo htmlentities($row['studentName']);?></td>
-                       
+                      <?php $query = mysqli_query($con, "select * from students");
+                      $cnt = 1;
+                      while ($row = mysqli_fetch_array($query)) {
+                      ?>
+                        <tr>
+                          <td><?php echo htmlentities($cnt); ?></td>
+                          <td style="text-align: center;" class="align-middle"><a href="#"><img src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="40" height="40"> </a></td>
+                          <td style="text-align: center;"><?php echo htmlentities($row['studentno']); ?></td>
+                          <td style="text-align: center;"><?php echo htmlentities($row['studentName']); ?></td>
+
                           <td style="text-align: center;">
-                            <button  class=" btn btn-primary btn-sm edit_data" id="<?php echo  $row['id']; ?>" title="click for edit">Edit</i></button>
-                            <button  class=" btn btn-success btn-sm edit_data2" id="<?php echo  $row['id']; ?>" title="click for edit">View</i></button>
-                            <a href="student_list.php?id=<?php echo $row['id']?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
+                            <button class=" btn btn-primary btn-sm edit_data" id="<?php echo  $row['id']; ?>" title="click for edit">Edit</i></button>
+                            <button class=" btn btn-success btn-sm edit_data2" id="<?php echo  $row['id']; ?>" title="click for edit">View</i></button>
+                            <a href="student_list.php?id=<?php echo $row['id'] ?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
 
                           </td>
                         </tr>
-                        <?php $cnt=$cnt+1;
+                      <?php $cnt = $cnt + 1;
                       } ?>
                     </tbody>
                   </table>
@@ -162,14 +161,16 @@ if(isset($_GET['del']))
   <!-- ./wrapper -->
   <?php @include("includes/foot.php"); ?>
   <script type="text/javascript">
-    $(document).ready(function(){
-      $(document).on('click','.edit_data',function(){
-        var edit_id=$(this).attr('id');
+    $(document).ready(function() {
+      $(document).on('click', '.edit_data', function() {
+        var edit_id = $(this).attr('id');
         $.ajax({
-          url:"edit_student.php",
-          type:"post",
-          data:{edit_id:edit_id},
-          success:function(data){
+          url: "edit_student.php",
+          type: "post",
+          data: {
+            edit_id: edit_id
+          },
+          success: function(data) {
             $("#info_update").html(data);
             $("#editData").modal('show');
           }
@@ -178,14 +179,16 @@ if(isset($_GET['del']))
     });
   </script>
   <script type="text/javascript">
-    $(document).ready(function(){
-      $(document).on('click','.edit_data2',function(){
-        var edit_id2=$(this).attr('id');
+    $(document).ready(function() {
+      $(document).on('click', '.edit_data2', function() {
+        var edit_id2 = $(this).attr('id');
         $.ajax({
-          url:"view_student_info.php",
-          type:"post",
-          data:{edit_id2:edit_id2},
-          success:function(data){
+          url: "view_student_info.php",
+          type: "post",
+          data: {
+            edit_id2: edit_id2
+          },
+          success: function(data) {
             $("#info_update2").html(data);
             $("#editData2").modal('show');
           }
@@ -194,4 +197,5 @@ if(isset($_GET['del']))
     });
   </script>
 </body>
+
 </html>

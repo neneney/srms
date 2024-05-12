@@ -67,6 +67,14 @@
             </p>
           </a>
         </li>
+        <li class="nav-item">
+          <a href="program_list.php" class="nav-link">
+            <i class="nav-icon fi fi-rr-browser"></i>
+            <p>
+              Manage Programs
+            </p>
+          </a>
+        </li>
 
         <li class="nav-header">SETTINGS & SECURITY</li>
         <!-- User Menu -->
