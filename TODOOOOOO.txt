@@ -1,0 +1,7 @@
+CRUD ng classes
+report generation(PRINTABLES)
+make different tbl for parents para malinis 
+modify yung student tbl for educational level ng studyanteng mag eenroll
+
+fix the additional feature nung sa add students
+fix the alignment nung sa view modal ng students

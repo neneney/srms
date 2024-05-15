@@ -2,13 +2,14 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['sid']==0)) {
-header('location:logout.php');
-} 
+if (strlen($_SESSION['sid'] == 0)) {
+    header('location:logout.php');
+}
 ?>
 <!DOCTYPE html>
 <html>
 <?php @include("includes/head.php"); ?>
+
 <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
         <!-- Navbar -->
@@ -26,7 +27,7 @@ header('location:logout.php');
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
                             </ol>
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -42,11 +43,11 @@ header('location:logout.php');
                         <div class="col-lg-4 col-6">
                             <!-- small box -->
                             <div class="small-box bg-info">
-                                <?php $query1=mysqli_query($con,"Select * from students ");
-                                $totalcust=mysqli_num_rows($query1);
+                                <?php $query1 = mysqli_query($con, "Select * from students ");
+                                $totalcust = mysqli_num_rows($query1);
                                 ?>
                                 <div class="inner">
-                                    <h3><?php echo $totalcust;?></h3>
+                                    <h3><?php echo $totalcust; ?></h3>
                                     <p>Total Students</p>
                                 </div>
                                 <div class="icon">
@@ -59,11 +60,11 @@ header('location:logout.php');
                         <div class="col-lg-4 col-6">
                             <!-- small box -->
                             <div class="small-box bg-success">
-                                <?php $query2=mysqli_query($con,"Select * from students where gender='Male'");
-                                $totalmale=mysqli_num_rows($query2);
+                                <?php $query2 = mysqli_query($con, "Select * from students where gender='Male'");
+                                $totalmale = mysqli_num_rows($query2);
                                 ?>
                                 <div class="inner">
-                                    <h3><?php echo $totalmale;?></h3>
+                                    <h3><?php echo $totalmale; ?></h3>
 
                                     <p>Total Male students</p>
                                 </div>
@@ -77,11 +78,11 @@ header('location:logout.php');
                         <div class="col-lg-4 col-6">
                             <!-- small box -->
                             <div class="small-box bg-info">
-                                <?php $query3=mysqli_query($con,"Select * from students where gender='Female'");
-                                $totalfemale=mysqli_num_rows($query3);
+                                <?php $query3 = mysqli_query($con, "Select * from students where gender='Female'");
+                                $totalfemale = mysqli_num_rows($query3);
                                 ?>
                                 <div class="inner">
-                                    <h3><?php echo $totalfemale;?></h3>
+                                    <h3><?php echo $totalfemale; ?></h3>
 
                                     <p>Total female students</p>
                                 </div>
@@ -96,8 +97,8 @@ header('location:logout.php');
                     </div>
                 </div>
                 <!-- /.row (main row) -->
-            </div>
-            <!-- /.container-fluid -->
+        </div>
+        <!-- /.container-fluid -->
         </section>
     </div>
     <!-- /.content-wrapper -->
@@ -105,12 +106,13 @@ header('location:logout.php');
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">
-      <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
-</div>
-<!-- ./wrapper -->
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+    </div>
+    <!-- ./wrapper -->
 
-<?php @include("includes/foot.php"); ?>
+    <?php @include("includes/foot.php"); ?>
 </body>
+
 </html>

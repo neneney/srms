@@ -1,107 +1,118 @@
  <!-- Main Sidebar Container -->
- <aside class="main-sidebar sidebar-dark-primary elevation-4 position-fixed "style="background-color: #153448">
-  <!-- Brand Logo -->
-  <a href="dashboard.php" class="brand-link">
-    <img src="company/bjmp_logo.png" alt="Leading Estate" class="brand-image img-circle elevation-3"
-    style="opacity: .8">
-    <span class="brand-text font-weight-light">IskulRec</span>
-  </a>
+ <aside class="main-sidebar sidebar-dark-primary elevation-4 position-fixed " style="background-color: #153448">
+   <!-- Brand Logo -->
+   <a href="dashboard.php" class="brand-link">
+     <img src="company/bjmp_logo.png" alt="Leading Estate" class="brand-image img-circle elevation-3" style="opacity: .8">
+     <span class="brand-text font-weight-light">IskulRec</span>
+   </a>
 
-  <!-- Sidebar -->
-  <div class="sidebar ">
-    <!-- Sidebar user panel (optional) -->
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-      <?php
-      $eid=$_SESSION['sid'];
-      $sql="SELECT * from tblusers   where id=:eid ";                                    
-      $query = $dbh -> prepare($sql);
-      $query-> bindParam(':eid', $eid, PDO::PARAM_STR);
-      $query->execute();
-      $results=$query->fetchAll(PDO::FETCH_OBJ);
+   <!-- Sidebar -->
+   <div class="sidebar ">
+     <!-- Sidebar user panel (optional) -->
+     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+       <?php
+        $eid = $_SESSION['sid'];
+        $sql = "SELECT * from tblusers   where id=:eid ";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':eid', $eid, PDO::PARAM_STR);
+        $query->execute();
+        $results = $query->fetchAll(PDO::FETCH_OBJ);
 
-      $cnt=1;
-      if($query->rowCount() > 0)
-      {
-        foreach($results as $row)
-        {    
-          ?>
-          <div class="image">
-            <img class="img-circle"
-            src="staff_images/<?php echo htmlentities($row->userimage);?>" width="90px" height="90px" class="user-image"
-            alt="User profile picture">
-          </div>
-          <div class="info">
-            <a href="profile.php" class="d-block"><?php echo ($row->name); ?> <?php echo ($row->lastname); ?></a>
-          </div>
-          <?php 
-        }
-      } ?>
+        $cnt = 1;
+        if ($query->rowCount() > 0) {
+          foreach ($results as $row) {
+        ?>
+           <div class="image">
+             <img class="img-circle" src="staff_images/<?php echo htmlentities($row->userimage); ?>" width="90px" height="90px" class="user-image" alt="User profile picture">
+           </div>
+           <div class="info">
+             <a href="profile.php" class="d-block"><?php echo ($row->name); ?> <?php echo ($row->lastname); ?></a>
+           </div>
+       <?php
+          }
+        } ?>
 
-    </div>
+     </div>
 
-    <!-- Sidebar Menu -->
-    <nav class="mt-2 ">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        
-        <li class="nav-item">
-          <a href="dashboard.php" class="nav-link">
-          <i class="nav-icon fas fa-tachometer-alt"></i>
-            <p>
-              Dashboard
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="add_student.php" class="nav-link">
-            <i class="nav-icon far fa-plus-square"></i>
-            <p>
-              Add Student
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="student_list.php" class="nav-link">
-            <i class="nav-icon far fa-user"></i>
-            <p>
-              Manage students
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="program_list.php" class="nav-link">
-            <i class="nav-icon fi fi-rr-browser"></i>
-            <p>
-              Manage Programs
-            </p>
-          </a>
-        </li>
+     <!-- Sidebar Menu -->
+     <nav class="mt-2 ">
+       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-        <li class="nav-header">SETTINGS & SECURITY</li>
-        <!-- User Menu -->
-        <?php
+         <li class="nav-item">
+           <a href="dashboard.php" class="nav-link">
+             <i class="nav-icon fas fa-tachometer-alt"></i>
+             <p>
+               Dashboard
+             </p>
+           </a>
+         </li>
+         <li class="nav-item">
+           <a href="add_student.php" class="nav-link">
+             <i class="nav-icon far fa-plus-square"></i>
+             <p>
+               Add Student
+             </p>
+           </a>
+         </li>
+         <li class="nav-item">
+           <a href="student_list.php" class="nav-link">
+             <i class="nav-icon far fa-user"></i>
+             <p>
+               Manage students
+             </p>
+           </a>
+         </li>
+         <li class="nav-item">
+           <a href="program_list.php" class="nav-link">
+             <i class="nav-icon far fa-solid fa-book"></i>
+             <p>
+               Vocational Course
+             </p>
+           </a>
+         </li>
+
+         <li class="nav-header">SETTINGS & SECURITY</li>
+         <!-- User Menu -->
+         <?php
           // Assuming $_SESSION['role'] contains the role information of the logged-in user
-          if($_SESSION['permission'] == 'Admin'):
+          if ($_SESSION['permission'] == 'Admin') :
           ?>
-          <li class="nav-item">
-            <a href="userregister.php" class="nav-link">
-              <i class="far fa-user nav-icon"></i>
-              <p>
-                Register User
-              </p>
-            </a>
-          </li>
-        <?php endif; ?><!-- /.user menu -->
-      <li class="nav-item">
-        <a href="auditlog.php" class="nav-link">
-          <i class="far fa-image nav-icon"></i>
-          <p>
-            Audit Logs
-          </p>
-        </a>
-      </li>
-    </ul>
-  </nav>
-  <!-- /.sidebar-menu -->
-</div>
-<!-- /.sidebar -->
-</aside>
+           <li class="nav-item">
+             <a href="userregister.php" class="nav-link">
+               <i class="far fa-user nav-icon"></i>
+               <p>
+                 Register User
+               </p>
+             </a>
+           </li>
+         <?php endif; ?><!-- /.user menu -->
+         <li class="nav-item">
+           <a href="auditlog.php" class="nav-link">
+             <i class="far fa-image nav-icon"></i>
+             <p>
+               Audit Logs
+             </p>
+           </a>
+         </li>
+       </ul>
+     </nav>
+     <!-- /.sidebar-menu -->
+   </div>
+   <!-- /.sidebar -->
+   <script>
+     // Get the current URL
+     var currentPageURL = window.location.href;
+
+     // Extract the page name from the URL
+     var currentPage = currentPageURL.substring(currentPageURL.lastIndexOf("/") + 1);
+
+     // If the URL contains query parameters, remove them
+     currentPage = currentPage.split('?')[0];
+
+     // If the page name contains an extension (e.g., .php), remove it
+     currentPage = currentPage.split('.')[0];
+
+     // Now, 'currentPage' contains the name of the current page
+     console.log("Current Page:", currentPage);
+   </script>
+ </aside>
