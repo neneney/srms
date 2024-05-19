@@ -1,7 +1,7 @@
 <?php
 session_start();
 error_reporting(0);
-include('includes/dbconnection.php');
+include('../includes/dbconnection.php');
 
 $city_id = $_GET['city_id'];
 $sql = "SELECT * FROM refbrgy WHERE citymunCode = $city_id";

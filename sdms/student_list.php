@@ -13,6 +13,17 @@
   <!DOCTYPE html>
   <html>
   <?php @include("includes/head.php"); ?>
+  <style>
+    .enlarged-image {
+      width: 500px;
+      height: auto;
+      cursor: pointer;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
 
   <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -107,6 +118,7 @@
                   </div>
                   <!--   end modal -->
 
+
                   <div class="card-body mt-2 ">
                     <table id="example1" class="table table-bordered table-hover">
                       <thead>
@@ -120,15 +132,28 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <?php $query = mysqli_query($con, "select * from students");
+                        <?php $query = mysqli_query($con, "select * from students order by postingDate desc");
                         $cnt = 1;
                         while ($row = mysqli_fetch_array($query)) {
                         ?>
                           <tr>
                             <td><?php echo htmlentities($cnt); ?></td>
-                            <td style="text-align: center;" class="align-middle"><a href="#"><img src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="40" height="40"> </a></td>
+                            <td style="text-align: center;" class="align-middle">
+                              <a href="#" onclick="toggleImageSize(event)">
+                                <img id="studentImage" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="40" height="40">
+                              </a>
+                            </td>
                             <td style="text-align: center;"><?php echo htmlentities($row['studentno']); ?></td>
-                            <td style="text-align: center;"><?php echo htmlentities($row['studentName']); ?></td>
+                            <td style="text-align: center;"><?php echo htmlentities($row['studentName']); ?>
+                              <?php
+                              // Fetch and concatenate the student's name parts
+                              $fullName = htmlentities($row['first-name']) . ' ' .
+                                htmlentities($row['middle-name']) . ' ' .
+                                htmlentities($row['last-name']) . ' ' .
+                                htmlentities($row['suffix']);
+                              // Display the concatenated full name
+                              echo $fullName;
+                              ?></td>
 
                             <td style="text-align: center;">
                               <button class=" btn btn-primary btn-sm edit_data" id="<?php echo  $row['id']; ?>" title="click for edit">Edit</i></button>
@@ -165,51 +190,7 @@
 
     <!-- ./wrapper -->
     <?php @include("includes/foot.php"); ?>
-    <script type="text/javascript">
-      $(document).ready(function() {
-        $(document).on('click', '.edit_data', function() {
-          var edit_id = $(this).attr('id');
-          $.ajax({
-            url: "edit_student.php",
-            type: "post",
-            data: {
-              edit_id: edit_id
-            },
-            success: function(data) {
-              $("#info_update").html(data);
-              $("#editData").modal('show');
-            }
-          });
-        });
-      });
-    </script>
-    <script type="text/javascript">
-      $(document).ready(function() {
-        $(document).on('click', '.edit_data2', function() {
-          var edit_id2 = $(this).attr('id');
-          $.ajax({
-            url: "view_student_info.php",
-            type: "post",
-            data: {
-              edit_id2: edit_id2
-            },
-            success: function(data) {
-              $("#info_update2").html(data);
-              $("#editData2").modal('show');
-            }
-          });
-        });
-      });
-    </script>
-    <script>
-      function printCert() {
-        var printContents = document.getElementById('certificateModal').innerHTML;
-        var originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-      }
-    </script>
+    <script defer src="build/js/student_list.js"></script>
   </body>
 
   </html>

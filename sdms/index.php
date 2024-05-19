@@ -3,6 +3,10 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
+if (isset($_SESSION['sid'])) {
+  header("location:dashboard.php");
+}
+
 if (isset($_POST['login'])) {
   $username = $_POST['username'];
   $password = md5($_POST['password']);

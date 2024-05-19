@@ -70,6 +70,14 @@
              </p>
            </a>
          </li>
+         <li class="nav-item">
+           <a href="classes.php" class="nav-link">
+             <i class="nav-icon fas fa-chalkboard"></i>
+             <p>
+               Classes
+             </p>
+           </a>
+         </li>
 
          <li class="nav-header">SETTINGS & SECURITY</li>
          <!-- User Menu -->
@@ -81,7 +89,7 @@
              <a href="userregister.php" class="nav-link">
                <i class="far fa-user nav-icon"></i>
                <p>
-                 Register User
+                 Registered User
                </p>
              </a>
            </li>

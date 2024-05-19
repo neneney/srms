@@ -5,3 +5,32 @@ modify yung student tbl for educational level ng studyanteng mag eenroll
 
 fix the additional feature nung sa add students
 fix the alignment nung sa view modal ng students
+
+TODO:
+BACKEND:
+    --student tbl--
+        add column for last school attended
+    --classes/section--
+        add column for semester(varchar 255)
+FRONTEND:
+    --add student page--
+        include the last school attended in form
+        fix the queries
+    --student page--
+        update student
+        view student
+        print functions for students
+    --vocational programs page--
+        print students that is enrolled 
+    --classes/section page--
+        CRUD CONTENT:
+            -grade-level
+            -code
+            -name
+            -teacher
+            -start-date
+            -end-date
+            -semester
+        print enrolled students & print function
+    --notifications--
+        fix the alerts(make it modal or anything new)

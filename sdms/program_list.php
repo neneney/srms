@@ -30,12 +30,12 @@
                     <div class="container-fluid">
                         <div class="row mb-2">
                             <div class="col-sm-6">
-                                <h1>Programs</h1>
+                                <h1>Vocational Courses</h1>
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-right">
                                     <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                                    <li class="breadcrumb-item active">Manage Programs</li>
+                                    <li class="breadcrumb-item active">Manage Vocational Courses</li>
                                 </ol>
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                                         <div class="modal-dialog modal-xl">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h4 class="modal-title">New Program</h4>
+                                                    <h4 class="modal-title">New Course</h4>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -81,7 +81,7 @@
                                         <div class="modal-dialog modal-xl">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Edit Program's Details</h5>
+                                                    <h5 class="modal-title">Edit Course's Details</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -101,7 +101,7 @@
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5 class="modal-title">Program Details</h5>
+                                                    <h5 class="modal-title">Course Details</h5>
                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -129,9 +129,9 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Program ID</th>
-                                                    <th>Program Name</th>
-                                                    <th>Program Type</th>
+                                                    <th>Course ID</th>
+                                                    <th>Course Name</th>
+                                                    <th>Course Type</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
