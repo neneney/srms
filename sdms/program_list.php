@@ -35,7 +35,7 @@
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-right">
                                     <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                                    <li class="breadcrumb-item active">Manage Vocational Courses</li>
+                                    <li class="breadcrumb-item active">Manage Courses</li>
                                 </ol>
                             </div>
                         </div>
@@ -49,9 +49,9 @@
                             <div class="col-12">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h3 class="card-title">Manage Programs</h3>
+                                        <h3 class="card-title">Manage Courses</h3>
                                         <div class="card-tools">
-                                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deposit"><i class="fas fa-plus"></i> New Program
+                                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deposit"><i class="fas fa-plus"></i> New Course
                                             </button>
                                         </div>
                                     </div>
@@ -129,7 +129,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Course ID</th>
+                                                    <th>Course Code</th>
                                                     <th>Course Name</th>
                                                     <th>Course Type</th>
                                                     <th>Action</th>
@@ -143,7 +143,7 @@
                                                 ?>
                                                     <tr>
                                                         <td><?php echo htmlentities($cnt); ?></td>
-                                                        <td style="text-align: center;"><?php echo htmlentities($row['ID']); ?></td>
+                                                        <td style="text-align: center;"><?php echo htmlentities($row['course-code']); ?></td>
                                                         <td style="text-align: center;"><?php echo htmlentities($row['name']); ?></td>
                                                         <td style="text-align: center;"><?php echo htmlentities($row['program_type']); ?></td>
                                                         <td style="text-align: center;">

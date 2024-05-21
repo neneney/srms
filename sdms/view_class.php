@@ -48,12 +48,12 @@ include('includes/dbconnection.php');
 <div class="row card-body">
     <?php
     $eid2 = $_POST['edit_id2'];
-    $ret2 = mysqli_query($con, "SELECT * FROM programs WHERE ID='$eid2'");
+    $ret2 = mysqli_query($con, "SELECT * FROM classes WHERE id='$eid2'");
 
 
 
     while ($row = mysqli_fetch_array($ret2)) {
-        $ret3 = mysqli_query($con, "SELECT * from students WHERE program = '" . $row['name'] . "'");
+        $ret3 = mysqli_query($con, "SELECT * from students WHERE class_id = '" . $row['id'] . "'");
     ?>
         <div class="col-md-12">
             <div class="header-logo">
@@ -67,9 +67,9 @@ include('includes/dbconnection.php');
                 <img src="company/als_logo.png" alt="Logo" style="width: 100px; height: auto; margin-left: 20px; margin-bottom: 20px;">
             </div>
             <hr class="horizontal">
-            <p style="margin: 0;">Course Code: <?php echo $row['course-code']; ?></p>
-            <p style="margin: 0;">Course Name: <?php echo $row['name']; ?></p>
-            <p style="margin: 0;">Course Type: <?php echo $row['program_type']; ?></p>
+            <p style="margin: 0;">Class Code: <?php echo $row['code']; ?></p>
+            <p style="margin: 0;">Class Name: <?php echo $row['name']; ?></p>
+            <p style="margin: 0;">Grade Level: <?php echo $row['grade-level']; ?></p>
             <p style="margin: 0; margin-bottom: 10px; margin-top:10px">Students Enrolled: </p>
             <table class="table">
                 <thead>

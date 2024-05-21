@@ -234,7 +234,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                     <div class="row">
                       <div class="form-group col-md-6">
                         <label for="studentno">Last School Attended</label>
-                        <input type="text" class="form-control" id="suffix" name="last_school" placeholder="Enter Last School Attended" required>
+                        <input type="text" class="form-control" id="last_school" name="last_school" placeholder="Enter Last School Attended" required>
                       </div>
                     </div>
 
@@ -344,7 +344,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                         <input type="text" class="form-control" id="parentname" name="parent-middlename" placeholder="Enter Middle Name" required>
                       </div>
                       <div class="form-group col-md-3">
-                        <label for="parent-suffix">Suffix</label>
+                        <label for="parent-suffix">Suffix(Optional)</label>
                         <input type="text" class="form-control" id="parentname" name="parent-suffix" placeholder="Enter Suffix">
                       </div>
                     </div>
@@ -365,6 +365,10 @@ if (strlen($_SESSION['sid'] == 0)) {
                         <label for="age">Email</label>
                         <input type="text" class="form-control" id="email" name="email" placeholder="email">
                       </div>
+                      <div class="form-group col-md-3">
+                        <label for="nextphone">Phone Number</label>
+                        <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number" required>
+                      </div>
                       <div class="form-group col-md-2">
                         <label for="occupation">Ocupation</label>
                         <select type="select" class="form-control" id="occupation" name="occupation" required>
@@ -379,10 +383,6 @@ if (strlen($_SESSION['sid'] == 0)) {
                           <option value="Farmer">Farmer</option>
                           <option value="Other">Other</option>
                         </select>
-                      </div>
-                      <div class="form-group col-md-3">
-                        <label for="nextphone">Phone Number</label>
-                        <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number" required>
                       </div>
                     </div>
 

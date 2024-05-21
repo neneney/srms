@@ -110,7 +110,7 @@ if (isset($_POST['save2'])) {
 ?>
 
 
-<!-- Content Wrapper. Contains page content -->
+
 <div class="card-body">
   <!-- Main content -->
   <section class="content">

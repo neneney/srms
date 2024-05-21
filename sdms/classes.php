@@ -107,7 +107,7 @@ if (isset($_GET['dels'])) {
                                                 </button>
                                             </div>
                                             <div class="modal-body" id="info_update2">
-                                                <?php @include("view_program.php"); ?>
+                                                <?php @include("view_class.php"); ?>
                                             </div>
                                             <div class="modal-footer ">
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -204,7 +204,7 @@ if (isset($_GET['dels'])) {
             $(document).on('click', '.edit_data2', function() {
                 var edit_id2 = $(this).attr('id');
                 $.ajax({
-                    url: "view_program.php",
+                    url: "view_class.php",
                     type: "post",
                     data: {
                         edit_id2: edit_id2
@@ -258,6 +258,15 @@ if (isset($_GET['dels'])) {
         }
 
         document.getElementById("end_date").addEventListener("change", validateEndDate);
+    </script>
+    <script>
+        function printTable() {
+            var printContents = document.getElementById('info_update2').innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
     </script>
 </body>
 
