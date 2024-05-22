@@ -75,10 +75,7 @@ if (isset($_POST['update'])) {
     <!-- <div class="modal-footer " style="float: left;">
       <button type="submit" name="update" id="update" class="btn btn-primary">Update</button>
     </div> -->
-    <div class="modal-footer text-right" style="float: left;">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      <button type="submit" name="update" class="btn btn-primary">Submit</button>
-    </div>
+
   </form>
 </div>
 <!-- /.card-body -->

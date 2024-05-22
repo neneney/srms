@@ -53,7 +53,7 @@ include('includes/dbconnection.php');
 
 
     while ($row = mysqli_fetch_array($ret2)) {
-        $ret3 = mysqli_query($con, "SELECT * from students WHERE class_id = '" . $row['id'] . "'");
+        $ret3 = mysqli_query($con, "SELECT * from students WHERE class_id = '" . $row['code'] . "'");
     ?>
         <div class="col-md-12">
             <div class="header-logo">

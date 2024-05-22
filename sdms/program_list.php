@@ -102,9 +102,7 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title">Course Details</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
+                                                    <button type="button" class="btn btn-primary float-right">Enroll Student</button>
                                                 </div>
                                                 <div class="modal-body" id="info_update2">
                                                     <?php @include("view_program.php"); ?>

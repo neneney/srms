@@ -1,3 +1,6 @@
+
+
+
 var images = document.querySelectorAll('img');
 images.forEach(function(image) {
   image.addEventListener('click', function(event) {
@@ -39,6 +42,7 @@ $(document).ready(function() {
     });
   });
 });
+
 
 $(document).ready(function() {
   $(document).on('click', '.edit_data2', function() {

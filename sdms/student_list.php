@@ -90,7 +90,8 @@ if (isset($_GET['del'])) {
                 </div>
                 <!--   end modal -->
 
-                <div id="editData2" class="modal fade">
+
+                <div id="editData2" class="modal fade" id="printTable">
                   <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -103,8 +104,8 @@ if (isset($_GET['del'])) {
                         <?php @include("view_student_info.php"); ?>
                       </div>
                       <div class="modal-footer ">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="printCert()">Print Certificate</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
                       </div>
                       <!-- /.modal-content -->
                     </div>
@@ -113,6 +114,8 @@ if (isset($_GET['del'])) {
                   <!-- /.modal -->
                 </div>
                 <!--   end modal -->
+
+
 
 
                 <div class="card-body mt-2 ">
@@ -130,7 +133,7 @@ if (isset($_GET['del'])) {
                       <?php
                       $query = mysqli_query($con, "SELECT * FROM students ORDER BY postingDate DESC");
                       while ($row = mysqli_fetch_array($query)) {
-                        $classQuery = mysqli_query($con, "SELECT name FROM classes WHERE id = '" . mysqli_real_escape_string($con, $row['class_id']) . "'");
+                        $classQuery = mysqli_query($con, "SELECT name FROM classes WHERE code = '" . mysqli_real_escape_string($con, $row['class_id']) . "'");
                         $classRow = mysqli_fetch_array($classQuery);
                       ?>
                         <tr>
@@ -192,7 +195,18 @@ if (isset($_GET['del'])) {
   </div>
   <!-- ./wrapper -->
 
+
   <script defer src="build/js/student_list.js"></script>
+  <script>
+    function printTable() {
+      var printContents = document.getElementById('info_update2').innerHTML;
+      var originalContents = document.body.innerHTML;
+      document.body.innerHTML = printContents;
+      window.print();
+      document.body.innerHTML = originalContents;
+    }
+  </script>
+
   <?php @include("includes/foot.php"); ?>
 </body>
 

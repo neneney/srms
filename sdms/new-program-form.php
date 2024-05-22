@@ -29,13 +29,13 @@ if (isset($_POST['submit'])) {
 <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
   <div class="card-body">
     <div class="row">
-      <div class="form-group col-md-4 ">
-        <label for="feFirstName">Course Name</label>
-        <input type="text" name="name" class="form-control" placeholder="Course Name" value="" required>
-      </div>
       <div class="form-group col-md-4">
         <label for="feFirstName">Course Code</label>
         <input type="text" name="code" class="form-control" placeholder="Course Code" value="" required>
+      </div>
+      <div class="form-group col-md-4 ">
+        <label for="feFirstName">Course Name</label>
+        <input type="text" name="name" class="form-control" placeholder="Course Name" value="" required>
       </div>
       <div class="form-group col-md-4">
         <label class="" for="register1-email">Type:</label>

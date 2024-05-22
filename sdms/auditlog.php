@@ -1,14 +1,14 @@
-
-<?php 
+<?php
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['sid']==0)) {
-header('location:logout.php');
-} 
+if (strlen($_SESSION['sid'] == 0)) {
+  header('location:logout.php');
+}
 
 ?>
 <?php @include("includes/head.php"); ?>
+
 <body class="hold-transition sidebar-mini layout-fixed">
   <div class="wrapper">
     <!-- Navbar -->
@@ -56,7 +56,6 @@ header('location:logout.php');
                         <th class="text-center">User Name</th>
                         <th class="text-center">Full Name</th>
                         <th class="text-center">User Email</th>
-                        <th class="text-center">User Ip Address</th>
                         <th class="text-center">Login Time</th>
                         <th class="text-center">Logout Time</th>
                         <th class="text-center">Status</th>
@@ -64,66 +63,60 @@ header('location:logout.php');
                     </thead>
                     <tbody>
                       <?php
-                      $sql="SELECT * from userlog ORDER BY id DESC";
-                      $query = $dbh -> prepare($sql);
+                      $sql = "SELECT * from userlog ORDER BY id DESC";
+                      $query = $dbh->prepare($sql);
                       $query->execute();
-                      $results=$query->fetchAll(PDO::FETCH_OBJ);
-                      $cnt=1;
-                      if($query->rowCount() > 0)
-                      {
-                        foreach($results as $row)
-                          {               ?>
-                           <tr>
-                             <td><?php  echo htmlentities($row->username);?></td>
-                             <td class="text-left"><?php  echo htmlentities($row->name);?> <?php  echo htmlentities($row->lastname);?></td>
-                             <td class="text-left"><?php  echo htmlentities($row->userEmail);?></td>
-                             <td class="text-left" ><?php  echo htmlentities($row->userip);?></td>
-                             <td class="text-left"><?php  echo htmlentities($row->loginTime);?></td>
-                             <td class="text-left" ><?php  echo htmlentities($row->logout);?></td>
-                             <td class="text-left"><?php $st=($row->status);
-                             if($st==1)
-                             {
-                              echo "Successfull";
-                            }
-                            else
-                            {
-                              echo "Failed";
-                            }
-                            ?></td>
+                      $results = $query->fetchAll(PDO::FETCH_OBJ);
+                      $cnt = 1;
+                      if ($query->rowCount() > 0) {
+                        foreach ($results as $row) {               ?>
+                          <tr>
+                            <td><?php echo htmlentities($row->username); ?></td>
+                            <td class="text-left"><?php echo htmlentities($row->name); ?> <?php echo htmlentities($row->lastname); ?></td>
+                            <td class="text-left"><?php echo htmlentities($row->userEmail); ?></td>
+                            <td class="text-left"><?php echo htmlentities($row->loginTime); ?></td>
+                            <td class="text-left"><?php echo htmlentities($row->logout); ?></td>
+                            <td class="text-left"><?php $st = ($row->status);
+                                                  if ($st == 1) {
+                                                    echo "Successfull";
+                                                  } else {
+                                                    echo "Failed";
+                                                  }
+                                                  ?></td>
                           </tr>
 
-                        <?php
-                         }
-                       } ?>
-                      </tbody>
-                    </table>
-                  </div>
-                  <!-- /.card-body -->
+                      <?php
+                        }
+                      } ?>
+                    </tbody>
+                  </table>
                 </div>
-                <!-- /.card -->
+                <!-- /.card-body -->
               </div>
-              <!-- /.col -->
+              <!-- /.card -->
             </div>
-            <!-- /.row -->
+            <!-- /.col -->
           </div>
-          <!-- /.container-fluid -->
-        </section>
-        <!-- /.content -->
-      </div>
-      <!-- /.content-wrapper -->
-      <?php @include("includes/footer.php"); ?>
-
-      <!-- Control Sidebar -->
-      <aside class="control-sidebar control-sidebar-dark">
-        <!-- Control sidebar content goes here -->
-      </aside>
-      <!-- /.control-sidebar -->
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
     </div>
-    <!-- ./wrapper -->
+    <!-- /.content-wrapper -->
+    <?php @include("includes/footer.php"); ?>
 
-    <?php @include("includes/foot.php"); ?>
-    <!-- page script -->
-    
-  </body>
-  </html>
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
 
+  <?php @include("includes/foot.php"); ?>
+  <!-- page script -->
+
+</body>
+
+</html>

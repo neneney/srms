@@ -7,11 +7,13 @@ if (isset($_POST['update'])) {
   $eid = $_SESSION['edid'];
   $name = $_POST['name'];
   $program_type = $_POST['program_type'];
+  $code = $_POST['code'];
 
-  $sql = "UPDATE programs SET name=:name, program_type=:program_type WHERE ID=:eid";
+  $sql = "UPDATE programs SET name=:name, `course-code`=:code, program_type=:program_type WHERE ID=:eid";
   $query = $dbh->prepare($sql);
   $query->bindParam(':name', $name, PDO::PARAM_STR);
   $query->bindParam(':program_type', $program_type, PDO::PARAM_STR);
+  $query->bindParam(':code', $code, PDO::PARAM_STR);
   $query->bindParam(':eid', $eid, PDO::PARAM_STR);
   $query->execute();
   echo '<script>alert("Updated successfully")</script>';
@@ -33,12 +35,17 @@ if (isset($_POST['update'])) {
       $_SESSION['edid'] = $row['ID'];
     ?>
       <div class="row">
-        <div class="form-group col-md-6">
-          <label for="name">Program Name</label>
+        <div class="form-group col-md-4">
+          <label for="name">Course Code</label>
+          <input type="text" name="code" class="form-control" id="code" value="<?php echo $row['course-code']; ?>" required>
+        </div>
+        <div class="form-group col-md-4">
+          <label for="name">Course Name</label>
           <input type="text" name="name" class="form-control" id="name" value="<?php echo $row['name']; ?>" required>
         </div>
-        <div class="form-group col-md-6">
-          <label for="program_type">Program Type</label>
+
+        <div class="form-group col-md-4">
+          <label for="program_type">Course Type</label>
           <select name="program_type" class="form-control" id="program_type" required>
             <option value="">Select Program Type</option>
             <option value="General Education" <?php if ($row['program_type'] == 'General Education') echo 'selected'; ?>>General Education</option>

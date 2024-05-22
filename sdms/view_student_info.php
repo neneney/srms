@@ -1,93 +1,69 @@
 <style>
+  .header-logo {
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-bottom: 20px !important;
+  }
+
+  .header-text {
+    text-align: center !important;
+  }
+
+  .horizontal {
+    margin-top: 40px !important;
+    display: none !important;
+  }
+
   @media print {
-
-    /* Hide unnecessary elements */
-    header,
-    footer,
-    nav,
-    .no-print,
-    .print-btn {
-      display: none;
+    * {
+      font-size: 20px !important;
     }
 
-    /* General print styles */
-    body {
-      font-size: 12pt;
-      line-height: 1.5;
-      color: #000;
-      background: none;
+    .b-print {
+      margin-bottom: 20px !important;
+
     }
 
-    /* Make the modal body fit to the page */
-    #info_update2 {
-      width: 100%;
-      margin: 0;
-      padding: 0;
+    .a-print {
+      display: none !important;
     }
 
-    /* Ensure images are displayed correctly */
-    img {
-      max-width: 100%;
-      height: auto;
+    .row-print {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr 1fr 1fr !important;
+      align-items: center !important;
+      padding-bottom: 5px !important;
+      margin-bottom: 10px !important;
     }
 
-    /* Adjust card layout for printing */
-    .card {
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
+    user-image {
+      height: 200px !important;
     }
 
-    .card-body {
-      padding: 10px;
+    .header-logo {
+      display: flex !important;
     }
 
-    /* Style headings */
-    h3,
     h4 {
-      text-align: center;
-      margin-bottom: 10px;
+      margin-top: 40px !important;
     }
 
-    /* Style lists */
-    .list-group-item {
-      border: none;
-      padding: 5px 0;
+    .horizontal {
+      display: block !important;
+
     }
 
-    /* Ensure full-width layout */
-    .row {
-      display: flex;
-      flex-wrap: wrap;
+    * {
+      font-size: 24px !important;
     }
 
-    .col-md-3,
-    .col-md-4,
-    .col-md-6,
-    .col-md-9 {
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: 100%;
+    table {
+      text-align: center !important;
     }
 
-    /* Ensure labels are displayed inline */
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 3px;
-    }
-
-    /* Style paragraphs */
-    p {
-      margin: 0 0 5px 0;
-    }
-
-    /* Adjust margins and paddings */
-    .modal-body {
-      padding: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 10px;
+    .img-print {
+      border-radius: 10px !important;
     }
   }
 </style>
@@ -103,25 +79,36 @@ while ($row = mysqli_fetch_array($ret2)) {
 
   <div class="row">
     <div class="col-md-3">
+      <div class="header-logo">
+        <img src="company/bjmp_logo.png" alt="Logo" style="width: 100px; height: auto; margin-right: 20px;">
+        <div class="header-text">
+          <p style="margin: 0;">Republic of the Philippines</p>
+          <h3 style="margin: 0;">Bureau of Jail Management and Penology</h3>
+          <p style="margin: 0;">Region IXA - Calabarzon</p>
+          <p style="margin: 0;">General Trias, Cavite</p>
+        </div>
+        <img src="company/als_logo.png" alt="Logo" style="width: 100px; height: auto; margin-left: 20px; margin-bottom: 20px;">
+      </div>
+
       <div class="card card-primary card-outline">
         <div class="card-body box-profile">
           <div class="text-center">
-            <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture">
+            <img class="img-circle img-print" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture">
           </div>
           <h3 class="profile-username text-center"><?php echo $row['name']; ?></h3>
           <p class="text-muted text-center"><strong></strong></p>
-          <ul class="list-group list-group-unbordered mb-3">
-            <li class="list-group-item">
+          <ul class="list-group list-group-unbordered mb-3 b-print">
+            <li class="list-group-item a-print">
               <?php
               $fullName = htmlentities($row['first-name']) . ' ' .
                 htmlentities($row['middle-name']) . ' ' .
                 htmlentities($row['last-name']) . ' ' .
                 htmlentities($row['suffix']);
               ?>
-              <b>Full Name</b> <a style="display:block; text-align: center;"><?php echo $fullName; ?></a>
+              <b>Full Name</b> <a class="a-print" style="display:block; text-align: center;"><?php echo $fullName; ?></a>
             </li>
-            <li class="list-group-item">
-              <b>Enrolled In</b> <a style="display:block; text-align: center;">
+            <li class="list-group-item a-print">
+              <b>Enrolled In</b> <a class="a-print" style="display:block; text-align: center;">
                 <?php
                 if (isset($row['program'])) {
                   echo htmlentities($row['program']);
@@ -137,10 +124,11 @@ while ($row = mysqli_fetch_array($ret2)) {
       </div>
     </div>
     <div class="col-md-9 d-flex flex-column">
+
       <div class="card flex-grow-1 d-flex flex-column">
         <div class="card-body flex-grow-1 d-flex flex-column">
           <div class="tab-content flex-grow-1">
-            <h4 style="margin-bottom: 10px;">Student Information</h4>
+            <h4 style="margin-bottom: 10px; font-weight: 600;">Student Information</h4>
             <hr>
             <div class="active tab-pane flex-grow-1 d-flex flex-column" id="studentinfo">
               <div class="row flex-grow-1">
@@ -151,8 +139,8 @@ while ($row = mysqli_fetch_array($ret2)) {
                   </div>
                 </div>
               </div>
-              <div class="row flex-grow-1">
-                <div class="col-md-3">
+              <div class="row flex-grow-1 row-print">
+                <div class="col-md-3 ">
                   <div class="form-group">
                     <label for="last-name">Last Name</label>
                     <p><?php echo htmlentities($row['last-name']); ?></p>
@@ -177,7 +165,7 @@ while ($row = mysqli_fetch_array($ret2)) {
                   </div>
                 </div>
               </div>
-              <div class="row flex-grow-1">
+              <div class="row flex-grow-1 row-print">
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Sex</label>
@@ -192,7 +180,7 @@ while ($row = mysqli_fetch_array($ret2)) {
                 </div>
               </div>
             </div>
-            <h4 style="margin-bottom: 10px;">Parent/Guardian Information</h4>
+            <h4 style="margin-bottom: 10px; font-weight: 600;">Parent/Guardian Information</h4>
             <hr>
             <div class="tab-pane flex-grow-1 d-flex flex-column" id="parentinfo">
               <?php
@@ -204,7 +192,7 @@ while ($row = mysqli_fetch_array($ret2)) {
               $parentQuery->execute();
               $parentRow = $parentQuery->fetch(PDO::FETCH_ASSOC);
               ?>
-              <div class="row flex-grow-1">
+              <div class="row flex-grow-1 row-print">
                 <div class="form-group col-md-3">
                   <label for="p_last_name">Last Name</label>
                   <p><?php echo htmlentities($parentRow['last_name']); ?></p>
@@ -222,7 +210,7 @@ while ($row = mysqli_fetch_array($ret2)) {
                   <p><?php echo htmlentities($parentRow['suffix']); ?></p>
                 </div>
               </div>
-              <div class="row flex-grow-1">
+              <div class="row flex-grow-1 row-print">
                 <div class="form-group col-md-3">
                   <label for="relationship">Relationship</label>
                   <p><?php echo htmlentities($parentRow['relationship']); ?></p>
@@ -247,7 +235,7 @@ while ($row = mysqli_fetch_array($ret2)) {
                 </div>
               </div>
             </div>
-            <h4 style="margin-bottom: 10px;">Address</h4>
+            <h4 style="margin-bottom: 10px; font-weight: 600;">Address</h4>
             <hr>
             <!-- /.tab-pane -->
             <div class="tab-pane flex-grow-1 d-flex flex-column" id="addressinfo">
@@ -258,7 +246,7 @@ while ($row = mysqli_fetch_array($ret2)) {
               $cityCode = $row['city'];
               $brgyCode = $row['barangay'];
               ?>
-              <div class="row flex-grow-1">
+              <div class="row flex-grow-1 row-print">
                 <div class="form-group col-md-6">
                   <label for="Province">Province</label>
                   <p><?php echo htmlentities($provRow['provDesc']); ?></p>
@@ -278,7 +266,7 @@ while ($row = mysqli_fetch_array($ret2)) {
                   </p>
                 </div>
               </div>
-              <div class="row flex-grow-1">
+              <div class="row flex-grow-1 row-print">
                 <div class="form-group col-md-6">
                   <label for="Barangay">Barangay</label>
                   <p>
@@ -310,22 +298,3 @@ while ($row = mysqli_fetch_array($ret2)) {
 <?php
 }
 ?>
-
-
-<script>
-  function printCert() {
-    var elements = document.querySelectorAll('#info_update2');
-    if (elements.length > 0) {
-      var printContents = '';
-      elements.forEach(function(element) {
-        printContents += element.innerHTML + '<br>';
-      });
-      var originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-    } else {
-      console.error('Elements with id "info_update2" not found.');
-    }
-  }
-</script>
