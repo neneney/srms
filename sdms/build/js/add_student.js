@@ -139,5 +139,42 @@ function fetchAndPopulateClasses(gradeLevel, levelType) {
       }
     });
   });
-  
-  
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const currentYear = new Date().getFullYear();
+    const randomNumber = Math.floor(Math.random() * 1000000);
+    const StudentId = `${currentYear}${randomNumber}`;
+    var IDfield = document.getElementById('studentno');
+
+    IDfield.value = StudentId;
+  })
+  document.addEventListener('DOMContentLoaded', function() {
+    const birthdateField = document.getElementById('birthdate');
+    const ageField = document.getElementById('age');
+
+    birthdateField.addEventListener('input', function() {
+        const birthdate = new Date(birthdateField.value);
+        const age = calculateAge(birthdate);
+
+        if (age <= 0) {
+            alert("Please enter a valid birthdate.");
+            birthdateField.value =''; 
+            ageField.value = '';
+        } else {
+            ageField.value = age;
+        }
+    });
+
+    function calculateAge(birthdate) {
+        const today = new Date();
+        let age = today.getFullYear() - birthdate.getFullYear();
+        const monthDifference = today.getMonth() - birthdate.getMonth();
+
+        // If the birth date hasn't occurred yet this year, subtract one from age
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthdate.getDate())) {
+            age--;
+        }
+
+        return age;
+    }
+});

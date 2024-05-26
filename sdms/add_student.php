@@ -25,6 +25,8 @@ if (strlen($_SESSION['sid'] == 0)) {
     $relation = $_POST['relation'];
     $occupation = $_POST['occupation'];
     $email = $_POST['email'];
+    $semail = $_POST['semail'];
+    $sphone = $_POST['sphone'];
     $last_school = $_POST['last_school'];
     $phone = $_POST['phone'];
     $province = $_POST['province'];
@@ -84,7 +86,8 @@ if (strlen($_SESSION['sid'] == 0)) {
       $parent_id = $dbh->lastInsertId();
 
       // Step 3: Insert student data using the retrieved parent_id
-      $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, program, parent_id, province, city, barangay, `village-house-no`, studentImage, gradelevel, strand, class_id, last_school) VALUES (:studentno, :lastname, :firstname, :middlename, :suffix, :age, :sex, :program, :parent_id, :province, :city, :barangay, :village, :photo, :gradelevel, :strand, :class_id, :last_school)";
+      $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, email, phone, program, parent_id, province, city, barangay, `village-house-no`, studentImage, gradelevel, strand, class_id, last_school) 
+      VALUES (:studentno, :lastname, :firstname, :middlename, :suffix, :age, :sex, :semail, :sphone, :program, :parent_id, :province, :city, :barangay, :village, :photo, :gradelevel, :strand, :class_id, :last_school)";
       $query_student = $dbh->prepare($sql_student);
       $query_student->bindParam(':studentno', $studentno, PDO::PARAM_STR);
       $query_student->bindParam(':lastname', $lastname, PDO::PARAM_STR);
@@ -93,8 +96,10 @@ if (strlen($_SESSION['sid'] == 0)) {
       $query_student->bindParam(':suffix', $suffix, PDO::PARAM_STR);
       $query_student->bindParam(':age', $age, PDO::PARAM_INT);
       $query_student->bindParam(':sex', $sex, PDO::PARAM_STR);
+      $query_student->bindParam(':semail', $semail, PDO::PARAM_STR);
+      $query_student->bindParam(':sphone', $sphone, PDO::PARAM_STR);
       $query_student->bindParam(':program', $program, PDO::PARAM_STR);
-      $query_student->bindParam(':parent_id', $parent_id, PDO::PARAM_INT); // Using the retrieved parent_id
+      $query_student->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
       $query_student->bindParam(':province', $province, PDO::PARAM_STR);
       $query_student->bindParam(':city', $city, PDO::PARAM_STR);
       $query_student->bindParam(':barangay', $barangay, PDO::PARAM_STR);
@@ -103,6 +108,8 @@ if (strlen($_SESSION['sid'] == 0)) {
       $query_student->bindParam(':gradelevel', $gradelevel, PDO::PARAM_STR);
       $query_student->bindParam(':strand', $strand, PDO::PARAM_STR);
       $query_student->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+      $query_student->bindParam(':last_school', $last_school, PDO::PARAM_STR);
+
 
       if ($strand !== null) {
         $query_student->bindParam(':strand', $strand, PDO::PARAM_STR);
@@ -186,7 +193,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                     <div class="row">
                       <div class="form-group col-md-3">
                         <label for="studentno">Student ID</label>
-                        <input type="text" class="form-control" id="studentno" name="studentno" placeholder="Enter student No" required>
+                        <input type="text" class="form-control" id="studentno" name="studentno" placeholder="Enter student No" required readonly>
                       </div>
                     </div>
                     <div class="row">
@@ -210,8 +217,12 @@ if (strlen($_SESSION['sid'] == 0)) {
 
                     <div class="row">
                       <div class="form-group col-md-3">
+                        <label for="birthdate">Birthdate</label>
+                        <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="Birthdate" required>
+                      </div>
+                      <div class="form-group col-md-3">
                         <label for="age">Age</label>
-                        <input type="number" class="form-control" id="age" name="age" placeholder="age" required>
+                        <input type="number" class="form-control" id="age" name="age" placeholder="age" required readonly>
                       </div>
                       <div class="form-group col-md-3">
                         <label for="sex">Sex</label>
@@ -222,7 +233,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                         </select>
                       </div>
 
-                      <div class="form-group col-md-4">
+                      <div class="form-group col-md-3">
                         <label for="exampleInputFile">Student Photo</label>
                         <div class="input-group">
                           <div class="custom-file">
@@ -232,6 +243,17 @@ if (strlen($_SESSION['sid'] == 0)) {
                       </div>
                     </div>
                     <div class="row">
+                      <div class="form-group col-md-3">
+                        <label for="semail">Email</label>
+                        <input type="text" class="form-control" id="semail" name="semail" placeholder="Email">
+                      </div>
+                      <div class="form-group col-md-3">
+                        <label for="sphone">Phone Number</label>
+                        <input type="text" class="form-control" id="sphone" name="sphone" placeholder="Phone Number">
+                      </div>
+                    </div>
+
+                    <div class="row">
                       <div class="form-group col-md-6">
                         <label for="studentno">Last School Attended</label>
                         <input type="text" class="form-control" id="last_school" name="last_school" placeholder="Enter Last School Attended" required>
@@ -240,7 +262,7 @@ if (strlen($_SESSION['sid'] == 0)) {
 
                     <div class="row">
                       <div class="form-group col-md-3">
-                        <label for="grade">Educational Level</label>
+                        <label for="grade">Student Educational Level</label>
                         <select class="form-control" id="levels" name="levels" required>
                           <option value="">Select Educational Level</option>
                           <option value="elementary">Elementary</option>
@@ -321,13 +343,43 @@ if (strlen($_SESSION['sid'] == 0)) {
                           <option value="he">HE - Home Economics </option>
                         </select>
                       </div>
+
+                    </div>
+
+                    <hr>
+                    <span style="color: brown">
+                      <h5>Address</h5>
+                    </span>
+                    <div class="row">
+                      <div class="form-group col-md-3">
+                        <label for="Province">Province</label>
+                        <select type="select" class="form-control" id="province" name="province" required>
+                          <option value="">Select province</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-3">
+                        <label for="City">City</label>
+                        <select type="select" class="form-control" id="city" name="city" required>
+                          <option value="">Select City</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-3">
+                        <label for="City">Barangay</label>
+                        <select type="select" class="form-control" id="barangay" name="barangay" required>
+                          <option value="">Select Barangay</option>
+                        </select>
+                      </div>
+                      <div class="form-group col-md-3">
+                        <label for="village">Village & House No.</label>
+                        <input type="text" class="form-control" id="village" name="village" placeholder="Village" required>
+                      </div>
                     </div>
 
                     <div class="row">
                     </div>
                     <hr>
                     <span style="color: brown">
-                      <h5>Parent/Guardian details</h5>
+                      <h5>Parent/Guardian Details</h5>
                     </span>
 
                     <div class="row">
@@ -363,15 +415,16 @@ if (strlen($_SESSION['sid'] == 0)) {
                       </div>
                       <div class="form-group col-md-4">
                         <label for="age">Email</label>
-                        <input type="text" class="form-control" id="email" name="email" placeholder="email">
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Email">
                       </div>
                       <div class="form-group col-md-3">
                         <label for="nextphone">Phone Number</label>
-                        <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number" required>
+                        <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number">
                       </div>
                       <div class="form-group col-md-2">
                         <label for="occupation">Ocupation</label>
-                        <select type="select" class="form-control" id="occupation" name="occupation" required>
+                        <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Occupation" required>
+                        <!-- <select type="select" class="form-control" id="occupation" name="occupation" required>
                           <option>occupation</option>
                           <option value="Doctor">Doctor</option>
                           <option value="Engineer">Engineer</option>
@@ -382,41 +435,12 @@ if (strlen($_SESSION['sid'] == 0)) {
                           <option value="Software developer">Software developer</option>
                           <option value="Farmer">Farmer</option>
                           <option value="Other">Other</option>
-                        </select>
+                        </select> -->
                       </div>
                     </div>
 
-                    <div class="row">
-                    </div>
-                    <hr>
-                    <span style="color: brown">
-                      <h5>Address</h5>
-                    </span>
 
-                    <div class="row">
-                      <div class="form-group col-md-3">
-                        <label for="Province">Province</label>
-                        <select type="select" class="form-control" id="province" name="province" required>
-                          <option value="">Select province</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-3">
-                        <label for="City">City</label>
-                        <select type="select" class="form-control" id="city" name="city" required>
-                          <option value="">Select City</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-3">
-                        <label for="City">Barangay</label>
-                        <select type="select" class="form-control" id="barangay" name="barangay" required>
-                          <option value="">Select Barangay</option>
-                        </select>
-                      </div>
-                      <div class="form-group col-md-3">
-                        <label for="village">Village & House No.</label>
-                        <input type="text" class="form-control" id="village" name="village" placeholder="Village" required>
-                      </div>
-                    </div>
+
                   </div>
                   <!-- /.card-body -->
                   <div class="card-footer">

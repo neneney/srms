@@ -271,11 +271,11 @@ if (isset($_POST['save2'])) {
                         </div>
                         <div class="form-group col-md-3">
                           <label for="p_first_name">First Name</label>
-                          <input name="p_first_name" class="form-control" id="p_first_name" value="<?php echo $parentRow['middle_name']; ?>" required>
+                          <input name="p_first_name" class="form-control" id="p_first_name" value="<?php echo $parentRow['first_name']; ?>" required>
                         </div>
                         <div class="form-group col-md-3">
                           <label for="p_middle_name">Middle Name</label>
-                          <input name="p_middle_name" class="form-control" id="p_middle_name" value="<?php echo $parentRow['first_name']; ?>" required>
+                          <input name="p_middle_name" class="form-control" id="p_middle_name" value="<?php echo $parentRow['middle_name']; ?>" required>
                         </div>
                         <div class="form-group col-md-3">
                           <label for="p_suffix">Suffix</label>
@@ -298,7 +298,8 @@ if (isset($_POST['save2'])) {
                         <div class="col-md-6">
                           <div class="form-group">
                             <label for="occupation">Occupation</label>
-                            <select class="form-control" id="occupation" name="occupation" required>
+                            <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Occupation" value="<?php echo $parentRow['occupation']; ?>" required>
+                            <!-- <select class="form-control" id="occupation" name="occupation" required>
                               <option>Occupation</option>
                               <option value="Doctor" <?php if ($parentRow['occupation'] == 'Doctor') echo 'selected'; ?>>Doctor</option>
                               <option value="Engineer" <?php if ($parentRow['occupation'] == 'Engineer') echo 'selected'; ?>>Engineer</option>
@@ -309,7 +310,7 @@ if (isset($_POST['save2'])) {
                               <option value="Software Developer" <?php if ($parentRow['occupation'] == 'Software Developer') echo 'selected'; ?>>Software Developer</option>
                               <option value="Farmer" <?php if ($parentRow['occupation'] == 'Farmer') echo 'selected'; ?>>Farmer</option>
                               <option value="Other" <?php if ($parentRow['occupation'] == 'Other') echo 'selected'; ?>>Other</option>
-                            </select>
+                            </select> -->
                           </div>
                         </div>
                       </div>
