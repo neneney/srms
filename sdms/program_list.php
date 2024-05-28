@@ -102,7 +102,7 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title">Course Details</h5>
-                                                    <button type="button" class="btn btn-primary float-right">Enroll Student</button>
+                                                    <button type="button editdata3" class="btn btn-primary float-right">Enroll Student</button>
                                                 </div>
                                                 <div class="modal-body" id="info_update2">
                                                     <?php @include("view_program.php"); ?>
@@ -117,6 +117,28 @@
                                         </div>
                                         <!-- /.modal -->
                                     </div>
+                                    <!-- <div id="editData3" class="modal fade">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Enroll Student</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body" id="info_update2">
+                                                    <?php @include("edit-program-form.php"); ?>
+                                                </div>
+                                                <div class="modal-footer ">
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                    <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
+                                                </div>
+                                            
+                                            </div>
+                                            
+                                        </div>
+                                     
+                                    </div> -->
 
 
                                     <!-- /.card-header -->
@@ -196,6 +218,22 @@
                     });
                 });
             });
+            // $(document).ready(function() {
+            //     $(document).on('click', '.edit_data3', function() {
+            //         var edit_id = $(this).attr('id');
+            //         $.ajax({
+            //             url: "edit-program-form.php",
+            //             type: "post",
+            //             data: {
+            //                 edit_id: edit_id
+            //             },
+            //             success: function(data) {
+            //                 $("#info_update").html(data);
+            //                 $("#editData3").modal('show');
+            //             }
+            //         });
+            //     });
+            // });
         </script>
         <script type="text/javascript">
             $(document).ready(function() {

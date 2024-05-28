@@ -231,7 +231,7 @@ if (isset($_POST['save2'])) {
                         <div class="col-md-6">
                           <div class="form-group">
                             <label>Age</label>
-                            <input type="number" class="form-control" name="age" value="<?php echo $row['age']; ?>" required>
+                            <input type="number" class="form-control" name="age" value="<?php echo $row['age']; ?>" required readonly>
                           </div>
                         </div>
                         <!-- <div class="form-group col-md-8">
