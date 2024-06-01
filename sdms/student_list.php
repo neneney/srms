@@ -124,8 +124,8 @@ if (isset($_GET['del'])) {
                       <tr>
                         <th style="text-align: center;">Student Image</th>
                         <th style="text-align: center;">Student Number</th>
-                        <th style="text-align: center;">Course/Class</th>
                         <th style="text-align: center;">Student Name</th>
+                        <th style="text-align: center;">Student Gender</th>
                         <th style="text-align: center;">Action</th>
                       </tr>
                     </thead>
@@ -143,15 +143,6 @@ if (isset($_GET['del'])) {
                             </a>
                           </td>
                           <td style="text-align: center;"><?php echo htmlentities($row['studentno']); ?></td>
-                          <?php if (isset($row['program'])) { ?>
-                            <td style="text-align: center;"><?php echo htmlentities($row['program']); ?></td>
-                          <?php } ?>
-                          <?php if (isset($row['class_id'])) { ?>
-                            <td style="text-align: center;"><?php echo htmlentities($classRow['name']); ?></td>
-                          <?php } ?>
-                          <?php if (empty($row['program']) && empty($row['class_id'])) { ?>
-                            <td style="text-align: center;">Not registered to any program/classes</td>
-                          <?php } ?>
                           <td style="text-align: center;">
                             <?php
                             $fullName = htmlentities($row['first-name']) . ' ' .
@@ -161,10 +152,13 @@ if (isset($_GET['del'])) {
                             echo $fullName;
                             ?>
                           </td>
+                          <td style="text-align: center;"><?php echo htmlentities($row['gender']); ?></td>
                           <td style="text-align: center;">
                             <button class="btn btn-primary btn-sm edit_data" id="<?php echo $row['id']; ?>" title="click for edit">Edit</button>
                             <button class="btn btn-success btn-sm edit_data2" id="<?php echo $row['id']; ?>" title="click for edit">View</button>
-                            <a href="student_list.php?id=<?php echo $row['id'] ?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm">Delete</a>
+                            <?php if ($_SESSION['permission'] == "Admin") { ?>
+                              <a href="student_list.php?id=<?php echo $row['id']; ?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm">Delete</a>
+                            <?php } ?>
                           </td>
                         </tr>
                       <?php

@@ -1,9 +1,7 @@
 <?php
-
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-
 ?>
 <style>
     .header-logo {
@@ -50,10 +48,11 @@ include('includes/dbconnection.php');
     $eid2 = $_POST['edit_id2'];
     $ret2 = mysqli_query($con, "SELECT * FROM classes WHERE id='$eid2'");
 
-
-
     while ($row = mysqli_fetch_array($ret2)) {
-        $ret3 = mysqli_query($con, "SELECT * from students WHERE class_id = '" . $row['code'] . "'");
+        $ret3 = mysqli_query($con, "SELECT s.studentno, s.`first-name`, s.`middle-name`, s.`last-name`, s.suffix, s.age, s.gender
+                                    FROM class_enrollment ce
+                                    JOIN students s ON ce.student_id = s.studentno
+                                    WHERE ce.class_id = '" . $row['code'] . "'");
     ?>
         <div class="col-md-12">
             <div class="header-logo">
@@ -101,8 +100,6 @@ include('includes/dbconnection.php');
                 </tbody>
             </table>
         </div>
-
         <hr>
     <?php } ?>
-
 </div>

@@ -33,7 +33,7 @@
               </div>
             </div>
             <div class="col-4">
-              <button style="width:100%;" type="submit" class="btn btn-primary btn-block">Login</button>
+              <input style="width:100%;" type="submit" class="btn btn-primary btn-block" value="Login">
             </div>
           </div>
         </form>
@@ -53,30 +53,37 @@
           data: $(this).serialize(),
           dataType: 'json',
           success: function(response) {
+            console.log('AJAX success:', response);
             if (response.status === 'success') {
               window.location.href = 'dashboard.php';
             } else {
               $('#errorMessage').text(response.message);
             }
+          },
+          error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+            console.log('Response:', xhr.responseText);
+            $('#errorMessage').text('An error occurred. Please try again.');
           }
         });
       });
+    });
 
-      const passwordField = document.getElementById('passwordField');
-      const toggleButton = document.getElementById('toggleButton');
-      passwordField.type = "password";
 
-      toggleButton.addEventListener('click', function() {
-        if (passwordField.type === 'password') {
-          passwordField.type = 'text';
-          toggleButton.classList.remove('fa-eye');
-          toggleButton.classList.add('fa-eye-slash');
-        } else {
-          passwordField.type = 'password';
-          toggleButton.classList.remove('fa-eye-slash');
-          toggleButton.classList.add('fa-eye');
-        }
-      });
+    const passwordField = document.getElementById('passwordField');
+    const toggleButton = document.getElementById('toggleButton');
+    passwordField.type = "password";
+
+    toggleButton.addEventListener('click', function() {
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleButton.classList.remove('fa-eye');
+        toggleButton.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        toggleButton.classList.remove('fa-eye-slash');
+        toggleButton.classList.add('fa-eye');
+      }
     });
   </script>
 </body>

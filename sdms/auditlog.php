@@ -55,7 +55,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                       <tr>
                         <th class="text-center">User Name</th>
                         <th class="text-center">Full Name</th>
-                        <th class="text-center">User Email</th>
+
                         <th class="text-center">Login Time</th>
                         <th class="text-center">Logout Time</th>
                         <th class="text-center">Status</th>
@@ -73,7 +73,6 @@ if (strlen($_SESSION['sid'] == 0)) {
                           <tr>
                             <td><?php echo htmlentities($row->username); ?></td>
                             <td class="text-left"><?php echo htmlentities($row->name); ?> <?php echo htmlentities($row->lastname); ?></td>
-                            <td class="text-left"><?php echo htmlentities($row->userEmail); ?></td>
                             <td class="text-left"><?php echo htmlentities($row->loginTime); ?></td>
                             <td class="text-left"><?php echo htmlentities($row->logout); ?></td>
                             <td class="text-left"><?php $st = ($row->status);

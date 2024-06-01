@@ -2,7 +2,7 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['sid'] == 0)) {
+if (strlen($_SESSION['sid']) == 0) {
   header('location:logout.php');
 } else {
   $sql = "SELECT * FROM programs";
@@ -33,9 +33,7 @@ if (strlen($_SESSION['sid'] == 0)) {
     $city = $_POST['city'];
     $barangay = $_POST['barangay'];
     $village = $_POST['village'];
-
     $strand = $_POST['strand'];
-
     $photo = $_FILES["photo"]["name"];
     move_uploaded_file($_FILES["photo"]["tmp_name"], "studentimages/" . $_FILES["photo"]["name"]);
 
@@ -58,18 +56,11 @@ if (strlen($_SESSION['sid'] == 0)) {
     } else {
       $class_id = null;
     }
-
-    // Handle the optional 'strand' field
-    $strand = !empty($_POST['strand']) ? $_POST['strand'] : null;
-    // $program = $_POST['program'];
-    $program = !empty($_POST['program']) ? $_POST['program'] : null;
-
+    $program = $_POST['program'];
 
     try {
-      // Begin transaction
       $dbh->beginTransaction();
 
-      // Step 1: Insert parent data
       $sql_parent = "INSERT INTO parent (last_name, first_name, middle_name, suffix, relationship, occupation, email, `contact-no`) VALUES (:parent_lastname, :parent_firstname, :parent_middlename, :parent_suffix, :relation, :occupation, :email, :phone)";
       $query_parent = $dbh->prepare($sql_parent);
       $query_parent->bindParam(':parent_lastname', $parent_lastname, PDO::PARAM_STR);
@@ -79,15 +70,13 @@ if (strlen($_SESSION['sid'] == 0)) {
       $query_parent->bindParam(':relation', $relation, PDO::PARAM_STR);
       $query_parent->bindParam(':occupation', $occupation, PDO::PARAM_STR);
       $query_parent->bindParam(':email', $email, PDO::PARAM_STR);
-      $query_parent->bindParam(':phone', $phone, PDO::PARAM_STR); // Corrected placeholder
+      $query_parent->bindParam(':phone', $phone, PDO::PARAM_STR);
       $query_parent->execute();
 
-      // Step 2: Retrieve the last inserted parent_id
       $parent_id = $dbh->lastInsertId();
 
-      // Step 3: Insert student data using the retrieved parent_id
-      $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, email, phone, program, parent_id, province, city, barangay, `village-house-no`, studentImage, gradelevel, strand, class_id, last_school) 
-      VALUES (:studentno, :lastname, :firstname, :middlename, :suffix, :age, :sex, :semail, :sphone, :program, :parent_id, :province, :city, :barangay, :village, :photo, :gradelevel, :strand, :class_id, :last_school)";
+      $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, email, phone, parent_id, province, city, barangay, `village-house-no`, studentImage, last_school) 
+            VALUES (:studentno, :lastname, :firstname, :middlename, :suffix, :age, :sex, :semail, :sphone, :parent_id, :province, :city, :barangay, :village, :photo, :last_school)";
       $query_student = $dbh->prepare($sql_student);
       $query_student->bindParam(':studentno', $studentno, PDO::PARAM_STR);
       $query_student->bindParam(':lastname', $lastname, PDO::PARAM_STR);
@@ -98,47 +87,44 @@ if (strlen($_SESSION['sid'] == 0)) {
       $query_student->bindParam(':sex', $sex, PDO::PARAM_STR);
       $query_student->bindParam(':semail', $semail, PDO::PARAM_STR);
       $query_student->bindParam(':sphone', $sphone, PDO::PARAM_STR);
-      $query_student->bindParam(':program', $program, PDO::PARAM_STR);
       $query_student->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
       $query_student->bindParam(':province', $province, PDO::PARAM_STR);
       $query_student->bindParam(':city', $city, PDO::PARAM_STR);
       $query_student->bindParam(':barangay', $barangay, PDO::PARAM_STR);
       $query_student->bindParam(':village', $village, PDO::PARAM_STR);
       $query_student->bindParam(':photo', $photo, PDO::PARAM_STR);
-      $query_student->bindParam(':gradelevel', $gradelevel, PDO::PARAM_STR);
-      $query_student->bindParam(':strand', $strand, PDO::PARAM_STR);
-      $query_student->bindParam(':class_id', $class_id, PDO::PARAM_INT);
       $query_student->bindParam(':last_school', $last_school, PDO::PARAM_STR);
-
-
-      if ($strand !== null) {
-        $query_student->bindParam(':strand', $strand, PDO::PARAM_STR);
-      } else {
-        $query_student->bindValue(':strand', null, PDO::PARAM_NULL);
-      }
-      $query_student->bindParam(':last_school', $last_school, PDO::PARAM_INT);
       $query_student->execute();
 
-      // Commit transaction
+      if (isset($class_id)) {
+        $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
+        $query_class = $dbh->prepare($class_sql);
+        $query_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+        $query_class->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+        $query_class->execute();
+      }
 
+      if (!empty($program)) {
+        $course_sql = "INSERT INTO course_enrollment (student_id, course_code) VALUES (:studentno, :program)";
+        $query_course = $dbh->prepare($course_sql);
+        $query_course->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+        $query_course->bindParam(':program', $program, PDO::PARAM_STR);
+        $query_course->execute();
+      }
 
       $dbh->commit();
 
-      echo "<script>
-        alert('Student has been registered.');
-        </script>";
+      echo "<script>alert('Student has been registered.');</script>";
     } catch (Exception $e) {
       $dbh->rollBack();
       $error_message = $e->getMessage();
       echo $error_message;
-      echo "<script>
-        alert('Something Went Wrong. Please try again.');
-        
-      </script>";
+      echo "<script>alert('Something Went Wrong. Please try again.');</script>";
     }
   }
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -184,7 +170,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                <form role="form" method="post" enctype="multipart/form-data">
+                <form role="form" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                   <div class="card-body">
                     <span style="color: brown">
                       <h5>Student details</h5>
@@ -263,23 +249,14 @@ if (strlen($_SESSION['sid'] == 0)) {
                     <div class="row">
                       <div class="form-group col-md-3">
                         <label for="grade">Student Educational Level</label>
-                        <select class="form-control" id="levels" name="levels" required>
+                        <select class="form-control" id="levels" name="levels">
                           <option value="">Select Educational Level</option>
                           <option value="elementary">Elementary</option>
                           <option value="Junior High">Junior High School</option>
                           <option value="Senior High">Senior High School</option>
-                          <option value="Vocational">Vocational Level</option>
                         </select>
                       </div>
-                      <div class="form-group col-md-3" id="programs" style="display:none;">
-                        <label for="program">Vocational Course/Program</label>
-                        <select class="form-control" id="program" name="program">
-                          <option value="">Select Course/Program</option>
-                          <?php foreach ($programs as $program) { ?>
-                            <option value="<?php echo $program['name']; ?>"><?php echo $program['name']; ?></option>
-                          <?php } ?>
-                        </select>
-                      </div>
+
                       <div class="form-group col-md-3" id="elementaryGrades" style="display:none;">
                         <label for="elementaryGrade">Grade Levels</label>
                         <select class="form-control" id="elementaryGrade" name="elementary-level">
@@ -331,21 +308,18 @@ if (strlen($_SESSION['sid'] == 0)) {
                         </select>
                       </div>
 
-                      <div class="form-group col-md-4" id="strand" style="display:none;">
-                        <label for="strand">Strand</label>
-                        <select class="form-control" id="strand" name="strand">
-                          <option value="">Select Strand</option>
-                          <option value="abm">ABM - Accountancy, Business and Management </option>
-                          <option value="stem">STEM - Science, Technology, Engineering and Mathematics (STEM)</option>
-                          <option value="humss">HUMSS - Humanities and Social Sciences </option>
-                          <option value="gas">GAS - General Academic Strand </option>
-                          <option value="ict">ICT - Information Communication Technology </option>
-                          <option value="he">HE - Home Economics </option>
+                    </div>
+                    <div class="row">
+                      <div class="form-group col-md-3" id="programs">
+                        <label for="program">Vocational Course/Program</label>
+                        <select class="form-control" id="program" name="program">
+                          <option value="">Select Course/Program</option>
+                          <?php foreach ($programs as $program) { ?>
+                            <option value="<?php echo $program['course-code']; ?>"><?php echo $program['name']; ?></option>
+                          <?php } ?>
                         </select>
                       </div>
-
                     </div>
-
                     <hr>
                     <span style="color: brown">
                       <h5>Address</h5>
@@ -424,18 +398,6 @@ if (strlen($_SESSION['sid'] == 0)) {
                       <div class="form-group col-md-2">
                         <label for="occupation">Ocupation</label>
                         <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Occupation" required>
-                        <!-- <select type="select" class="form-control" id="occupation" name="occupation" required>
-                          <option>occupation</option>
-                          <option value="Doctor">Doctor</option>
-                          <option value="Engineer">Engineer</option>
-                          <option value="Bussiness man">Bussiness man</option>
-                          <option value="Teacher">Teacher</option>
-                          <option value="Driver">Driver</option>
-                          <option value="Pilot">Pilot</option>
-                          <option value="Software developer">Software developer</option>
-                          <option value="Farmer">Farmer</option>
-                          <option value="Other">Other</option>
-                        </select> -->
                       </div>
                     </div>
 

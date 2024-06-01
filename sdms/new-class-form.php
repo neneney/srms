@@ -4,34 +4,36 @@ error_reporting(0);
 include('includes/dbconnection.php');
 
 if (isset($_POST['submit'])) {
+    $educ_level = $_POST['levels'];
     $code = $_POST['code'];
     $name = $_POST['name'];
-    if (isset($_POST['elementary-level'])) {
+    if ($educ_level === "elementary") {
         $grade_level = $_POST['elementary-level'];
-    } else if (isset($_POST['jhs-level'])) {
+    } else if ($educ_level === "Junior High") {
         $grade_level = $_POST['jhs-level'];
-    } else if (isset($_POST['shs-level'])) {
+    } else if ($educ_level === "Senior High") {
         $grade_level = $_POST['shs-level'];
     }
     $teacher = $_POST['teacher'];
-    $semester = $_POST['semester'];
+    $grading = $_POST['grading'];
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
-    $educ_level = $_POST['levels'];
+    $strand = $_POST['strand'];
 
     try {
-        $sql = "INSERT INTO classes (`grade-level`,`educ-level`, `code`, `name`, `teacher`, `start-date`, `end-date`, `semester`) 
-                VALUES (:grade_level, :educ_level, :code, :name, :teacher, :start_date, :end_date, :semester)";
+        $sql = "INSERT INTO classes (`grade-level`,`educ-level`,  `strand`, `code`, `name`, `teacher`, `start-date`, `end-date`, `grading`) 
+                VALUES (:grade_level, :educ_level, :strand, :code, :name, :teacher, :start_date, :end_date, :grading)";
 
         $query = $dbh->prepare($sql);
         $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
         $query->bindParam(':educ_level', $educ_level, PDO::PARAM_STR);
+        $query->bindParam(':strand', $strand, PDO::PARAM_STR);
         $query->bindParam(':code', $code, PDO::PARAM_STR);
         $query->bindParam(':name', $name, PDO::PARAM_STR);
         $query->bindParam(':teacher', $teacher, PDO::PARAM_STR);
         $query->bindParam(':start_date', $start_date, PDO::PARAM_STR);
         $query->bindParam(':end_date', $end_date, PDO::PARAM_STR);
-        $query->bindParam(':semester', $semester, PDO::PARAM_STR);
+        $query->bindParam(':grading', $grading, PDO::PARAM_STR);
 
         $query->execute();
         $lastInsertId = $dbh->lastInsertId();
@@ -55,7 +57,7 @@ if (isset($_POST['submit'])) {
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="code">Class Code</label>
-                <input type="text" name="code" class="form-control" placeholder="Class Code" value="" required>
+                <input id="code" type="text" name="code" class="form-control" placeholder="Class Code" value="" required readonly>
             </div>
             <div class="form-group col-md-6">
                 <label for="name">Class Name</label>
@@ -104,17 +106,32 @@ if (isset($_POST['submit'])) {
             </div>
         </div>
         <div class="row">
+            <div class="form-group col-md-6" id="strands" style="display:none;">
+                <label for="strand">Strand</label>
+                <select class="form-control" id="strand" name="strand">
+                    <option value="">Select Strand</option>
+                    <option value="abm">ABM - Accountancy, Business and Management </option>
+                    <option value="stem">STEM - Science, Technology, Engineering and Mathematics (STEM)</option>
+                    <option value="humss">HUMSS - Humanities and Social Sciences </option>
+                    <option value="gas">GAS - General Academic Strand </option>
+                    <option value="ict">ICT - Information Communication Technology </option>
+                    <option value="he">HE - Home Economics </option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
             <div class="form-group col-md-6">
                 <label for="Teacher">Teacher/Instructor</label>
                 <input type="text" name="teacher" class="form-control" placeholder="Techer/Instructor" value="" required>
             </div>
             <div class="form-group col-md-6">
-                <label for="semester">Semester</label>
-                <select type="select" class="form-control" id="semester" name="semester" required>
-                    <option>Select Semester</option>
-                    <option value="1st Sem">1st Sem</option>
-                    <option value="2nd Sem">2nd Sem</option>
-                    <option value="3rd Sem">3rd Sem</option>
+                <label for="grading">Grading</label>
+                <select type="select" class="form-control" id="grading" name="grading" required>
+                    <option>Select Grading</option>
+                    <option value="1st grading">1st grading</option>
+                    <option value="2nd grading">2nd grading</option>
+                    <option value="3rd grading">3rd grading</option>
+                    <option value="4th grading">4th grading</option>
                 </select>
             </div>
         </div>
@@ -136,3 +153,11 @@ if (isset($_POST['submit'])) {
         <button type="submit" name="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentYear = new Date().getFullYear().toString();
+        var randomNumber = Math.floor(10000 + Math.random() * 90000);
+        var code = currentYear + randomNumber;
+        document.getElementById("code").value = code;
+    });
+</script>

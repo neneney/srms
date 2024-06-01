@@ -3,6 +3,7 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
+
 $sql = "SELECT * FROM programs";
 $query = $dbh->prepare($sql);
 $query->execute();
@@ -107,6 +108,96 @@ if (isset($_POST['save2'])) {
     echo "<script>alert('something went wrong, please try again later');</script>";
   }
 }
+if (isset($_POST['enroll'])) {
+  $sid = $_SESSION['edid'];
+  $student_sql = "SELECT * FROM students WHERE id = :sid";
+  $student_query = $dbh->prepare($student_sql);
+  $student_query->bindParam(':sid', $sid, PDO::PARAM_INT);
+  $student_query->execute();
+  $student_data = $student_query->fetch(PDO::FETCH_ASSOC);
+  $studentno = $student_data['studentno'];
+  echo "<script>console.log('studentno: " . $studentno . "');</script>";
+
+  if (isset($_POST['enroll'])) {
+    if (!empty($_POST['elementary-class'])) {
+      $class_id = $_POST['elementary-class'];
+    } else if (!empty($_POST['jhs-class'])) {
+      $class_id = $_POST['jhs-class'];
+    } else if (!empty($_POST['shs-class'])) {
+      $class_id = $_POST['shs-class'];
+    } else {
+      $class_id = null;
+    }
+    $program = $_POST['program'];
+
+    if (isset($class_id)) {
+      try {
+        // Check if the student is already enrolled in any class
+        $sql1 = "SELECT * FROM class_enrollment WHERE student_id = :studentno";
+        $query1 = $dbh->prepare($sql1);
+        $query1->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+        $query1->execute();
+        $enrollment = $query1->fetch(PDO::FETCH_ASSOC);
+
+        if ($enrollment) {
+          // Update the existing class enrollment
+          $class_sql = "UPDATE class_enrollment SET class_id = :class_id WHERE student_id = :studentno";
+        } else {
+          // Insert new class enrollment
+          $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
+        }
+
+        $query = $dbh->prepare($class_sql);
+        $query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+        $query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+        $result = $query->execute();
+
+        if ($result) {
+          echo "<script>alert('Class enrollment updated successfully.');</script>";
+          echo "<script>window.location.href ='student_list.php'</script>";
+        } else {
+          echo "<script>alert('Failed to update class enrollment.');</script>";
+        }
+      } catch (PDOException $e) {
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+      }
+    }
+
+    if (isset($program)) {
+      try {
+        // Check if the student is already enrolled in any program
+        $sql2 = "SELECT * FROM course_enrollment WHERE student_id = :studentno";
+        $course_query = $dbh->prepare($sql2);
+        $course_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+        $course_query->execute();
+        $course_enrollment = $course_query->fetch(PDO::FETCH_ASSOC);
+
+        if ($course_enrollment) {
+          // Update the existing course enrollment
+          $course_sql = "UPDATE course_enrollment SET course_code = :program WHERE student_id = :studentno";
+        } else {
+          // Insert new course enrollment
+          $course_sql = "INSERT INTO course_enrollment (student_id, course_code) VALUES (:studentno, :program)";
+        }
+
+        $course_query = $dbh->prepare($course_sql);
+        $course_query->bindParam(':program', $program, PDO::PARAM_STR);
+        $course_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+        $course_result = $course_query->execute();
+
+        if ($course_result) {
+          echo "<script>alert('Program enrollment updated successfully.');</script>";
+          echo "<script>window.location.href ='student_list.php'</script>";
+        } else {
+          echo "<script>alert('Failed to update program enrollment.');</script>";
+        }
+      } catch (PDOException $e) {
+        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+      }
+    }
+  }
+}
+
 ?>
 
 
@@ -174,6 +265,7 @@ if (isset($_POST['save2'])) {
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#companydetail" data-toggle="tab">Student Info</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#enrollment" data-toggle="tab">Enrollment</a></li>
                   <li class="nav-item"><a class="nav-link" href="#companyaddress" data-toggle="tab">Parent/Guardian</a></li>
                   <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Address</a></li>
                   <li class="nav-item"><a class="nav-link" href="#change" data-toggle="tab">Update Image</a></li>
@@ -181,6 +273,7 @@ if (isset($_POST['save2'])) {
               </div><!-- /.card-header -->
               <div class="card-body">
                 <div class="tab-content">
+                  <!-- tab pane -->
                   <div class="active tab-pane" id="companydetail">
                     <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
                       <div class="row">
@@ -234,24 +327,102 @@ if (isset($_POST['save2'])) {
                             <input type="number" class="form-control" name="age" value="<?php echo $row['age']; ?>" required readonly>
                           </div>
                         </div>
-                        <!-- <div class="form-group col-md-8">
-                          <label for="program">Program</label>
-                          <select class="form-control" id="program" name="program" required>
-                            <option>Select Program</option>
-                            <?php foreach ($programs as $program) { ?>
-                              <option value="<?php echo $program['name']; ?>"><?php echo $program['name']; ?></option>
-                            <?php } ?>
-                          </select>
-                        </div> -->
-                        <!-- /.col -->
+
                       </div>
-                      <!-- /.card-body -->
+
                       <div class="modal-footer text-right">
                         <button type="submit" name="submit" class="btn btn-primary">Update</button>
                       </div>
                     </form>
                   </div>
+                  <div class="tab-pane" id="enrollment">
+                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <div class="row">
+                        <div class="form-group col-md-4">
+                          <label for="grade">Student Educational Level</label>
+                          <select class="form-control" id="levels" name="levels">
+                            <option value="">Select Educational Level</option>
+                            <option value="elementary">Elementary</option>
+                            <option value="Junior High">Junior High School</option>
+                            <option value="Senior High">Senior High School</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group col-md-4" id="elementaryGrades" style="display:none;">
+                          <label for="elementaryGrade">Grade Levels</label>
+                          <select class="form-control" id="elementaryGrade" name="elementary-level">
+                            <option value="">Select Grade</option>
+                            <option value="Grade 1">Grade 1</option>
+                            <option value="Grade 2">Grade 2</option>
+                            <option value="Grade 3">Grade 3</option>
+                            <option value="Grade 4">Grade 4</option>
+                            <option value="Grade 5">Grade 5</option>
+                            <option value="Grade 6">Grade 6</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-4" id="middleGrades" style="display:none;">
+                          <label for="middleGrade">Grade Levels</label>
+                          <select class="form-control" id="middleGrade" name="jhs-level">
+                            <option value="">Select Grade</option>
+                            <option value="Grade 7">Grade 7</option>
+                            <option value="Grade 8">Grade 8</option>
+                            <option value="Grade 9">Grade 9</option>
+                            <option value="Grade 10">Grade 10</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-4" id="highGrades" style="display:none;">
+                          <label for="highGrade">Grade Levels</label>
+                          <select class="form-control" id="highGrade" name="shs-level">
+                            <option value="">Select Grade</option>
+                            <option value="Grade 11">Grade 11</option>
+                            <option value="Grade 12">Grade 12</option>
+                          </select>
+                        </div>
+                        <div class="form-group col-md-4" id="elementaryClass" style="display:none;">
+                          <label for="elementaryClasses">Class/Section</label>
+                          <select class="form-control" id="elementaryClasses" name="elementary-class">
+                            <option value="">Select Class/Section</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group col-md-4" id="middleClass" style="display:none;">
+                          <label for="middleClasses">Class/Section</label>
+                          <select class="form-control" id="middleClasses" name="jhs-class">
+                            <option value="">Select Class/Section</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group col-md-4" id="highClass" style="display:none;">
+                          <label for="highClasses">Class/Section</label>
+                          <select class="form-control" id="highClasses" name="shs-class">
+                            <option value="">Select Class/Section</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <?php
+                        $sql = "SELECT * FROM programs";
+                        $query = $dbh->prepare($sql);
+                        $query->execute();
+                        $programs = $query->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+                        <div class="form-group col-md-4" id="programs">
+                          <label for="program">Vocational Course/Program</label>
+                          <select class="form-control" id="program" name="program">
+                            <option value="">Select Course/Program</option>
+                            <?php foreach ($programs as $program) { ?>
+                              <option value="<?php echo $program['course-code']; ?>"><?php echo $program['name']; ?></option>
+                            <?php } ?>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="modal-footer text-right">
+                        <button type="submit" name="enroll" class="btn btn-primary">Update</button>
+                      </div>
+                    </form>
+                  </div>
                   <!-- /.tab-pane -->
+                  <!-- tab pane -->
                   <div class=" tab-pane" id="companyaddress">
                     <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
                       <?php
@@ -299,18 +470,7 @@ if (isset($_POST['save2'])) {
                           <div class="form-group">
                             <label for="occupation">Occupation</label>
                             <input type="text" class="form-control" id="occupation" name="occupation" placeholder="Occupation" value="<?php echo $parentRow['occupation']; ?>" required>
-                            <!-- <select class="form-control" id="occupation" name="occupation" required>
-                              <option>Occupation</option>
-                              <option value="Doctor" <?php if ($parentRow['occupation'] == 'Doctor') echo 'selected'; ?>>Doctor</option>
-                              <option value="Engineer" <?php if ($parentRow['occupation'] == 'Engineer') echo 'selected'; ?>>Engineer</option>
-                              <option value="Businessman" <?php if ($parentRow['occupation'] == 'Businessman') echo 'selected'; ?>>Businessman</option>
-                              <option value="Teacher" <?php if ($parentRow['occupation'] == 'Teacher') echo 'selected'; ?>>Teacher</option>
-                              <option value="Driver" <?php if ($parentRow['occupation'] == 'Driver') echo 'selected'; ?>>Driver</option>
-                              <option value="Pilot" <?php if ($parentRow['occupation'] == 'Pilot') echo 'selected'; ?>>Pilot</option>
-                              <option value="Software Developer" <?php if ($parentRow['occupation'] == 'Software Developer') echo 'selected'; ?>>Software Developer</option>
-                              <option value="Farmer" <?php if ($parentRow['occupation'] == 'Farmer') echo 'selected'; ?>>Farmer</option>
-                              <option value="Other" <?php if ($parentRow['occupation'] == 'Other') echo 'selected'; ?>>Other</option>
-                            </select> -->
+
                           </div>
                         </div>
                       </div>
@@ -334,9 +494,7 @@ if (isset($_POST['save2'])) {
                       </div>
                     </form>
                   </div>
-
-                  <!-- /.tab-pane -->
-
+                  <!-- /.tab pane -->
                   <div class=" tab-pane" id="change">
                     <div class="row">
                       <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
@@ -351,6 +509,7 @@ if (isset($_POST['save2'])) {
                       </form>
                     </div>
                   </div>
+                  <!-- /.tab pane -->
                   <?php
                   $provCode = $row['province'];
                   $allProvincesQuery = $dbh->query("SELECT * FROM refprovince where provCode =  $provCode");
@@ -415,7 +574,6 @@ if (isset($_POST['save2'])) {
 
                     </form>
                   </div>
-
                   <!-- /.tab-pane -->
                 <?php
               } ?>
@@ -425,3 +583,78 @@ if (isset($_POST['save2'])) {
   </section>
   <!-- /.content -->
 </div>
+
+<script>
+  function clearClassDropdowns() {
+    document.getElementById('elementaryClasses').innerHTML = '<option value="">Select Class/Section</option>';
+    document.getElementById('middleClasses').innerHTML = '<option value="">Select Class/Section</option>';
+    document.getElementById('highClasses').innerHTML = '<option value="">Select Class/Section</option>';
+    document.getElementById('elementaryClass').style.display = 'none';
+    document.getElementById('middleClass').style.display = 'none';
+    document.getElementById('highClass').style.display = 'none';
+  }
+
+
+  document.getElementById('elementaryGrade').addEventListener('change', function() {
+    clearClassDropdowns();
+    fetchAndPopulateClasses(this.value, 'elementary');
+  });
+
+  document.getElementById('middleGrade').addEventListener('change', function() {
+    clearClassDropdowns();
+    fetchAndPopulateClasses(this.value, 'middle');
+  });
+
+  document.getElementById('highGrade').addEventListener('change', function() {
+    clearClassDropdowns();
+    fetchAndPopulateClasses(this.value, 'high');
+  });
+
+  function fetchAndPopulateClasses(gradeLevel, levelType) {
+    var classSelect = document.getElementById(`${levelType}Class`);
+    var classesDropdown = document.getElementById(`${levelType}Classes`);
+
+    if (gradeLevel !== "") {
+      fetch('getters-php/get-classes.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'gradeLevel=' + encodeURIComponent(gradeLevel)
+        })
+        .then(response => response.json())
+        .then(data => {
+          classesDropdown.innerHTML = '<option value="">Select Class/Section</option>';
+          data.forEach(classItem => {
+            var option = document.createElement('option');
+            option.value = classItem.code;
+            option.text = classItem.name;
+            classesDropdown.appendChild(option);
+          });
+          classSelect.style.display = 'block';
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+      classSelect.style.display = 'none';
+    }
+  }
+
+  document.getElementById('levels').addEventListener('change', function() {
+    const selectedGrade = this.value;
+    document.getElementById('elementaryGrades').style.display = 'none';
+    document.getElementById('middleGrades').style.display = 'none';
+    document.getElementById('highGrades').style.display = 'none';
+    clearClassDropdowns();
+
+    if (selectedGrade === 'elementary') {
+      document.getElementById('elementaryGrades').style.display = 'block';
+
+    } else if (selectedGrade === 'Junior High') {
+      document.getElementById('middleGrades').style.display = 'block';
+
+    } else if (selectedGrade === 'Senior High') {
+      document.getElementById('highGrades').style.display = 'block';
+
+    }
+  });
+</script>

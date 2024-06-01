@@ -31,7 +31,7 @@ if (isset($_POST['submit'])) {
     <div class="row">
       <div class="form-group col-md-4">
         <label for="feFirstName">Course Code</label>
-        <input type="text" name="code" class="form-control" placeholder="Course Code" value="" required>
+        <input id="code" type="text" name="code" class="form-control" placeholder="Course Code" value="" required readonly>
       </div>
       <div class="form-group col-md-4 ">
         <label for="feFirstName">Course Name</label>
@@ -55,3 +55,13 @@ if (isset($_POST['submit'])) {
     <button type="submit" name="submit" class="btn btn-primary">Submit</button>
   </div>
 </form>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var currentYear = new Date().getFullYear().toString();
+    var randomNumber = Math.floor(10000 + Math.random() * 90000);
+    var code = currentYear + randomNumber;
+    document.getElementById("code").value = code;
+  });
+</script>

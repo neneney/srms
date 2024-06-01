@@ -43,6 +43,10 @@ include('includes/dbconnection.php');
         table {
             text-align: center;
         }
+
+        .modal-footer {
+            display: none !important;
+        }
     }
 </style>
 <div class="row card-body">
@@ -100,9 +104,10 @@ include('includes/dbconnection.php');
                     ?>
                 </tbody>
             </table>
+            <div class="modal-footer text-right" style="float: right;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
+            </div>
         </div>
-
-        <hr>
     <?php } ?>
-
 </div>

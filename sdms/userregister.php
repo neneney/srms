@@ -215,8 +215,7 @@ if (isset($_GET['delid'])) {
                     <thead>
                       <tr>
                         <th class="text-center">Name</th>
-                        <th class="text-center">Mobile</th>
-                        <th class="text-center">Email</th>
+                        <th class="text-center">Username</th>
                         <th class="text-center">Permission</th>
                         <th class="text-center">Action</th>
                       </tr>
@@ -233,15 +232,14 @@ if (isset($_GET['delid'])) {
 
                       $cnt = 1;
                       if ($query->rowCount() > 0) {
-                        foreach ($results as $row) {               ?>
+                        foreach ($results as $row) { ?>
                           <tr>
-                            <td class="text-left"><?php echo htmlentities($row->name); ?> <?php echo htmlentities($row->lastname); ?></td>
-                            <td class="text-left">0<?php echo htmlentities($row->mobile); ?></td>
-                            <td class="text-left"><?php echo htmlentities($row->email); ?></td>
-                            <td class="text-left"><?php echo htmlentities($row->permission); ?></td>
-                            <td class="text-left">
-                              <a class="edit_data" id="<?php echo ($row->id); ?>" title="click for edit"><i class="fas fa-edit"></i></a>
-                              <a href="userregister.php?delid=<?php echo ($row->id); ?>" title="click for block" onclick="return confirm('sure to block ?')">Block</i></a>
+                            <td class="text-center"><?php echo htmlentities($row->name); ?> <?php echo htmlentities($row->lastname); ?></td>
+                            <td class="text-center"><?php echo htmlentities($row->username); ?></td>
+                            <td class="text-center"><?php echo htmlentities($row->permission); ?></td>
+                            <td class="text-center">
+                              <a style="color:white;" class="btn btn-primary btn-sm edit_data" id="<?php echo ($row->id); ?>" title="click for edit">Edit</a>
+                              <a class="btn btn-danger btn-sm" href="userregister.php?delid=<?php echo ($row->id); ?>" title="click for block" onclick="return confirm('sure to block ?')">Block</i></a>
                             </td>
                           </tr>
 

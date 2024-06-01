@@ -12,21 +12,17 @@ if (isset($_POST['submit'])) {
     $name = $_POST['name'];
     $lastname = $_POST['lastname'];
     $username = $_POST['username'];
-    $email = $_POST['email'];
     $permission = $_POST['permission'];
     $sex = $_POST['sex'];
-    $mobile = $_POST['mobile'];
     $password = md5($_POST['password']);
     $status = 1;
-    $sql = "INSERT INTO  tblusers(name,username,email,password,status,mobile,sex,lastname,permission) VALUES(:name,:username,:email,:password,:status,:mobile,:sex,:lastname,:permission)";
+    $sql = "INSERT INTO  tblusers(name,username,password,status,sex,lastname,permission) VALUES(:name,:username,:email,:password,:status,:mobile,:sex,:lastname,:permission)";
     $query = $dbh->prepare($sql);
     $query->bindParam(':name', $name, PDO::PARAM_STR);
     $query->bindParam(':lastname', $lastname, PDO::PARAM_STR);
     $query->bindParam(':sex', $sex, PDO::PARAM_STR);
-    $query->bindParam(':mobile', $mobile, PDO::PARAM_STR);
     $query->bindParam(':status', $status, PDO::PARAM_STR);
     $query->bindParam(':username', $username, PDO::PARAM_STR);
-    $query->bindParam(':email', $email, PDO::PARAM_STR);
     $query->bindParam(':permission', $permission, PDO::PARAM_STR);
     $query->bindParam(':password', $password, PDO::PARAM_STR);
     $query->execute();
@@ -64,14 +60,6 @@ if (isset($_POST['submit'])) {
           <option value="Admin">Admin</option>
           <option value="User">User</option>
         </select>
-      </div>
-      <div class="form-group col-4">
-        <label for="exampleInputEmail1">Email address</label>
-        <input type="email" name="email" class="form-control" placeholder="Enter email" value="" required>
-      </div>
-      <div class="form-group col-4">
-        <label for="exampleInputEmail1">Mobile</label>
-        <input type="text" name="mobile" class="form-control" placeholder="Enter mobile" value="" required>
       </div>
     </div>
 

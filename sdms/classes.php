@@ -132,6 +132,7 @@ if (isset($_GET['dels'])) {
                                                 <th>Class Code</th>
                                                 <th>Class Name</th>
                                                 <th>Class Teacher</th>
+                                                <th>Grade level</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -146,6 +147,7 @@ if (isset($_GET['dels'])) {
                                                     <td style="text-align: center;"><?php echo htmlentities($row['code']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['name']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['teacher']); ?></td>
+                                                    <td style="text-align: center;"><?php echo htmlentities($row['grade-level']); ?></td>
                                                     <td style="text-align: center;">
                                                         <a class="edit_data btn btn-primary btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for edit">Edit</a>
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
@@ -198,8 +200,6 @@ if (isset($_GET['dels'])) {
                 });
             });
         });
-    </script>
-    <script type="text/javascript">
         $(document).ready(function() {
             $(document).on('click', '.edit_data2', function() {
                 var edit_id2 = $(this).attr('id');
@@ -216,8 +216,6 @@ if (isset($_GET['dels'])) {
                 });
             });
         });
-    </script>
-    <script>
         document.getElementById('levels').addEventListener('change', function() {
             const selectedGrade = this.value;
             document.getElementById('elementaryGrades').style.display = 'none';
@@ -226,6 +224,8 @@ if (isset($_GET['dels'])) {
             document.getElementById('elementaryGrade').removeAttribute('required');
             document.getElementById('middleGrade').removeAttribute('required');
             document.getElementById('highGrade').removeAttribute('required');
+            document.getElementById('strands').style.display = 'none';
+            document.getElementById('strand').removeAttribute('required');
 
 
             if (selectedGrade === 'elementary') {
@@ -236,9 +236,12 @@ if (isset($_GET['dels'])) {
                 document.getElementById('middleGrade').setAttribute('required', 'required');
             } else if (selectedGrade === 'Senior High') {
                 document.getElementById('highGrades').style.display = 'block';
+                document.getElementById('strands').style.display = 'block';
                 document.getElementById('highGrade').setAttribute('required', 'required');
+                document.getElementById('strand').setAttribute('required', 'required');
             }
         });
+
 
         function validateEndDate() {
             var startDate = document.getElementById("start_date").value;
@@ -258,8 +261,7 @@ if (isset($_GET['dels'])) {
         }
 
         document.getElementById("end_date").addEventListener("change", validateEndDate);
-    </script>
-    <script>
+
         function printTable() {
             var printContents = document.getElementById('info_update2').innerHTML;
             var originalContents = document.body.innerHTML;

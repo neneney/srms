@@ -37,7 +37,7 @@ if (isset($_POST['update'])) {
       <div class="row">
         <div class="form-group col-md-4">
           <label for="name">Course Code</label>
-          <input type="text" name="code" class="form-control" id="code" value="<?php echo $row['course-code']; ?>" required>
+          <input type="text" name="code" class="form-control" id="code" value="<?php echo $row['course-code']; ?>" required readonly>
         </div>
         <div class="form-group col-md-4">
           <label for="name">Course Name</label>
@@ -52,7 +52,6 @@ if (isset($_POST['update'])) {
             <option value="Specialized" <?php if ($row['program_type'] == 'Specialized') echo 'selected'; ?>>Specialized</option>
             <option value="Technical and Vocational Course" <?php if ($row['program_type'] == 'Technical and Vocational Course') echo 'selected'; ?>>Technical and Vocational Course</option>
             <option value="Professional Development Courses" <?php if ($row['program_type'] == 'Professional Development Courses') echo 'selected'; ?>>Professional Development Courses</option>
-            <!-- Add more options as needed -->
           </select>
         </div>
       </div>

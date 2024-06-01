@@ -2,35 +2,52 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
+
 if (isset($_POST['edit-submit'])) {
     $eid = $_SESSION['edid'];
     $code = $_POST['edit-code'];
     $name = $_POST['edit-name'];
-    if (isset($_POST['edit-elementary-level'])) {
-        $grade_level = $_POST['edit-elementary-level'];
-    } else if (isset($_POST['edit-jhs-level'])) {
-        $grade_level = $_POST['edit-jhs-level'];
-    } else if (isset($_POST['edit-shs-level'])) {
-        $grade_level = $_POST['edit-shs-level'];
-    }
-    $teacher = $_POST['edit-teacher'];
-    $semester = $_POST['edit-semester'];
-    $start_date = $_POST['edit-start_date'];
-    $end_date = $_POST['edit-end_date'];
     $educ_level = $_POST['edit-levels'];
 
+    // Explicitly checking each grade level
+    if ($educ_level === "elementary") {
+        $grade_level = $_POST['elementary-level'];
+    } else if ($educ_level === "Junior High") {
+        $grade_level = $_POST['jhs-level'];
+    } else if ($educ_level === "Senior High") {
+        $grade_level = $_POST['shs-level'];
+    }
+
+    $teacher = $_POST['edit-teacher'];
+    $grading = $_POST['edit-grading'];
+    $start_date = $_POST['edit-start_date'];
+    $end_date = $_POST['edit-end_date'];
+    $strand = $_POST['strand'];
+
     try {
-        $sql = "UPDATE classes SET `grade-level`=:grade_level, `educ-level`=:educ_level, `code`=:code, `name`=:name, `teacher`=:teacher, `start-date`=:start_date, `end-date`=:end_date, `semester`=:semester WHERE id=:eid";
+        // Corrected SQL with commas instead of semicolons
+        $sql = "UPDATE classes 
+                SET `grade-level` = :grade_level, 
+                    `educ-level` = :educ_level, 
+                    strand = :strand, 
+                    `code` = :code, 
+                    `name` = :name, 
+                    `teacher` = :teacher, 
+                    `start-date` = :start_date, 
+                    `end-date` = :end_date, 
+                    `grading` = :grading 
+                WHERE id = :eid";
 
         $query = $dbh->prepare($sql);
         $query->bindParam(':grade_level', $grade_level, PDO::PARAM_STR);
         $query->bindParam(':educ_level', $educ_level, PDO::PARAM_STR);
+        $query->bindParam(':strand', $strand, PDO::PARAM_STR);
         $query->bindParam(':code', $code, PDO::PARAM_STR);
         $query->bindParam(':name', $name, PDO::PARAM_STR);
         $query->bindParam(':teacher', $teacher, PDO::PARAM_STR);
         $query->bindParam(':start_date', $start_date, PDO::PARAM_STR);
         $query->bindParam(':end_date', $end_date, PDO::PARAM_STR);
-        $query->bindParam(':semester', $semester, PDO::PARAM_STR);
+        $query->bindParam(':grading', $grading, PDO::PARAM_STR);
         $query->bindParam(':eid', $eid, PDO::PARAM_INT);
         $query->execute();
 
@@ -39,7 +56,7 @@ if (isset($_POST['edit-submit'])) {
             echo "<script>window.location.href ='classes.php'</script>";
         } else {
             $errorInfo = $query->errorInfo();
-            echo "<script>alert('Something went wrong: $errorInfo');</script>";
+            echo "<script>alert('Something went wrong: " . $errorInfo[2] . "');</script>";
         }
     } catch (PDOException $e) {
         $error_message = $e->getMessage();
@@ -47,7 +64,6 @@ if (isset($_POST['edit-submit'])) {
     }
 }
 ?>
-
 
 
 <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
@@ -65,7 +81,7 @@ if (isset($_POST['edit-submit'])) {
             <div class="row">
                 <div class="form-group col-md-6">
                     <label for="code">Class Code</label>
-                    <input type="text" name="edit-code" class="form-control" placeholder="<?php echo $row['code']; ?>" value="<?php echo $row['code']; ?>" required>
+                    <input type="text" name="edit-code" class="form-control" placeholder="<?php echo $row['code']; ?>" value="<?php echo $row['code']; ?>" required readonly>
                 </div>
                 <div class="form-group col-md-6">
                     <label for="name">Class Name</label>
@@ -92,7 +108,6 @@ if (isset($_POST['edit-submit'])) {
                         <option value="Grade 4" <?php if ($row['grade-level'] === "Grade 4") echo "selected"; ?>>Grade 4</option>
                         <option value="Grade 5" <?php if ($row['grade-level'] === "Grade 5") echo "selected"; ?>>Grade 5</option>
                         <option value="Grade 6" <?php if ($row['grade-level'] === "Grade 6") echo "selected"; ?>>Grade 6</option>
-
                     </select>
                 </div>
                 <div class="form-group col-md-6" id="e-middleGrades" <?php if ($row['educ-level'] !== "Junior High") echo "style='display:none;'"; ?>>
@@ -115,17 +130,36 @@ if (isset($_POST['edit-submit'])) {
                 </div>
             </div>
             <div class="row">
+                <div class="form-group col-md-6" id="e-strands" <?php if (empty($row['strand'])) {
+                                                                    echo 'style="display:none;"';
+                                                                } else {
+                                                                    echo 'style="display:block"';
+                                                                }; ?>>
+                    <label for="strand">Strand</label>
+                    <select class="form-control" id="e-strand" name="strand">
+                        <option value="">Select Strand</option>
+                        <option <?php if ($row['strand'] === "abm") echo "selected"; ?> value="abm">ABM - Accountancy, Business and Management </option>
+                        <option <?php if ($row['strand'] === "stem") echo "selected"; ?> value="stem">STEM - Science, Technology, Engineering and Mathematics (STEM)</option>
+                        <option <?php if ($row['strand'] === "humss") echo "selected"; ?> value="humss">HUMSS - Humanities and Social Sciences </option>
+                        <option <?php if ($row['strand'] === "gas") echo "selected"; ?> value="gas">GAS - General Academic Strand </option>
+                        <option <?php if ($row['strand'] === "ict") echo "selected"; ?> value="ict">ICT - Information Communication Technology </option>
+                        <option <?php if ($row['strand'] === "he") echo "selected"; ?> value="he">HE - Home Economics </option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-md-6">
                     <label for="Teacher">Teacher/Instructor</label>
                     <input type="text" name="edit-teacher" class="form-control" placeholder="<?php echo $row['teacher']; ?>" value="<?php echo $row['teacher']; ?>" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="semester">Semester</label>
-                    <select type="select" class="form-control" id="semester" name="edit-semester" required>
-                        <option>Select Semester</option>
-                        <option value="1st Sem">1st Sem</option>
-                        <option value="2nd Sem">2nd Sem</option>
-                        <option value="3rd Sem">3rd Sem</option>
+                    <label for="grading">Grading</label>
+                    <select type="select" class="form-control" id="grading" name="edit-grading" required>
+                        <option>Select Grading</option>
+                        <option value="1st grading" <?php if ($row['grading'] === "1st grading") echo "selected"; ?>>1st grading</option>
+                        <option value="2nd grading" <?php if ($row['grading'] === "2nd grading") echo "selected"; ?>>2nd grading</option>
+                        <option value="3rd grading" <?php if ($row['grading'] === "3rd grading") echo "selected"; ?>>3rd grading</option>
+                        <option value="4th grading" <?php if ($row['grading'] === "4th grading") echo "selected"; ?>>4th grading</option>
                     </select>
                 </div>
             </div>
@@ -139,7 +173,6 @@ if (isset($_POST['edit-submit'])) {
                     <input type="date" id="end_date" name="edit-end_date" class="form-control" value="<?php echo $row['end-date']; ?>" required>
                 </div>
             </div>
-
         </div>
         <!-- /.card-body -->
     <?php
@@ -154,13 +187,26 @@ if (isset($_POST['edit-submit'])) {
 <script>
     document.getElementById('e-levels').addEventListener('change', function() {
         const selectedGrade = this.value;
+
+        // Hide all grade and strand sections
         document.getElementById('e-elementaryGrades').style.display = 'none';
         document.getElementById('e-middleGrades').style.display = 'none';
         document.getElementById('e-highGrades').style.display = 'none';
+        document.getElementById('e-strands').style.display = 'none';
+
+        // Remove required attribute from all inputs
         document.getElementById('e-elementaryGrade').removeAttribute('required');
         document.getElementById('e-middleGrade').removeAttribute('required');
         document.getElementById('e-highGrade').removeAttribute('required');
+        document.getElementById('e-strand').removeAttribute('required');
 
+        // Reset the value of all inputs
+        document.getElementById('e-elementaryGrade').value = null;
+        document.getElementById('e-middleGrade').value = null;
+        document.getElementById('e-highGrade').value = null;
+        document.getElementById('e-strand').value = null;
+
+        // Show and set required attribute based on selected grade
         if (selectedGrade === 'elementary') {
             document.getElementById('e-elementaryGrades').style.display = 'block';
             document.getElementById('e-elementaryGrade').setAttribute('required', 'required');
@@ -169,7 +215,9 @@ if (isset($_POST['edit-submit'])) {
             document.getElementById('e-middleGrade').setAttribute('required', 'required');
         } else if (selectedGrade === 'Senior High') {
             document.getElementById('e-highGrades').style.display = 'block';
+            document.getElementById('e-strands').style.display = 'block';
             document.getElementById('e-highGrade').setAttribute('required', 'required');
+            document.getElementById('e-strand').setAttribute('required', 'required');
         }
     });
 </script>

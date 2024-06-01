@@ -1,3 +1,4 @@
+
 function clearClassDropdowns() {
   document.getElementById('elementaryClasses').innerHTML = '<option value="">Select Class/Section</option>';
   document.getElementById('middleClasses').innerHTML = '<option value="">Select Class/Section</option>';
@@ -57,23 +58,18 @@ function fetchAndPopulateClasses(gradeLevel, levelType) {
     document.getElementById('elementaryGrades').style.display = 'none';
     document.getElementById('middleGrades').style.display = 'none';
     document.getElementById('highGrades').style.display = 'none';
-    document.getElementById('strand').style.display = 'none';
-    document.getElementById('programs').style.display = 'none';
     clearClassDropdowns();
 
     if (selectedGrade === 'elementary') {
       document.getElementById('elementaryGrades').style.display = 'block';
-      document.getElementById('strand').style.display = 'none';
+      
     } else if (selectedGrade === 'Junior High') {
       document.getElementById('middleGrades').style.display = 'block';
-      document.getElementById('strand').style.display = 'none';
+      
     } else if (selectedGrade === 'Senior High') {
       document.getElementById('highGrades').style.display = 'block';
-      document.getElementById('strand').style.display = 'block';
-    } else if (selectedGrade === "Vocational") {
-      document.getElementById('programs').style.display = 'block';
-      document.getElementById('strand').style.display = 'none';
-    }
+      
+    } 
   });
 
   function fetchOptions(url, callback) {
