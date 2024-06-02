@@ -1,3 +1,4 @@
+tapos na{
 class/course:
     enrollment button and popup
         -dapat naka preselect na yung pageenrollan or no need na hingin ihide nalang yung dropdown ng grades and course
@@ -7,6 +8,8 @@ course:
         teacher
     remove type
     change the "course name" to "course title" 
+}
+eto kulang{
 filters:
     student:
         gender
@@ -17,3 +20,4 @@ filters:
 security:
     do not allow the user to delete
     acitivity log ng mga user/admin - table lang to sa database tas query
+}

@@ -219,7 +219,7 @@ if (isset($_POST['enroll'])) {
             <div class="card card-primary card-outline">
               <div class="card-body box-profile">
                 <div class="text-center">
-                  <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture">
+                  <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture" onerror="this.onerror=null; this.src='studentimages/placeholder.jpg';">
                 </div>
 
                 <h3 class="profile-username text-center"><?php echo $row['name']; ?></h3>
@@ -239,18 +239,7 @@ if (isset($_POST['enroll'])) {
                     ?>
                     <b>Full Name</b> <a style="display:block; text-align: center;"><?php echo $fullName; ?></a>
                   </li>
-                  <li class="list-group-item">
-                    <b>Enrolled In</b> <a style="display:block; text-align: center;">
-                      <?php
-                      if (isset($row['program'])) {
-                        echo $row['program'];
-                      } else {
-                        echo $row['gradelevel'];
-                      }
-                      ?>
-                    </a>
 
-                  </li>
 
                 </ul>
 
@@ -495,20 +484,7 @@ if (isset($_POST['enroll'])) {
                     </form>
                   </div>
                   <!-- /.tab pane -->
-                  <div class=" tab-pane" id="change">
-                    <div class="row">
-                      <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
-                        <div class="form-group">
-                          <label>Upload Image</label>
-                          <input type="file" class="" name="studentimage" value="" required>
-                        </div>
-                        <div class="modal-footer text-right">
-                          <button type="submit" name="save2" class="btn btn-primary">Update</button>
-                        </div>
 
-                      </form>
-                    </div>
-                  </div>
                   <!-- /.tab pane -->
                   <?php
                   $provCode = $row['province'];
@@ -572,6 +548,20 @@ if (isset($_POST['enroll'])) {
                         <button type="submit" name="pass" class="btn btn-primary">Update</button>
                       </div>
 
+                    </form>
+                  </div>
+                  <div class=" tab-pane" id="change">
+                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <div class="row">
+                        <div class="form-group col-md-8">
+                          <label>Upload Image</label>
+                          <input type="file" class="" name="studentimage" value="" required>
+                        </div>
+
+                      </div>
+                      <div class="modal-footer text-right">
+                        <button type="submit" name="save2" class="btn btn-primary">Update</button>
+                      </div>
                     </form>
                   </div>
                   <!-- /.tab-pane -->

@@ -2,13 +2,13 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-$program_id = $_POST['edit_id3'];
-$sql = "SELECT * FROM programs WHERE ID = :program_id";
+$class_id = $_POST['edit_id3'];
+$sql = "SELECT * FROM classes WHERE id = :class_id";
 $query = $dbh->prepare($sql);
-$query->bindParam(':program_id', $program_id, PDO::PARAM_INT);
+$query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
 $query->execute();
-$programs = $query->fetchAll(PDO::FETCH_ASSOC);
-$_SESSION['code'] = $programs[0]['course-code'];
+$classes = $query->fetchAll(PDO::FETCH_ASSOC);
+$_SESSION['class-code'] = $classes[0]['code'];
 
 if (isset($_POST['submit1'])) {
     $lastname = $_POST['lastname'];
@@ -37,17 +37,7 @@ if (isset($_POST['submit1'])) {
     $photo = $_FILES["photo"]["name"];
     move_uploaded_file($_FILES["photo"]["tmp_name"], "studentimages/" . $_FILES["photo"]["name"]);
 
-    if (!empty($_POST['elementary-level'])) {
-        $gradelevel = $_POST['elementary-level'];
-    } else if (!empty($_POST['jhs-level'])) {
-        $gradelevel = $_POST['jhs-level'];
-    } else if (!empty($_POST['shs-level'])) {
-        $gradelevel = $_POST['shs-level'];
-    } else {
-        $gradelevel = null;
-    }
-
-    $program = $_POST['program'];
+    $class = $_POST['class'];
 
     try {
         $dbh->beginTransaction();
@@ -87,20 +77,13 @@ if (isset($_POST['submit1'])) {
         $query_student->bindParam(':last_school', $last_school, PDO::PARAM_STR);
         $query_student->execute();
 
-        if (isset($class_id)) {
-            $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
+
+        if (!empty($class)) {
+            $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class)";
             $query_class = $dbh->prepare($class_sql);
             $query_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $query_class->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+            $query_class->bindParam(':class', $class, PDO::PARAM_INT);
             $query_class->execute();
-        }
-
-        if (!empty($program)) {
-            $course_sql = "INSERT INTO course_enrollment (student_id, course_code) VALUES (:studentno, :program)";
-            $query_course = $dbh->prepare($course_sql);
-            $query_course->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $query_course->bindParam(':program', $program, PDO::PARAM_STR);
-            $query_course->execute();
         }
 
         $dbh->commit();
@@ -123,7 +106,7 @@ if (isset($_POST['submit1'])) {
             <!-- general form elements -->
             <div class="card card-primary">
                 <div class="card-header">
-                    <h3 class="card-title">Enroll Student in <?php echo $programs[0]['name']; ?></h3>
+                    <h3 class="card-title">Enroll Student in <?php echo $classes[0]['name']; ?></h3>
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
@@ -204,11 +187,11 @@ if (isset($_POST['submit1'])) {
                         </div>
                         <div class="row">
                             <div class="form-group col-md-3" id="programs" style="display: block;">
-                                <label for="program">Vocational Course/Program</label>
-                                <!-- <input value="<?php echo $_SESSION['code'] ?>" type="text" class="form-control" id="program3" name="program" placeholder="<?php echo $programs[0]['name']; ?>" required readonly> -->
+                                <label for="program">Class/Section</label>
+                                <!-- <input value="<?php echo $_SESSION['class-code'] ?>" type="text" class="form-control" id="program3" name="class" required readonly> -->
                                 <select class="form-control" id="program" name="program" readonly>
 
-                                    <option value="<?php echo $_SESSION['code']; ?>" selected><?php echo $programs[0]['name']; ?></option>
+                                    <option value="<?php echo $_SESSION['class-code']; ?>" selected><?php echo $classes[0]['name']; ?></option>
 
                                 </select>
                             </div>

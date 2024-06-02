@@ -139,7 +139,7 @@ if (isset($_GET['del'])) {
                         <tr>
                           <td style="text-align: center;" class="align-middle">
                             <a href="#" onclick="toggleImageSize(event)">
-                              <img id="studentImage" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="40" height="40">
+                              <img style="border-radius: 100%;" id="studentImage" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="40" height="40" alt="Student Image" onerror="this.onerror=null; this.src='studentimages/placeholder.jpg';">
                             </a>
                           </td>
                           <td style="text-align: center;"><?php echo htmlentities($row['studentno']); ?></td>

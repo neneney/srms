@@ -139,7 +139,7 @@ if (isset($_GET['delid'])) {
                 </div>
                 <!-- /.card-header -->
                 <div class="modal fade" id="deposit">
-                  <div class="modal-dialog modal-xl">
+                  <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h4 class="modal-title">Register New User</h4>
@@ -187,7 +187,7 @@ if (isset($_GET['delid'])) {
                 <!-- /.modal -->
 
                 <div id="editData" class="modal fade">
-                  <div class="modal-dialog ">
+                  <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title">Edit User's Details</h5>
@@ -199,10 +199,7 @@ if (isset($_GET['delid'])) {
                         <!-- <p>One fine body&hellip;</p> -->
                         <?php @include("edituser-form.php"); ?>
                       </div>
-                      <div class="modal-footer text-right" style="float: right;">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="submit" name="update" class="btn btn-primary">Submit</button>
-                      </div>
+
                       <!-- /.modal-content -->
                     </div>
                     <!-- /.modal-dialog -->

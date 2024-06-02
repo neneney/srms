@@ -93,7 +93,8 @@ while ($row = mysqli_fetch_array($ret2)) {
       <div class="card card-primary card-outline">
         <div class="card-body box-profile">
           <div class="text-center">
-            <img class="img-circle img-print" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture">
+            <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture" onerror="this.onerror=null; this.src='studentimages/placeholder.jpg';">
+
           </div>
           <h3 class="profile-username text-center"><?php echo $row['name']; ?></h3>
           <p class="text-muted text-center"><strong></strong></p>
@@ -106,17 +107,6 @@ while ($row = mysqli_fetch_array($ret2)) {
                 htmlentities($row['suffix']);
               ?>
               <b>Full Name</b> <a class="a-print" style="display:block; text-align: center;"><?php echo $fullName; ?></a>
-            </li>
-            <li class="list-group-item a-print">
-              <b>Enrolled In</b> <a class="a-print" style="display:block; text-align: center;">
-                <?php
-                if (isset($row['program'])) {
-                  echo htmlentities($row['program']);
-                } else {
-                  echo htmlentities($row['gradelevel']);
-                }
-                ?>
-              </a>
             </li>
           </ul>
         </div>

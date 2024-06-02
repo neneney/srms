@@ -119,6 +119,21 @@ if (isset($_GET['dels'])) {
                                     </div>
                                     <!-- /.modal -->
                                 </div>
+                                <div id="editData3" class="modal fade">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Enroll Student</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body" id="info_update3">
+                                                <?php @include("enroll_student_class.php"); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
 
                                 <!-- /.card-header -->
@@ -151,6 +166,7 @@ if (isset($_GET['dels'])) {
                                                     <td style="text-align: center;">
                                                         <a class="edit_data btn btn-primary btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for edit">Edit</a>
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
+                                                        <a class="btn btn-sm btn-info editdata3" style="color: white;" id="<?php echo ($row["id"]); ?>">Enroll</a>
                                                         <a href="classes.php?ID=<?php echo $row['id'] ?>&dels=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
                                                     </td>
                                                 </tr>
@@ -216,6 +232,115 @@ if (isset($_GET['dels'])) {
                 });
             });
         });
+        $(document).on('click', '.editdata3', function() {
+            var edit_id3 = $(this).attr('id');
+            $.ajax({
+                url: "enroll_student_class.php",
+                type: "post",
+                data: {
+                    edit_id3: edit_id3
+                },
+                success: function(data) {
+                    $("#info_update3").html(data);
+                    $("#editData3").modal('show');
+                    populateProvinceDropdown(); // Populate the province dropdown when the modal is shown
+                }
+            });
+        });
+
+        // Populate dropdowns function
+        function populateDropdown(select, options, placeholder = "Select an option") {
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+            options.forEach(option => {
+                const opt = document.createElement("option");
+                opt.value = option.provCode || option.citymunCode || option.brgyCode; // Adjust keys based on your JSON structure
+                opt.textContent = option.provDesc || option.citymunDesc || option.brgyDesc; // Adjust keys based on your JSON structure
+                select.appendChild(opt);
+            });
+        }
+
+        // Fetch data for dropdowns function
+        function fetchDropdownData(url, callback) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => callback(data))
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Populate province dropdown
+        function populateProvinceDropdown() {
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const barangaySelect = document.getElementById('barangay');
+
+            fetchDropdownData('getters-php/get-province.php', function(provinces) {
+                populateDropdown(provinceSelect, provinces, "Select Province");
+            });
+
+            provinceSelect.addEventListener('change', function() {
+                const selectedProvinceId = this.value;
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>'; // Reset barangay dropdown
+
+                if (selectedProvinceId) {
+                    fetchDropdownData(`getters-php/get-cities.php?province_id=${selectedProvinceId}`, function(cities) {
+                        populateDropdown(citySelect, cities, "Select City");
+                    });
+                }
+            });
+
+            citySelect.addEventListener('change', function() {
+                const selectedCityId = this.value;
+                barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+
+                if (selectedCityId) {
+                    fetchDropdownData(`getters-php/get-barangay.php?city_id=${selectedCityId}`, function(barangays) {
+                        populateDropdown(barangaySelect, barangays, "Select Barangay");
+                    });
+                }
+            });
+        }
+
+        // Generate Student ID and calculate age
+        function generateStudentIdAndCalculateAge() {
+            const currentYear = new Date().getFullYear();
+            const randomNumber = Math.floor(Math.random() * 1000000);
+            const studentId = `${currentYear}${randomNumber}`;
+            const IDfield = document.getElementById('studentnos');
+            IDfield.value = studentId;
+
+            const birthdateField = document.getElementById('birthdate');
+            const ageField = document.getElementById('age');
+
+            birthdateField.addEventListener('input', function() {
+                const birthdate = new Date(birthdateField.value);
+                const age = calculateAge(birthdate);
+
+                if (age <= 0) {
+                    alert("Please enter a valid birthdate.");
+                    birthdateField.value = '';
+                    ageField.value = '';
+                } else {
+                    ageField.value = age;
+                }
+            });
+
+            function calculateAge(birthdate) {
+                const today = new Date();
+                let age = today.getFullYear() - birthdate.getFullYear();
+                const monthDifference = today.getMonth() - birthdate.getMonth();
+
+                // If the birth date hasn't occurred yet this year, subtract one from age
+                if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthdate.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+        }
+
+        // Attach generateStudentIdAndCalculateAge to modal show event
+        $(document).on('show.bs.modal', '#editData3', generateStudentIdAndCalculateAge);
         document.getElementById('levels').addEventListener('change', function() {
             const selectedGrade = this.value;
             document.getElementById('elementaryGrades').style.display = 'none';

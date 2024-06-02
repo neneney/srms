@@ -1,41 +1,37 @@
-<?php 
+<?php
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
-if (strlen($_SESSION['sid']==0)) 
-{
+if (strlen($_SESSION['sid'] == 0)) {
   header('location:logout.php');
-} else
-{
-  if(isset($_POST['submit']))
-  {
-    $adminid=$_SESSION['cpmsaid'];
-    $cpassword=md5($_POST['password']);
-    $newpassword=md5($_POST['password1']);
-    $sql ="SELECT id FROM tblusers WHERE id=:adminid and Password=:cpassword";
-    $query= $dbh -> prepare($sql);
-    $query-> bindParam(':adminid', $adminid, PDO::PARAM_STR);
-    $query-> bindParam(':cpassword', $cpassword, PDO::PARAM_STR);
-    $query-> execute();
-    $results = $query -> fetchAll(PDO::FETCH_OBJ);
+} else {
+  if (isset($_POST['submit'])) {
+    $adminid = $_SESSION['cpmsaid'];
+    $cpassword = md5($_POST['password']);
+    $newpassword = md5($_POST['password1']);
+    $sql = "SELECT id FROM tblusers WHERE id=:adminid and Password=:cpassword";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':adminid', $adminid, PDO::PARAM_STR);
+    $query->bindParam(':cpassword', $cpassword, PDO::PARAM_STR);
+    $query->execute();
+    $results = $query->fetchAll(PDO::FETCH_OBJ);
 
-    if($query -> rowCount() > 0)
-    {
-      $con="update tblusers set Password=:newpassword where id=:adminid";
+    if ($query->rowCount() > 0) {
+      $con = "update tblusers set Password=:newpassword where id=:adminid";
       $chngpwd1 = $dbh->prepare($con);
-      $chngpwd1-> bindParam(':adminid', $adminid, PDO::PARAM_STR);
-      $chngpwd1-> bindParam(':newpassword', $newpassword, PDO::PARAM_STR);
+      $chngpwd1->bindParam(':adminid', $adminid, PDO::PARAM_STR);
+      $chngpwd1->bindParam(':newpassword', $newpassword, PDO::PARAM_STR);
       $chngpwd1->execute();
 
       echo '<script>alert("Your password successully changed")</script>';
     } else {
       echo '<script>alert("Your current password is wrong")</script>';
-
     }
   }
-  ?>
+?>
 
   <?php @include("includes/head.php"); ?>
+
   <body class="hold-transition sidebar-mini layout-fixed">
     <div class="wrapper">
       <!-- Navbar -->
@@ -44,41 +40,44 @@ if (strlen($_SESSION['sid']==0))
       <!-- Side bar and Menu -->
       <?php @include("includes/sidebar.php"); ?>
       <!-- /.sidebar and menu -->
-      
+
       <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
+      <div class="content-wrapper ">
         <br>
-        <div class="card" style="display: flex; align-items: center; justify-content: center">
+        <div class="card pt-3" style="display: flex; align-items: center; justify-content: center;">
           <div class="col-md-10">
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title">Change Password</h3>
               </div>
               <div class="card-body">
+                <div class="d-flex flex-row align-items-center back"><i style="cursor: pointer;" id="backbtn" class="fa fa-long-arrow-left mr-1 mb-1"></i>
+                </div>
                 <!-- Date -->
 
-                <form role="form" id=""  method="post" enctype="multipart/form-data" class="form-horizontal">
+                <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
 
                   <div class="card-body">
                     <div class="form-group  ">
                       <label for="exampleInputPassword1">Old Password</label>
-                      <input type="password" name="password" class="form-control" id="exampleInputPassword1"  required>
+                      <input type="password" name="password" class="form-control" id="exampleInputPassword1" required>
                     </div>
                     <div class="form-group  ">
                       <label for="exampleInputPassword1">New Password</label>
-                      <input type="password" name="password1"  class="form-control" id="exampleInputPassword1" required>
+                      <input type="password" name="password1" class="form-control" id="exampleInputPassword1" required>
                     </div>
                     <div class="form-group ">
                       <label for="exampleInputPassword1">Confirm password</label>
-                      <input type="password" name="password2" class="form-control" id="exampleInputPassword1"  >
+                      <input type="password" name="password2" class="form-control" id="exampleInputPassword1">
                     </div>
                   </div>
-                </div>
-                <div class="modal-footer text-right">
-                  <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-                </div>
+              </div>
+              <div class="modal-footer text-right">
+                <button class="btn btn-info" onclick="goBack()">Back</button>
+                <button type="submit" name="submit" class="btn btn-primary">Submit</button>
+              </div>
 
-              </form> 
+              </form>
 
             </div>
 
@@ -92,7 +91,16 @@ if (strlen($_SESSION['sid']==0))
     <!-- /.content-wrapper -->
     <?php @include("includes/footer.php"); ?>
     <?php @include("includes/foot.php"); ?>
+    <script>
+      var back = document.getElementById('backbtn');
+      back.addEventListener('click', goBack);
+
+      function goBack() {
+        window.history.back();
+      }
+    </script>
   </body>
+
   </html>
-  <?php
+<?php
 } ?>
