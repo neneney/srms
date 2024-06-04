@@ -68,7 +68,7 @@ if (isset($_POST['submit'])) {
     <div class="row">
       <div class="form-group col-md-6">
         <label for="feLastName">Username</label>
-        <input type="text" name="username" class="form-control" placeholder="Username" value="" required>
+        <input type="text" name="username" class="form-control no-capitalize" placeholder="Username" value="" required>
       </div>
       <div class="form-group col-md-6">
         <label class="" for="register1-email">Permission:</label>

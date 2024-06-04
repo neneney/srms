@@ -231,11 +231,11 @@ if (strlen($_SESSION['sid']) == 0) {
                     <div class="row">
                       <div class="form-group col-md-3">
                         <label for="semail">Email</label>
-                        <input type="text" class="form-control" id="semail" name="semail" placeholder="Email">
+                        <input type="email" class="form-control" id="semail" name="semail" placeholder="Email">
                       </div>
                       <div class="form-group col-md-3">
                         <label for="sphone">Phone Number</label>
-                        <input type="text" class="form-control" id="sphone" name="sphone" placeholder="Phone Number">
+                        <input type="number" class="form-control" id="sphone" name="sphone" placeholder="Phone Number">
                       </div>
                     </div>
 
@@ -389,11 +389,11 @@ if (strlen($_SESSION['sid']) == 0) {
                       </div>
                       <div class="form-group col-md-4">
                         <label for="age">Email</label>
-                        <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                       </div>
                       <div class="form-group col-md-3">
                         <label for="nextphone">Phone Number</label>
-                        <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number">
+                        <input type="number" class="form-control" id="nextphone" name="phone" placeholder="Phone Number">
                       </div>
                       <div class="form-group col-md-2">
                         <label for="occupation">Ocupation</label>

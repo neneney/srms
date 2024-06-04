@@ -174,3 +174,26 @@ function fetchAndPopulateClasses(gradeLevel, levelType) {
         return age;
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all input elements of type text
+  var textInputs = document.querySelectorAll('input[type="text"]');
+
+  // Function to capitalize the first letter of each word
+  function capitalizeWords(input) {
+    let words = input.value.split(' ');
+    for (let i = 0; i < words.length; i++) {
+      if (words[i].length > 0) {
+        words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+      }
+    }
+    input.value = words.join(' ');
+  }
+
+  // Add event listeners to each text input element
+  textInputs.forEach(function(input) {
+    input.addEventListener('input', function() {
+      capitalizeWords(input);
+    });
+  });
+});

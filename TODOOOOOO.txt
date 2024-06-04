@@ -10,6 +10,10 @@ course:
     change the "course name" to "course title" 
 }
 eto kulang{
+delete:
+    dapat pag nag delete ng student mawawala din yung ibang data like parents and yung sa enrollments
+    add delete btn sa view class like uunenroll yung student
+form validation
 filters:
     student:
         gender

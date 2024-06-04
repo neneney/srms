@@ -167,7 +167,9 @@ if (isset($_GET['dels'])) {
                                                         <a class="edit_data btn btn-primary btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for edit">Edit</a>
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
                                                         <a class="btn btn-sm btn-info editdata3" style="color: white;" id="<?php echo ($row["id"]); ?>">Enroll</a>
-                                                        <a href="classes.php?ID=<?php echo $row['id'] ?>&dels=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
+                                                        <?php if ($_SESSION['permission'] == "Admin") { ?>
+                                                            <a href="classes.php?ID=<?php echo $row['id'] ?>&dels=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
+                                                        <?php } ?>
                                                     </td>
                                                 </tr>
                                             <?php
@@ -394,6 +396,28 @@ if (isset($_GET['dels'])) {
             window.print();
             document.body.innerHTML = originalContents;
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all input elements of type text
+            var textInputs = document.querySelectorAll('input[type="text"]');
+
+            // Function to capitalize the first letter of each word
+            function capitalizeWords(input) {
+                let words = input.value.split(' ');
+                for (let i = 0; i < words.length; i++) {
+                    if (words[i].length > 0) {
+                        words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+                    }
+                }
+                input.value = words.join(' ');
+            }
+
+            // Add event listeners to each text input element
+            textInputs.forEach(function(input) {
+                input.addEventListener('input', function() {
+                    capitalizeWords(input);
+                });
+            });
+        });
     </script>
 </body>
 

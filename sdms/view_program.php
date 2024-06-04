@@ -57,8 +57,12 @@ include('includes/dbconnection.php');
 
 
     while ($row = mysqli_fetch_array($ret2)) {
-        $ret3 = mysqli_query($con, "SELECT * from students WHERE program = '" . $row['name'] . "'");
+        $ret3 = mysqli_query($con, "SELECT s.studentno, s.`first-name`, s.`middle-name`, s.`last-name`, s.suffix, s.age, s.gender
+                                    FROM course_enrollment ce
+                                    JOIN students s ON ce.student_id = s.studentno
+                                    WHERE ce.course_code = '" . $row['course-code'] . "'");
     ?>
+
         <div class="col-md-12">
             <div class="header-logo">
                 <img src="company/bjmp_logo.png" alt="Logo" style="width: 100px; height: auto; margin-right: 20px;">
