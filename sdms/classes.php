@@ -243,8 +243,7 @@ if (isset($_GET['dels'])) {
                 }
             });
         });
-
-
+        // Populate dropdown function
         function populateDropdown(select, options, placeholder = "Select an option") {
             select.innerHTML = `<option value="">${placeholder}</option>`;
             options.forEach(option => {
@@ -268,6 +267,8 @@ if (isset($_GET['dels'])) {
             const provinceSelect = document.getElementById('province');
             const citySelect = document.getElementById('city');
             const barangaySelect = document.getElementById('barangay');
+
+            let selectedBarangay; // Variable to store selected barangay
 
             fetchDropdownData('getters-php/get-province.php', function(provinces) {
                 populateDropdown(provinceSelect, provinces, "Select Province");
@@ -295,7 +296,16 @@ if (isset($_GET['dels'])) {
                     });
                 }
             });
+
+            barangaySelect.addEventListener('change', function() {
+                selectedBarangay = this.value; // Store the selected barangay value
+                console.log('Selected Barangay:', selectedBarangay); // Log the selected barangay for verification
+                // You can also call a function or perform an action with the selectedBarangay value here
+            });
         }
+
+        // Initialize the dropdown population
+        populateProvinceDropdown();
 
         // Generate Student ID and calculate age
         function generateStudentIdAndCalculateAge() {
