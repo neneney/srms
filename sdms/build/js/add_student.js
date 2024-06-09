@@ -1,76 +1,36 @@
-
-function clearClassDropdowns() {
-  document.getElementById('elementaryClasses').innerHTML = '<option value="">Select Class/Section</option>';
-  document.getElementById('middleClasses').innerHTML = '<option value="">Select Class/Section</option>';
-  document.getElementById('highClasses').innerHTML = '<option value="">Select Class/Section</option>';
-  document.getElementById('elementaryClass').style.display = 'none';
-  document.getElementById('middleClass').style.display = 'none';
-  document.getElementById('highClass').style.display = 'none';
-}
-
-
-document.getElementById('elementaryGrade').addEventListener('change', function() {
-  clearClassDropdowns();
-  fetchAndPopulateClasses(this.value, 'elementary');
+document.getElementById('levels').addEventListener('change', function() {
+  fetchAndPopulateClasses(this.value);
 });
 
-document.getElementById('middleGrade').addEventListener('change', function() {
-  clearClassDropdowns();
-  fetchAndPopulateClasses(this.value, 'middle');
-});
-
-document.getElementById('highGrade').addEventListener('change', function() {
-  clearClassDropdowns();
-  fetchAndPopulateClasses(this.value, 'high');
-});
-
-function fetchAndPopulateClasses(gradeLevel, levelType) {
-  var classSelect = document.getElementById(`${levelType}Class`);
-  var classesDropdown = document.getElementById(`${levelType}Classes`);
+function fetchAndPopulateClasses(gradeLevel) {
+  var classSelect = document.getElementById('class');
+  var classesDropdown = document.getElementById('classes');
 
   if (gradeLevel !== "") {
-    fetch('getters-php/get-classes.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: 'gradeLevel=' + encodeURIComponent(gradeLevel)
-    })
-    .then(response => response.json())
-    .then(data => {
-      classesDropdown.innerHTML = '<option value="">Select Class/Section</option>';
-      data.forEach(classItem => {                                            
-        var option = document.createElement('option');                                                                                            
-        option.value = classItem.code;
-        option.text = classItem.name;
-        classesDropdown.appendChild(option);
-      });
-      classSelect.style.display = 'block';
-    })
-    .catch(error => console.error('Error:', error));
+      fetch('getters-php/get-classes.php', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: 'gradeLevel=' + encodeURIComponent(gradeLevel)
+      })
+      .then(response => response.json())
+      .then(data => {
+          classesDropdown.innerHTML = '<option value="">Select Class</option>';
+          data.forEach(classItem => {
+              var option = document.createElement('option');
+              option.value = classItem.code;
+              option.text = classItem.title;
+              classesDropdown.appendChild(option);
+          });
+          classSelect.style.display = 'block';
+      })
+      .catch(error => console.error('Error:', error));
   } else {
-    classSelect.style.display = 'none';
+      classSelect.style.display = 'none';
   }
 }
 
-  document.getElementById('levels').addEventListener('change', function() {
-    const selectedGrade = this.value;
-    document.getElementById('elementaryGrades').style.display = 'none';
-    document.getElementById('middleGrades').style.display = 'none';
-    document.getElementById('highGrades').style.display = 'none';
-    clearClassDropdowns();
-
-    if (selectedGrade === 'elementary') {
-      document.getElementById('elementaryGrades').style.display = 'block';
-      
-    } else if (selectedGrade === 'Junior High') {
-      document.getElementById('middleGrades').style.display = 'block';
-      
-    } else if (selectedGrade === 'Senior High') {
-      document.getElementById('highGrades').style.display = 'block';
-      
-    } 
-  });
 
   function fetchOptions(url, callback) {
     fetch(url)

@@ -6,8 +6,31 @@ if (strlen($_SESSION['sid'] == 0)) {
   header('location:logout.php');
 }
 if (isset($_GET['del'])) {
-  mysqli_query($con, "delete from students where id = '" . $_GET['id'] . "'");
-  $_SESSION['delmsg'] = "student deleted !!";
+  $student_id = $_GET['id'];
+
+  // Fetch the studentno and parent_id from the students table
+  $result = mysqli_query($con, "SELECT studentno, parent_id FROM students WHERE id = '$student_id'");
+  if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $studentno = $row['studentno'];
+    $parent_id = $row['parent_id'];
+
+    // Delete the enrollment(s) from the class_enrollment table using studentno
+    $delete_enrollment_query = "DELETE FROM class_enrollment WHERE student_id = '$studentno'";
+    mysqli_query($con, $delete_enrollment_query);
+
+    // Delete the student from the students table
+    $delete_student_query = "DELETE FROM students WHERE id = '$student_id'";
+    mysqli_query($con, $delete_student_query);
+
+    // Delete the parent data from the parent table
+    $delete_parent_query = "DELETE FROM parent WHERE id = '$parent_id'";
+    mysqli_query($con, $delete_parent_query);
+
+    $_SESSION['delmsg'] = "Student data deleted !!";
+  } else {
+    $_SESSION['delmsg'] = "Error: Student not found!";
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -66,7 +89,7 @@ if (isset($_GET['del'])) {
                       </button> </a>
                   </div>
                 </div>
-                <!-- /.card-header -->
+
                 <div id="editData" class="modal fade">
                   <div class="modal-dialog modal-xl">
                     <div class="modal-content">
@@ -82,13 +105,9 @@ if (isset($_GET['del'])) {
                       <div class="modal-footer ">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                       </div>
-                      <!-- /.modal-content -->
                     </div>
-                    <!-- /.modal-dialog -->
                   </div>
-                  <!-- /.modal -->
                 </div>
-                <!--   end modal -->
 
 
                 <div id="editData2" class="modal fade" id="printTable">
@@ -107,17 +126,12 @@ if (isset($_GET['del'])) {
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                         <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
                       </div>
-                      <!-- /.modal-content -->
+
                     </div>
-                    <!-- /.modal-dialog -->
+
                   </div>
-                  <!-- /.modal -->
+
                 </div>
-                <!--   end modal -->
-
-
-
-
                 <div class="card-body mt-2 ">
                   <table id="example1" class="table table-bordered table-hover">
                     <thead>
@@ -133,8 +147,6 @@ if (isset($_GET['del'])) {
                       <?php
                       $query = mysqli_query($con, "SELECT * FROM students ORDER BY postingDate DESC");
                       while ($row = mysqli_fetch_array($query)) {
-                        $classQuery = mysqli_query($con, "SELECT name FROM classes WHERE code = '" . mysqli_real_escape_string($con, $row['class_id']) . "'");
-                        $classRow = mysqli_fetch_array($classQuery);
                       ?>
                         <tr>
                           <td style="text-align: center;" class="align-middle">

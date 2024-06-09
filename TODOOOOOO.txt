@@ -25,3 +25,22 @@ security:
     do not allow the user to delete
     acitivity log ng mga user/admin - table lang to sa database tas query
 }
+
+
+bagong gagawin: 
+    -remove vocational course page
+    class: 
+        add additional dropdown:
+            vocational 
+            others(like other institutoins that offer programs) 
+        premade data:
+        15-20 students
+        status and remarks of students pag view ng class
+        add time for classes: 
+            add restrictions bawal mag input ng same student data na magkaparehas ng oras
+        existing or new yung eenroll?
+    report generation: 
+        add date and timestamp
+        individual
+        class
+        passed/failed 

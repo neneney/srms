@@ -7,7 +7,7 @@ if (strlen($_SESSION['sid'] == 0)) {
 }
 if (isset($_GET['dels'])) {
     mysqli_query($con, "delete from classes where ID = '" . $_GET['ID'] . "'");
-    $_SESSION['delmsg'] = "program deleted !!";
+    $_SESSION['delmsg'] = "class deleted !!";
 }
 ?>
 <!DOCTYPE html>
@@ -68,10 +68,7 @@ if (isset($_GET['dels'])) {
                                                 <!-- <p>One fine body&hellip;</p> -->
                                                 <?php @include("new-class-form.php"); ?>
                                             </div>
-                                            <!-- <div class="modal-footer ">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div> -->
+
                                         </div>
                                         <!-- /.modal-content -->
                                     </div>
@@ -98,7 +95,7 @@ if (isset($_GET['dels'])) {
                                     <!-- /.modal -->
                                 </div>
                                 <div id="editData2" class="modal fade" id="printTable">
-                                    <div class="modal-dialog modal-lg">
+                                    <div class="modal-dialog modal-xl">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Classes Details</h5>
@@ -109,10 +106,7 @@ if (isset($_GET['dels'])) {
                                             <div class="modal-body" id="info_update2">
                                                 <?php @include("view_class.php"); ?>
                                             </div>
-                                            <div class="modal-footer ">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                                <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
-                                            </div>
+
                                             <!-- /.modal-content -->
                                         </div>
                                         <!-- /.modal-dialog -->
@@ -144,11 +138,11 @@ if (isset($_GET['dels'])) {
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Class Code</th>
-                                                <th>Class Name</th>
-                                                <th>Class Teacher</th>
-                                                <th>Grade level</th>
-                                                <th>Action</th>
+                                                <th class="text-center">Class Code</th>
+                                                <th class="text-center">Class Name</th>
+                                                <th class="text-center">Class Teacher</th>
+                                                <th class="text-center">Educational Level</th>
+                                                <th class="text-center">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -162,7 +156,7 @@ if (isset($_GET['dels'])) {
                                                     <td style="text-align: center;"><?php echo htmlentities($row['code']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['name']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['teacher']); ?></td>
-                                                    <td style="text-align: center;"><?php echo htmlentities($row['grade-level']); ?></td>
+                                                    <td style="text-align: center;"><?php echo htmlentities($row['educ-level']); ?></td>
                                                     <td style="text-align: center;">
                                                         <a class="edit_data btn btn-primary btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for edit">Edit</a>
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
@@ -245,18 +239,18 @@ if (isset($_GET['dels'])) {
                 success: function(data) {
                     $("#info_update3").html(data);
                     $("#editData3").modal('show');
-                    populateProvinceDropdown(); // Populate the province dropdown when the modal is shown
+                    populateProvinceDropdown();
                 }
             });
         });
 
-        // Populate dropdowns function
+
         function populateDropdown(select, options, placeholder = "Select an option") {
             select.innerHTML = `<option value="">${placeholder}</option>`;
             options.forEach(option => {
                 const opt = document.createElement("option");
-                opt.value = option.provCode || option.citymunCode || option.brgyCode; // Adjust keys based on your JSON structure
-                opt.textContent = option.provDesc || option.citymunDesc || option.brgyDesc; // Adjust keys based on your JSON structure
+                opt.value = option.provCode || option.citymunCode || option.brgyCode;
+                opt.textContent = option.provDesc || option.citymunDesc || option.brgyDesc;
                 select.appendChild(opt);
             });
         }
@@ -345,27 +339,25 @@ if (isset($_GET['dels'])) {
         $(document).on('show.bs.modal', '#editData3', generateStudentIdAndCalculateAge);
         document.getElementById('levels').addEventListener('change', function() {
             const selectedGrade = this.value;
-            document.getElementById('elementaryGrades').style.display = 'none';
-            document.getElementById('middleGrades').style.display = 'none';
-            document.getElementById('highGrades').style.display = 'none';
-            document.getElementById('elementaryGrade').removeAttribute('required');
-            document.getElementById('middleGrade').removeAttribute('required');
-            document.getElementById('highGrade').removeAttribute('required');
             document.getElementById('strands').style.display = 'none';
             document.getElementById('strand').removeAttribute('required');
+            var title = document.getElementById("title");
+            var type = document.getElementById("type");
+            title.style.display = "none";
+            document.getElementById('titles').removeAttribute('required')
+            type.style.display = "none";
+            document.getElementById('types').removeAttribute('required');
 
 
-            if (selectedGrade === 'elementary') {
-                document.getElementById('elementaryGrades').style.display = 'block';
-                document.getElementById('elementaryGrade').setAttribute('required', 'required');
-            } else if (selectedGrade === 'Junior High') {
-                document.getElementById('middleGrades').style.display = 'block';
-                document.getElementById('middleGrade').setAttribute('required', 'required');
-            } else if (selectedGrade === 'Senior High') {
-                document.getElementById('highGrades').style.display = 'block';
+            if (selectedGrade === 'Senior Highschool') {
                 document.getElementById('strands').style.display = 'block';
-                document.getElementById('highGrade').setAttribute('required', 'required');
                 document.getElementById('strand').setAttribute('required', 'required');
+            } else if (selectedGrade === "Vocational Course") {
+                title.style.display = "block";
+                document.getElementById('titles').setAttribute('required', 'required');
+            } else if (selectedGrade === "Others") {
+                type.style.display = "block";
+                document.getElementById('types').setAttribute('required', 'required');
             }
         });
 
@@ -389,13 +381,9 @@ if (isset($_GET['dels'])) {
 
         document.getElementById("end_date").addEventListener("change", validateEndDate);
 
-        function printTable() {
-            var printContents = document.getElementById('info_update2').innerHTML;
-            var originalContents = document.body.innerHTML;
-            document.body.innerHTML = printContents;
-            window.print();
-            document.body.innerHTML = originalContents;
-        }
+
+
+
         document.addEventListener('DOMContentLoaded', function() {
             // Get all input elements of type text
             var textInputs = document.querySelectorAll('input[type="text"]');
@@ -417,6 +405,12 @@ if (isset($_GET['dels'])) {
                     capitalizeWords(input);
                 });
             });
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var currentYear = new Date().getFullYear().toString();
+            var randomNumber = Math.floor(10000 + Math.random() * 90000);
+            var code = currentYear + randomNumber;
+            document.getElementById("code").value = code;
         });
     </script>
 </body>

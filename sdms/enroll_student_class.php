@@ -39,61 +39,80 @@ if (isset($_POST['submit1'])) {
 
     $class = $_POST['class'];
 
-    try {
-        $dbh->beginTransaction();
+    $check_sql = "SELECT COUNT(*) AS count FROM students WHERE `last-name` = :lastname AND `first-name` = :firstname AND `middle-name` = :middlename AND suffix = :suffix";
+    $check_query = $dbh->prepare($check_sql);
+    $check_query->bindParam(':lastname', $lastname, PDO::PARAM_STR);
+    $check_query->bindParam(':firstname', $firstname, PDO::PARAM_STR);
+    $check_query->bindParam(':middlename', $middlename, PDO::PARAM_STR);
+    $check_query->bindParam(':suffix', $suffix, PDO::PARAM_STR);
+    $check_query->execute();
+    $count = $check_query->fetch(PDO::FETCH_ASSOC)['count'];
 
-        $sql_parent = "INSERT INTO parent (last_name, first_name, middle_name, suffix, relationship, occupation, email, `contact-no`) VALUES (:parent_lastname, :parent_firstname, :parent_middlename, :parent_suffix, :relation, :occupation, :email, :phone)";
-        $query_parent = $dbh->prepare($sql_parent);
-        $query_parent->bindParam(':parent_lastname', $parent_lastname, PDO::PARAM_STR);
-        $query_parent->bindParam(':parent_firstname', $parent_firstname, PDO::PARAM_STR);
-        $query_parent->bindParam(':parent_middlename', $parent_middlename, PDO::PARAM_STR);
-        $query_parent->bindParam(':parent_suffix', $parent_suffix, PDO::PARAM_STR);
-        $query_parent->bindParam(':relation', $relation, PDO::PARAM_STR);
-        $query_parent->bindParam(':occupation', $occupation, PDO::PARAM_STR);
-        $query_parent->bindParam(':email', $email, PDO::PARAM_STR);
-        $query_parent->bindParam(':phone', $phone, PDO::PARAM_STR);
-        $query_parent->execute();
+    if ($count > 0) {
+        // Student with the same name already exists, show error message or take appropriate action
+        echo "<script>alert('Student with the same name already exists.');</script>";
+    } else {
+        try {
+            $dbh->beginTransaction();
 
-        $parent_id = $dbh->lastInsertId();
+            $sql_parent = "INSERT INTO parent (last_name, first_name, middle_name, suffix, relationship, occupation, email, `contact-no`) VALUES (:parent_lastname, :parent_firstname, :parent_middlename, :parent_suffix, :relation, :occupation, :email, :phone)";
+            $query_parent = $dbh->prepare($sql_parent);
+            $query_parent->bindParam(':parent_lastname', $parent_lastname, PDO::PARAM_STR);
+            $query_parent->bindParam(':parent_firstname', $parent_firstname, PDO::PARAM_STR);
+            $query_parent->bindParam(':parent_middlename', $parent_middlename, PDO::PARAM_STR);
+            $query_parent->bindParam(':parent_suffix', $parent_suffix, PDO::PARAM_STR);
+            $query_parent->bindParam(':relation', $relation, PDO::PARAM_STR);
+            $query_parent->bindParam(':occupation', $occupation, PDO::PARAM_STR);
+            $query_parent->bindParam(':email', $email, PDO::PARAM_STR);
+            $query_parent->bindParam(':phone', $phone, PDO::PARAM_STR);
+            $query_parent->execute();
 
-        $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, email, phone, parent_id, province, city, barangay, `village-house-no`, studentImage, last_school) 
+            $parent_id = $dbh->lastInsertId();
+
+            $sql_student = "INSERT INTO students (studentno, `last-name`, `first-name`, `middle-name`, suffix, age, gender, email, phone, parent_id, province, city, barangay, `village-house-no`, studentImage, last_school) 
             VALUES (:studentno, :lastname, :firstname, :middlename, :suffix, :age, :sex, :semail, :sphone, :parent_id, :province, :city, :barangay, :village, :photo, :last_school)";
-        $query_student = $dbh->prepare($sql_student);
-        $query_student->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-        $query_student->bindParam(':lastname', $lastname, PDO::PARAM_STR);
-        $query_student->bindParam(':firstname', $firstname, PDO::PARAM_STR);
-        $query_student->bindParam(':middlename', $middlename, PDO::PARAM_STR);
-        $query_student->bindParam(':suffix', $suffix, PDO::PARAM_STR);
-        $query_student->bindParam(':age', $age, PDO::PARAM_INT);
-        $query_student->bindParam(':sex', $sex, PDO::PARAM_STR);
-        $query_student->bindParam(':semail', $semail, PDO::PARAM_STR);
-        $query_student->bindParam(':sphone', $sphone, PDO::PARAM_STR);
-        $query_student->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
-        $query_student->bindParam(':province', $province, PDO::PARAM_STR);
-        $query_student->bindParam(':city', $city, PDO::PARAM_STR);
-        $query_student->bindParam(':barangay', $barangay, PDO::PARAM_STR);
-        $query_student->bindParam(':village', $village, PDO::PARAM_STR);
-        $query_student->bindParam(':photo', $photo, PDO::PARAM_STR);
-        $query_student->bindParam(':last_school', $last_school, PDO::PARAM_STR);
-        $query_student->execute();
+            $query_student = $dbh->prepare($sql_student);
+            $query_student->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+            $query_student->bindParam(':lastname', $lastname, PDO::PARAM_STR);
+            $query_student->bindParam(':firstname', $firstname, PDO::PARAM_STR);
+            $query_student->bindParam(':middlename', $middlename, PDO::PARAM_STR);
+            $query_student->bindParam(':suffix', $suffix, PDO::PARAM_STR);
+            $query_student->bindParam(':age', $age, PDO::PARAM_INT);
+            $query_student->bindParam(':sex', $sex, PDO::PARAM_STR);
+            $query_student->bindParam(':semail', $semail, PDO::PARAM_STR);
+            $query_student->bindParam(':sphone', $sphone, PDO::PARAM_STR);
+            $query_student->bindParam(':parent_id', $parent_id, PDO::PARAM_INT);
+            $query_student->bindParam(':province', $province, PDO::PARAM_STR);
+            $query_student->bindParam(':city', $city, PDO::PARAM_STR);
+            $query_student->bindParam(':barangay', $barangay, PDO::PARAM_STR);
+            $query_student->bindParam(':village', $village, PDO::PARAM_STR);
+            $query_student->bindParam(':photo', $photo, PDO::PARAM_STR);
+            $query_student->bindParam(':last_school', $last_school, PDO::PARAM_STR);
+            $query_student->execute();
+
+            $status = "active";
+            $remarks = "none";
+
+            if (!empty($class)) {
+                $class_sql = "INSERT INTO class_enrollment (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
+                $query_class = $dbh->prepare($class_sql);
+                $query_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+                $query_class->bindParam(':class_id', $class, PDO::PARAM_INT);
+                $query_class->bindParam(':status', $status, PDO::PARAM_STR);
+                $query_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
+                $query_class->execute();
+            }
 
 
-        if (!empty($class)) {
-            $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class)";
-            $query_class = $dbh->prepare($class_sql);
-            $query_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $query_class->bindParam(':class', $class, PDO::PARAM_INT);
-            $query_class->execute();
+            $dbh->commit();
+
+            echo "<script>alert('Student has been enrolled.');</script>";
+        } catch (Exception $e) {
+            $dbh->rollBack();
+            $error_message = $e->getMessage();
+            echo $error_message;
+            echo "<script>alert('Something Went Wrong. Please try again.');</script>";
         }
-
-        $dbh->commit();
-
-        echo "<script>alert('Student has been enrolled.');</script>";
-    } catch (Exception $e) {
-        $dbh->rollBack();
-        $error_message = $e->getMessage();
-        echo $error_message;
-        echo "<script>alert('Something Went Wrong. Please try again.');</script>";
     }
 }
 
@@ -189,7 +208,7 @@ if (isset($_POST['submit1'])) {
                             <div class="form-group col-md-3" id="programs" style="display: block;">
                                 <label for="program">Class/Section</label>
                                 <!-- <input value="<?php echo $_SESSION['class-code'] ?>" type="text" class="form-control" id="program3" name="class" required readonly> -->
-                                <select class="form-control" id="program" name="program" readonly>
+                                <select class="form-control" id="program" name="class" readonly>
 
                                     <option value="<?php echo $_SESSION['class-code']; ?>" selected><?php echo $classes[0]['name']; ?></option>
 

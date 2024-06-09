@@ -4,10 +4,7 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-$sql = "SELECT * FROM programs";
-$query = $dbh->prepare($sql);
-$query->execute();
-$programs = $query->fetchAll(PDO::FETCH_ASSOC);
+
 
 if (isset($_POST['submit'])) {
   $sid = $_SESSION['edid'];
@@ -119,81 +116,37 @@ if (isset($_POST['enroll'])) {
   echo "<script>console.log('studentno: " . $studentno . "');</script>";
 
   if (isset($_POST['enroll'])) {
-    if (!empty($_POST['elementary-class'])) {
-      $class_id = $_POST['elementary-class'];
-    } else if (!empty($_POST['jhs-class'])) {
-      $class_id = $_POST['jhs-class'];
-    } else if (!empty($_POST['shs-class'])) {
-      $class_id = $_POST['shs-class'];
-    } else {
-      $class_id = null;
-    }
-    $program = $_POST['program'];
+    try {
+      // Check if the student is already enrolled in any class
+      $sql1 = "SELECT * FROM class_enrollment WHERE student_id = :studentno";
+      $query1 = $dbh->prepare($sql1);
+      $query1->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+      $query1->execute();
+      $enrollment = $query1->fetch(PDO::FETCH_ASSOC);
 
-    if (isset($class_id)) {
-      try {
-        // Check if the student is already enrolled in any class
-        $sql1 = "SELECT * FROM class_enrollment WHERE student_id = :studentno";
-        $query1 = $dbh->prepare($sql1);
-        $query1->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-        $query1->execute();
-        $enrollment = $query1->fetch(PDO::FETCH_ASSOC);
+      $class_id = $_POST['classes'];
 
-        if ($enrollment) {
-          // Update the existing class enrollment
-          $class_sql = "UPDATE class_enrollment SET class_id = :class_id WHERE student_id = :studentno";
-        } else {
-          // Insert new class enrollment
-          $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
-        }
-
-        $query = $dbh->prepare($class_sql);
-        $query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
-        $query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-        $result = $query->execute();
-
-        if ($result) {
-          echo "<script>alert('Class enrollment updated successfully.');</script>";
-          echo "<script>window.location.href ='student_list.php'</script>";
-        } else {
-          echo "<script>alert('Failed to update class enrollment.');</script>";
-        }
-      } catch (PDOException $e) {
-        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+      if ($enrollment) {
+        // Update the existing class enrollment
+        $class_sql = "UPDATE class_enrollment SET class_id = :class_id WHERE student_id = :studentno";
+      } else {
+        // Insert new class enrollment
+        $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
       }
-    }
 
-    if (isset($program)) {
-      try {
-        // Check if the student is already enrolled in any program
-        $sql2 = "SELECT * FROM course_enrollment WHERE student_id = :studentno";
-        $course_query = $dbh->prepare($sql2);
-        $course_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-        $course_query->execute();
-        $course_enrollment = $course_query->fetch(PDO::FETCH_ASSOC);
+      $query = $dbh->prepare($class_sql);
+      $query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+      $query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+      $result = $query->execute();
 
-        if ($course_enrollment) {
-          // Update the existing course enrollment
-          $course_sql = "UPDATE course_enrollment SET course_code = :program WHERE student_id = :studentno";
-        } else {
-          // Insert new course enrollment
-          $course_sql = "INSERT INTO course_enrollment (student_id, course_code) VALUES (:studentno, :program)";
-        }
-
-        $course_query = $dbh->prepare($course_sql);
-        $course_query->bindParam(':program', $program, PDO::PARAM_STR);
-        $course_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-        $course_result = $course_query->execute();
-
-        if ($course_result) {
-          echo "<script>alert('Program enrollment updated successfully.');</script>";
-          echo "<script>window.location.href ='student_list.php'</script>";
-        } else {
-          echo "<script>alert('Failed to update program enrollment.');</script>";
-        }
-      } catch (PDOException $e) {
-        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+      if ($result) {
+        echo "<script>alert('Enrollment updated successfully.');</script>";
+        echo "<script>window.location.href ='student_list.php'</script>";
+      } else {
+        echo "<script>alert('Failed to update class enrollment.');</script>";
       }
+    } catch (PDOException $e) {
+      echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
   }
 }
@@ -324,6 +277,7 @@ if (isset($_POST['enroll'])) {
                       </div>
                     </form>
                   </div>
+
                   <div class="tab-pane" id="enrollment">
                     <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
                       <div class="row">
@@ -331,77 +285,17 @@ if (isset($_POST['enroll'])) {
                           <label for="grade">Student Educational Level</label>
                           <select class="form-control" id="levels" name="levels">
                             <option value="">Select Educational Level</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="Junior High">Junior High School</option>
-                            <option value="Senior High">Senior High School</option>
+                            <option value="Elementary">Elementary</option>
+                            <option value="Junior Highschool">Junior High School</option>
+                            <option value="Senior Highschool">Senior High School</option>
+                            <option value="Vocational Course">Vocational Course(TESDA)</option>
+                            <option value="Others">Others</option>
                           </select>
                         </div>
-
-                        <div class="form-group col-md-4" id="elementaryGrades" style="display:none;">
-                          <label for="elementaryGrade">Grade Levels</label>
-                          <select class="form-control" id="elementaryGrade" name="elementary-level">
-                            <option value="">Select Grade</option>
-                            <option value="Grade 1">Grade 1</option>
-                            <option value="Grade 2">Grade 2</option>
-                            <option value="Grade 3">Grade 3</option>
-                            <option value="Grade 4">Grade 4</option>
-                            <option value="Grade 5">Grade 5</option>
-                            <option value="Grade 6">Grade 6</option>
-                          </select>
-                        </div>
-                        <div class="form-group col-md-4" id="middleGrades" style="display:none;">
-                          <label for="middleGrade">Grade Levels</label>
-                          <select class="form-control" id="middleGrade" name="jhs-level">
-                            <option value="">Select Grade</option>
-                            <option value="Grade 7">Grade 7</option>
-                            <option value="Grade 8">Grade 8</option>
-                            <option value="Grade 9">Grade 9</option>
-                            <option value="Grade 10">Grade 10</option>
-                          </select>
-                        </div>
-                        <div class="form-group col-md-4" id="highGrades" style="display:none;">
-                          <label for="highGrade">Grade Levels</label>
-                          <select class="form-control" id="highGrade" name="shs-level">
-                            <option value="">Select Grade</option>
-                            <option value="Grade 11">Grade 11</option>
-                            <option value="Grade 12">Grade 12</option>
-                          </select>
-                        </div>
-                        <div class="form-group col-md-4" id="elementaryClass" style="display:none;">
-                          <label for="elementaryClasses">Class/Section</label>
-                          <select class="form-control" id="elementaryClasses" name="elementary-class">
-                            <option value="">Select Class/Section</option>
-                          </select>
-                        </div>
-
-                        <div class="form-group col-md-4" id="middleClass" style="display:none;">
-                          <label for="middleClasses">Class/Section</label>
-                          <select class="form-control" id="middleClasses" name="jhs-class">
-                            <option value="">Select Class/Section</option>
-                          </select>
-                        </div>
-
-                        <div class="form-group col-md-4" id="highClass" style="display:none;">
-                          <label for="highClasses">Class/Section</label>
-                          <select class="form-control" id="highClasses" name="shs-class">
-                            <option value="">Select Class/Section</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <?php
-                        $sql = "SELECT * FROM programs";
-                        $query = $dbh->prepare($sql);
-                        $query->execute();
-                        $programs = $query->fetchAll(PDO::FETCH_ASSOC);
-                        ?>
-                        <div class="form-group col-md-4" id="programs">
-                          <label for="program">Vocational Course/Program</label>
-                          <select class="form-control" id="program" name="program">
-                            <option value="">Select Course/Program</option>
-                            <?php foreach ($programs as $program) { ?>
-                              <option value="<?php echo $program['course-code']; ?>"><?php echo $program['name']; ?></option>
-                            <?php } ?>
+                        <div class="form-group col-md-4" id="class">
+                          <label for="classes">Student Class</label>
+                          <select class="form-control" id="classes" name="classes">
+                            <option value="">Select Educational Level</option>
                           </select>
                         </div>
                       </div>
@@ -575,34 +469,13 @@ if (isset($_POST['enroll'])) {
 </div>
 
 <script>
-  function clearClassDropdowns() {
-    document.getElementById('elementaryClasses').innerHTML = '<option value="">Select Class/Section</option>';
-    document.getElementById('middleClasses').innerHTML = '<option value="">Select Class/Section</option>';
-    document.getElementById('highClasses').innerHTML = '<option value="">Select Class/Section</option>';
-    document.getElementById('elementaryClass').style.display = 'none';
-    document.getElementById('middleClass').style.display = 'none';
-    document.getElementById('highClass').style.display = 'none';
-  }
-
-
-  document.getElementById('elementaryGrade').addEventListener('change', function() {
-    clearClassDropdowns();
-    fetchAndPopulateClasses(this.value, 'elementary');
+  document.getElementById('levels').addEventListener('change', function() {
+    fetchAndPopulateClasses(this.value);
   });
 
-  document.getElementById('middleGrade').addEventListener('change', function() {
-    clearClassDropdowns();
-    fetchAndPopulateClasses(this.value, 'middle');
-  });
-
-  document.getElementById('highGrade').addEventListener('change', function() {
-    clearClassDropdowns();
-    fetchAndPopulateClasses(this.value, 'high');
-  });
-
-  function fetchAndPopulateClasses(gradeLevel, levelType) {
-    var classSelect = document.getElementById(`${levelType}Class`);
-    var classesDropdown = document.getElementById(`${levelType}Classes`);
+  function fetchAndPopulateClasses(gradeLevel) {
+    var classSelect = document.getElementById('class');
+    var classesDropdown = document.getElementById('classes');
 
     if (gradeLevel !== "") {
       fetch('getters-php/get-classes.php', {
@@ -614,11 +487,11 @@ if (isset($_POST['enroll'])) {
         })
         .then(response => response.json())
         .then(data => {
-          classesDropdown.innerHTML = '<option value="">Select Class/Section</option>';
+          classesDropdown.innerHTML = '<option value="">Select Class</option>';
           data.forEach(classItem => {
             var option = document.createElement('option');
             option.value = classItem.code;
-            option.text = classItem.name;
+            option.text = classItem.title;
             classesDropdown.appendChild(option);
           });
           classSelect.style.display = 'block';
@@ -628,23 +501,4 @@ if (isset($_POST['enroll'])) {
       classSelect.style.display = 'none';
     }
   }
-
-  document.getElementById('levels').addEventListener('change', function() {
-    const selectedGrade = this.value;
-    document.getElementById('elementaryGrades').style.display = 'none';
-    document.getElementById('middleGrades').style.display = 'none';
-    document.getElementById('highGrades').style.display = 'none';
-    clearClassDropdowns();
-
-    if (selectedGrade === 'elementary') {
-      document.getElementById('elementaryGrades').style.display = 'block';
-
-    } else if (selectedGrade === 'Junior High') {
-      document.getElementById('middleGrades').style.display = 'block';
-
-    } else if (selectedGrade === 'Senior High') {
-      document.getElementById('highGrades').style.display = 'block';
-
-    }
-  });
 </script>

@@ -6,7 +6,7 @@ include('../includes/dbconnection.php');
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $gradeLevel = $_POST['gradeLevel'];
 
-    $sql = "SELECT * FROM classes WHERE `grade-level` = :gradeLevel";
+    $sql = "SELECT * FROM classes WHERE `educ-level` = :gradeLevel";
     $query = $dbh->prepare($sql);
     $query->bindParam(':gradeLevel', $gradeLevel, PDO::PARAM_STR);
     $query->execute();
