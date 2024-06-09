@@ -491,7 +491,7 @@ if (isset($_POST['enroll'])) {
           data.forEach(classItem => {
             var option = document.createElement('option');
             option.value = classItem.code;
-            option.text = classItem.title;
+            option.text = classItem.name;
             classesDropdown.appendChild(option);
           });
           classSelect.style.display = 'block';

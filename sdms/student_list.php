@@ -122,10 +122,7 @@ if (isset($_GET['del'])) {
                       <div class="modal-body" id="info_update2">
                         <?php @include("view_student_info.php"); ?>
                       </div>
-                      <div class="modal-footer ">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="printTable()">Print</button>
-                      </div>
+
 
                     </div>
 

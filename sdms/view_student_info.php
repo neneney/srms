@@ -292,7 +292,17 @@ while ($row = mysqli_fetch_array($ret2)) {
         <!-- /.card -->
       </div>
     </div>
+    <div class="modal-footer ">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="generatePDF()">Print</button>
+    </div>
+    <script>
+      function generatePDF() {
+        var classId = "<?php echo $eid2; ?>";
 
+        window.location.href = "student_pdf.php?class_id=" + classId;
+      }
+    </script>
   <?php
 }
   ?>

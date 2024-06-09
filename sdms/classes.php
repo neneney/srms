@@ -286,16 +286,26 @@ if (isset($_GET['dels'])) {
                 }
             });
 
+            function populateBarangay(select, options, placeholder = "Select an option") {
+                select.innerHTML = `<option value="">${placeholder}</option>`;
+                options.forEach(option => {
+                    const opt = document.createElement("option");
+                    opt.value = option.brgyCode;
+                    opt.textContent = option.brgyDesc;
+                    select.appendChild(opt);
+                });
+            }
             citySelect.addEventListener('change', function() {
                 const selectedCityId = this.value;
                 barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
 
                 if (selectedCityId) {
                     fetchDropdownData(`getters-php/get-barangay.php?city_id=${selectedCityId}`, function(barangays) {
-                        populateDropdown(barangaySelect, barangays, "Select Barangay");
+                        populateBarangay(barangaySelect, barangays, "Select Barangay");
                     });
                 }
             });
+
 
             barangaySelect.addEventListener('change', function() {
                 selectedBarangay = this.value; // Store the selected barangay value

@@ -31,6 +31,19 @@ $eid2 = $_GET['class_id'];
 $ret2 = mysqli_query($con, "SELECT * FROM students WHERE id='$eid2'");
 $row = mysqli_fetch_array($ret2);
 
+// Fetch parent/guardian information
+$parentId = $row['parent_id'];
+$parentQuery = mysqli_query($con, "SELECT * FROM parent WHERE id='$parentId'");
+$parentRow = mysqli_fetch_array($parentQuery);
+
+// Fetch address information
+$provCode = $row['province'];
+$cityCode = $row['city'];
+$brgyCode = $row['barangay'];
+
+$provQuery = mysqli_query($con, "SELECT * FROM refprovince WHERE provCode='$provCode'");
+$provRow = mysqli_fetch_array($provQuery);
+
 ?>
 
 <!DOCTYPE html>
@@ -100,22 +113,32 @@ $row = mysqli_fetch_array($ret2);
         <tr>
             <th>Last Name</th>
             <td><?php echo htmlentities($row['last-name']); ?></td>
+        </tr>
+        <tr>
             <th>First Name</th>
             <td><?php echo htmlentities($row['first-name']); ?></td>
+        </tr>
+        <tr>
             <th>Middle Name</th>
             <td><?php echo htmlentities($row['middle-name']); ?></td>
-            <?php if (!empty($row['suffix'])) { ?>
+        </tr>
+        <?php if (!empty($row['suffix'])) { ?>
+            <tr>
                 <th>Suffix</th>
                 <td><?php echo htmlentities($row['suffix']); ?></td>
-            <?php } ?>
-        </tr>
+            </tr>
+        <?php } ?>
         <tr>
             <th>Sex</th>
             <td><?php echo htmlentities($row['gender']); ?></td>
+        </tr>
+        <tr>
             <th>Age</th>
             <td><?php echo htmlentities($row['age']); ?></td>
+        </tr>
+        <tr>
             <th>Last School Attended</th>
-            <td colspan="3"><?php echo htmlentities($row['last_school']); ?></td>
+            <td><?php echo htmlentities($row['last_school']); ?></td>
         </tr>
     </table>
 
@@ -125,26 +148,36 @@ $row = mysqli_fetch_array($ret2);
         <tr>
             <th>Last Name</th>
             <td><?php echo htmlentities($parentRow['last_name']); ?></td>
+        </tr>
+        <tr>
             <th>First Name</th>
             <td><?php echo htmlentities($parentRow['first_name']); ?></td>
+        </tr>
+        <tr>
             <th>Middle Name</th>
             <td><?php echo htmlentities($parentRow['middle_name']); ?></td>
-            <?php if (!empty($parentRow['suffix'])) { ?>
+        </tr>
+        <?php if (!empty($parentRow['suffix'])) { ?>
+            <tr>
                 <th>Suffix</th>
                 <td><?php echo htmlentities($parentRow['suffix']); ?></td>
-            <?php } ?>
-        </tr>
+            </tr>
+        <?php } ?>
         <tr>
             <th>Relationship</th>
             <td><?php echo htmlentities($parentRow['relationship']); ?></td>
+        </tr>
+        <tr>
             <th>Occupation</th>
             <td><?php echo htmlentities($parentRow['occupation']); ?></td>
+        </tr>
+        <tr>
             <th>Phone No.</th>
-            <td colspan="3">0<?php echo htmlentities($parentRow['contact-no']); ?></td>
+            <td>0<?php echo htmlentities($parentRow['contact-no']); ?></td>
         </tr>
         <tr>
             <th>Email</th>
-            <td colspan="7"><?php echo htmlentities($parentRow['email']); ?></td>
+            <td><?php echo htmlentities($parentRow['email']); ?></td>
         </tr>
     </table>
 
@@ -154,16 +187,14 @@ $row = mysqli_fetch_array($ret2);
         <tr>
             <th>Province</th>
             <td><?php echo htmlentities($provRow['provDesc']); ?></td>
+        </tr>
+        <tr>
             <th>City</th>
             <td>
                 <?php
-                $allCitiesQuery = $dbh->query("SELECT * FROM refcitymun WHERE provCode = '{$provCode}'");
-                while ($cityRow = $allCitiesQuery->fetch(PDO::FETCH_ASSOC)) {
-                    if ($cityRow['citymunCode'] == $cityCode) {
-                        echo htmlentities($cityRow['citymunDesc']);
-                        break;
-                    }
-                }
+                $cityQuery = mysqli_query($con, "SELECT * FROM refcitymun WHERE citymunCode='$cityCode'");
+                $cityRow = mysqli_fetch_array($cityQuery);
+                echo htmlentities($cityRow['citymunDesc']);
                 ?>
             </td>
         </tr>
@@ -171,17 +202,15 @@ $row = mysqli_fetch_array($ret2);
             <th>Barangay</th>
             <td>
                 <?php
-                $allBarangaysQuery = $dbh->query("SELECT * FROM refbrgy WHERE citymunCode = '{$cityCode}'");
-                while ($brgyRow = $allBarangaysQuery->fetch(PDO::FETCH_ASSOC)) {
-                    if ($brgyRow['brgyCode'] == $brgyCode) {
-                        echo htmlentities($brgyRow['brgyDesc']);
-                        break;
-                    }
-                }
+                $brgyQuery = mysqli_query($con, "SELECT * FROM refbrgy WHERE brgyCode='$brgyCode'");
+                $brgyRow = mysqli_fetch_array($brgyQuery);
+                echo htmlentities($brgyRow['brgyDesc']);
                 ?>
             </td>
+        </tr>
+        <tr>
             <th>Village & House No.</th>
-            <td colspan="5"><?php echo htmlentities($row['village-house-no']); ?></td>
+            <td><?php echo htmlentities($row['village-house-no']); ?></td>
         </tr>
     </table>
 
