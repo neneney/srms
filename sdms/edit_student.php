@@ -140,6 +140,11 @@ if (isset($_POST['enroll'])) {
       $result = $query->execute();
 
       if ($result) {
+        $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id) VALUES (:studentno, :class_id)";
+        $enrollment_class = $dbh->prepare($enrollment_sql);
+        $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+        $enrollment_class->bindParam(':class_id', $class, PDO::PARAM_INT);
+        $enrollment_class->execute();
         echo "<script>alert('Enrollment updated successfully.');</script>";
         echo "<script>window.location.href ='student_list.php'</script>";
       } else {
@@ -148,6 +153,33 @@ if (isset($_POST['enroll'])) {
     } catch (PDOException $e) {
       echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
     }
+  }
+}
+if (isset($_POST['save3'])) {
+  session_start();
+  $sid = $_SESSION['edid'];
+  $studentCert = $_FILES["studentCert"]["name"];
+
+  // Ensure the upload directory exists
+  $target_dir = "student_cert/";
+  if (!file_exists($target_dir)) {
+    mkdir($target_dir, 0777, true);
+  }
+
+  // Move the uploaded file
+  move_uploaded_file($_FILES["studentCert"]["tmp_name"], $target_dir . $studentCert);
+
+  // Insert the record into the database
+  $sql = "INSERT INTO student_cert (image, student_id) VALUES (:studentCert, :sid)";
+  $query = $dbh->prepare($sql);
+  $query->bindParam(':studentCert', $studentCert, PDO::PARAM_STR);
+  $query->bindParam(':sid', $sid, PDO::PARAM_INT);
+
+  if ($query->execute()) {
+    echo "<script>alert('Certification added successfully.');</script>";
+    echo "<script>window.location.href ='student_list.php'</script>";
+  } else {
+    echo "<script>alert('Something went wrong, please try again later.');</script>";
   }
 }
 
@@ -211,6 +243,7 @@ if (isset($_POST['enroll'])) {
                   <li class="nav-item"><a class="nav-link" href="#companyaddress" data-toggle="tab">Parent/Guardian</a></li>
                   <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Address</a></li>
                   <li class="nav-item"><a class="nav-link" href="#change" data-toggle="tab">Update Image</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#cert" data-toggle="tab">Certifications</a></li>
                 </ul>
               </div><!-- /.card-header -->
               <div class="card-body">
@@ -455,6 +488,19 @@ if (isset($_POST['enroll'])) {
                       </div>
                       <div class="modal-footer text-right">
                         <button type="submit" name="save2" class="btn btn-primary">Update</button>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="tab-pane" id="cert">
+                    <form role="form" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <div class="row">
+                        <div class="form-group col-md-8">
+                          <label>Upload certificate</label>
+                          <input type="file" class="" name="studentCert" required>
+                        </div>
+                      </div>
+                      <div class="modal-footer text-right">
+                        <button type="submit" name="save3" class="btn btn-primary">Update</button>
                       </div>
                     </form>
                   </div>

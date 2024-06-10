@@ -94,7 +94,7 @@ if (isset($_GET['del'])) {
                   <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title">Student details</h5>
+                        <h5 class="modal-title">Edit Student details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
@@ -111,7 +111,7 @@ if (isset($_GET['del'])) {
 
 
                 <div id="editData2" class="modal fade" id="printTable">
-                  <div class="modal-dialog modal-xl">
+                  <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                       <div class="modal-header">
                         <h5 class="modal-title">Student Details</h5>

@@ -1,308 +1,282 @@
-<style>
-  .header-logo {
-    display: none !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin-bottom: 20px !important;
-  }
-
-  .header-text {
-    text-align: center !important;
-  }
-
-  .horizontal {
-    margin-top: 40px !important;
-    display: none !important;
-  }
-
-  @media print {
-    * {
-      font-size: 20px !important;
-    }
-
-    .image-container {
-      display: none;
-    }
-
-    .b-print {
-      margin-bottom: 20px !important;
-
-    }
-
-    .a-print {
-      display: none !important;
-    }
-
-    .row-print {
-      display: grid !important;
-      grid-template-columns: 1fr 1fr 1fr 1fr !important;
-      align-items: center !important;
-      padding-bottom: 5px !important;
-      margin-bottom: 10px !important;
-    }
-
-    user-image {
-      height: 200px !important;
-    }
-
-    .header-logo {
-      display: flex !important;
-    }
-
-    h4 {
-      margin-top: 40px !important;
-    }
-
-    .horizontal {
-      display: block !important;
-
-    }
-
-    * {
-      font-size: 24px !important;
-    }
-
-    table {
-      text-align: center !important;
-    }
-
-    .img-print {
-      border-radius: 10px !important;
-    }
-  }
-</style>
 <?php
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
+if (isset($_POST['remove_cert'])) {
+  $cert_id = $_POST['cert_id'];
+  $deleteQuery = $dbh->prepare("DELETE FROM student_cert WHERE id = :cert_id");
+  $deleteQuery->bindParam(':cert_id', $cert_id, PDO::PARAM_INT);
+  $deleteQuery->execute();
+}
+
 $eid2 = $_POST['edit_id2'];
 $ret2 = mysqli_query($con, "SELECT * FROM students WHERE id='$eid2'");
 while ($row = mysqli_fetch_array($ret2)) {
 ?>
+  <button style="float: right; margin-bottom: 20px" type="button" class="btn btn-info" data-toggle="modal" data-target="#certificateModal">View Certificate</button>
+  <button style="float: right; margin-bottom: 20px; margin-right: 10px;" type="button" class="btn btn-info" data-toggle="modal" data-target="#enrollmentModal">View Enrollment History</button>
+  <table class="table table-bordered">
+    <tr>
+      <td colspan="2" class="text-center">
+        <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture" onerror="this.onerror=null; this.src='studentimages/placeholder.jpg';">
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Student ID:</strong></td>
+      <td><?php echo htmlentities($row['studentno']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Last Name:</strong></td>
+      <td><?php echo htmlentities($row['last-name']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>First Name:</strong></td>
+      <td><?php echo htmlentities($row['first-name']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Middle Name:</strong></td>
+      <td><?php echo htmlentities($row['middle-name']); ?></td>
+    </tr>
+    <?php if (!empty($row['suffix'])) { ?>
+      <tr>
+        <td><strong>Suffix:</strong></td>
+        <td><?php echo htmlentities($row['suffix']); ?></td>
+      </tr>
+    <?php } ?>
+    <tr>
+      <td><strong>Sex:</strong></td>
+      <td><?php echo htmlentities($row['gender']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Age:</strong></td>
+      <td><?php echo htmlentities($row['age']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Last School Attended:</strong></td>
+      <td><?php echo htmlentities($row['last_school']); ?></td>
+    </tr>
+  </table>
+  </div>
+  <h4 style="margin-bottom: 10px; font-weight: 600;">Parent/Guardian Information</h4>
+  <hr>
 
-  <div class="row">
-
-    <div class="header-logo">
-      <img src="company/bjmp_logo.png" alt="Logo" style="width: 100px; height: auto; margin-right: 20px;">
-      <div class="header-text">
-        <p style="margin: 0;">Republic of the Philippines</p>
-        <h3 style="margin: 0;">Bureau of Jail Management and Penology</h3>
-        <p style="margin: 0;">Region IXA - Calabarzon</p>
-        <p style="margin: 0;">General Trias, Cavite</p>
-      </div>
-      <img src="company/als_logo.png" alt="Logo" style="width: 100px; height: auto; margin-left: 20px; margin-bottom: 20px;">
-    </div>
-
-
-
-    <div class="col-md-12 d-flex flex-column">
-
-      <div class="card flex-grow-1 d-flex flex-column">
-        <div class="card-body flex-grow-1 d-flex flex-column">
-          <div class="tab-content flex-grow-1">
-            <h4 style="margin-bottom: 10px; font-weight: 600;">Student Information</h4>
-            <hr>
-            <div class="active tab-pane flex-grow-1 d-flex flex-column" id="studentinfo">
-              <div class="row">
-
-                <div class="col-md-9">
-                  <div class="row flex-grow-1">
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label for="regno">Student ID</label>
-                        <p><?php echo htmlentities($row['studentno']); ?></p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row flex-grow-1 row-print">
-                    <div class="col-md-3 ">
-                      <div class="form-group">
-                        <label for="last-name">Last Name</label>
-                        <p><?php echo htmlentities($row['last-name']); ?></p>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label for="first-name">First Name</label>
-                        <p><?php echo htmlentities($row['first-name']); ?></p>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label for="middle-name">Middle Name</label>
-                        <p><?php echo htmlentities($row['middle-name']); ?></p>
-                      </div>
-                    </div>
-                    <?php if (!empty($row['suffix'])) { ?>
-                      <div class="col-md-3">
-                        <div class="form-group">
-                          <label for="suffix">Suffix</label>
-                          <p><?php echo htmlentities($row['suffix']); ?></p>
-                        </div>
-                      </div>
-                    <?php } ?>
-                  </div>
-                  <div class="row flex-grow-1 row-print">
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label>Sex</label>
-                        <p><?php echo htmlentities($row['gender']); ?></p>
-                      </div>
-                    </div>
-                    <div class="col-md-3">
-                      <div class="form-group">
-                        <label>Age</label>
-                        <p><?php echo htmlentities($row['age']); ?></p>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group">
-                        <label>Last School Attended</label>
-                        <p><?php echo htmlentities($row['last_school']); ?></p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="card card-primary card-outline image-container">
-                    <div class="card-body box-profile">
-                      <div class="text-center">
-                        <img class="img-circle" src="studentimages/<?php echo htmlentities($row['studentImage']); ?>" width="150" height="150" class="user-image" alt="User profile picture" onerror="this.onerror=null; this.src='studentimages/placeholder.jpg';">
-
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h4 style="margin-bottom: 10px; font-weight: 600;">Parent/Guardian Information</h4>
-              <hr>
-              <div class="tab-pane flex-grow-1 d-flex flex-column" id="parentinfo">
-                <?php
-                $parentID = $row['parent_id'];
-                $_SESSION['parentID'] = $parentID;
-                $sql = "SELECT * FROM parent WHERE id = :parentID";
-                $parentQuery = $dbh->prepare($sql);
-                $parentQuery->bindParam(':parentID', $parentID, PDO::PARAM_INT);
-                $parentQuery->execute();
-                $parentRow = $parentQuery->fetch(PDO::FETCH_ASSOC);
-                ?>
-                <div class="row flex-grow-1 row-print">
-                  <div class="form-group col-md-3">
-                    <label for="p_last_name">Last Name</label>
-                    <p><?php echo htmlentities($parentRow['last_name']); ?></p>
-                  </div>
-                  <div class="form-group col-md-3">
-                    <label for="p_first_name">First Name</label>
-                    <p><?php echo htmlentities($parentRow['first_name']); ?></p>
-                  </div>
-                  <div class="form-group col-md-3">
-                    <label for="p_middle_name">Middle Name</label>
-                    <p><?php echo htmlentities($parentRow['middle_name']); ?></p>
-                  </div>
-                  <?php if (!empty($parentRow['suffix'])) { ?>
-                    <div class="form-group col-md-3">
-                      <label for="p_suffix">Suffix</label>
-                      <p><?php echo htmlentities($parentRow['suffix']); ?></p>
-                    </div>
-                  <?php  } ?>
-                </div>
-                <div class="row flex-grow-1 row-print">
-                  <div class="form-group col-md-3">
-                    <label for="relationship">Relationship</label>
-                    <p><?php echo htmlentities($parentRow['relationship']); ?></p>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label for="occupation">Occupation</label>
-                      <p><?php echo htmlentities($parentRow['occupation']); ?></p>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label>Phone No.</label>
-                      <p>0<?php echo htmlentities($parentRow['contact-no']); ?></p>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="form-group">
-                      <label>Email</label>
-                      <p><?php echo htmlentities($parentRow['email']); ?></p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <h4 style="margin-bottom: 10px; font-weight: 600;">Address</h4>
-              <hr>
-              <!-- /.tab-pane -->
-              <div class="tab-pane flex-grow-1 d-flex flex-column" id="addressinfo">
-                <?php
-                $provCode = $row['province'];
-                $allProvincesQuery = $dbh->query("SELECT * FROM refprovince where provCode =  $provCode");
-                $provRow = $allProvincesQuery->fetch(PDO::FETCH_ASSOC);
-                $cityCode = $row['city'];
-                $brgyCode = $row['barangay'];
-                ?>
-                <div class="row flex-grow-1 row-print">
-                  <div class="form-group col-md-6">
-                    <label for="Province">Province</label>
-                    <p><?php echo htmlentities($provRow['provDesc']); ?></p>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="City">City</label>
-                    <p>
-                      <?php
-                      $allCitiesQuery = $dbh->query("SELECT * FROM refcitymun WHERE provCode = '{$provCode}'");
-                      while ($cityRow = $allCitiesQuery->fetch(PDO::FETCH_ASSOC)) {
-                        if ($cityRow['citymunCode'] == $cityCode) {
-                          echo htmlentities($cityRow['citymunDesc']);
-                          break;
-                        }
-                      }
-                      ?>
-                    </p>
-                  </div>
-                </div>
-                <div class="row flex-grow-1 row-print">
-                  <div class="form-group col-md-6">
-                    <label for="Barangay">Barangay</label>
-                    <p>
-                      <?php
-                      $allBarangaysQuery = $dbh->query("SELECT * FROM refbrgy WHERE citymunCode = '{$cityCode}'");
-                      while ($brgyRow = $allBarangaysQuery->fetch(PDO::FETCH_ASSOC)) {
-                        if ($brgyRow['brgyCode'] == $brgyCode) {
-                          echo htmlentities($brgyRow['brgyDesc']);
-                          break;
-                        }
-                      }
-                      ?>
-                    </p>
-                  </div>
-                  <div class="form-group col-md-6">
-                    <label for="village">Village & House No.</label>
-                    <p><?php echo htmlentities($row['village-house-no']); ?></p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- /.tab-content -->
-          </div><!-- /.card-body -->
-        </div>
-        <!-- /.card -->
-      </div>
-    </div>
-    <div class="modal-footer ">
-      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      <button type="button" class="btn btn-primary" onclick="generatePDF()">Print</button>
-    </div>
-    <script>
-      function generatePDF() {
-        var classId = "<?php echo $eid2; ?>";
-
-        window.location.href = "student_pdf.php?class_id=" + classId;
-      }
-    </script>
   <?php
-}
+  $parentID = $row['parent_id'];
+  $_SESSION['parentID'] = $parentID;
+  $sql = "SELECT * FROM parent WHERE id = :parentID";
+  $parentQuery = $dbh->prepare($sql);
+  $parentQuery->bindParam(':parentID', $parentID, PDO::PARAM_INT);
+  $parentQuery->execute();
+  $parentRow = $parentQuery->fetch(PDO::FETCH_ASSOC);
   ?>
+  <table class="table table-bordered">
+    <tr>
+      <td><strong>Last Name:</strong></td>
+      <td><?php echo htmlentities($parentRow['last_name']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>First Name:</strong></td>
+      <td><?php echo htmlentities($parentRow['first_name']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Middle Name:</strong></td>
+      <td><?php echo htmlentities($parentRow['middle_name']); ?></td>
+    </tr>
+    <?php if (!empty($parentRow['suffix'])) { ?>
+      <tr>
+        <td><strong>Suffix:</strong></td>
+        <td><?php echo htmlentities($parentRow['suffix']); ?></td>
+      </tr>
+    <?php } ?>
+    <tr>
+      <td><strong>Relationship:</strong></td>
+      <td><?php echo htmlentities($parentRow['relationship']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Occupation:</strong></td>
+      <td><?php echo htmlentities($parentRow['occupation']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Phone No.:</strong></td>
+      <td>0<?php echo htmlentities($parentRow['contact-no']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Email:</strong></td>
+      <td><?php echo htmlentities($parentRow['email']); ?></td>
+    </tr>
+  </table>
+  </div>
+  <h4 style="margin-bottom: 10px; font-weight: 600;">Address</h4>
+  <hr>
+
+  <?php
+  $provCode = $row['province'];
+  $allProvincesQuery = $dbh->query("SELECT * FROM refprovince WHERE provCode =  $provCode");
+  $provRow = $allProvincesQuery->fetch(PDO::FETCH_ASSOC);
+  $cityCode = $row['city'];
+  $brgyCode = $row['barangay'];
+  ?>
+  <table class="table table-bordered">
+    <tr>
+      <td><strong>Province:</strong></td>
+      <td><?php echo htmlentities($provRow['provDesc']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>City:</strong></td>
+      <td>
+        <?php
+        $allCitiesQuery = $dbh->query("SELECT * FROM refcitymun WHERE provCode = '{$provCode}'");
+        while ($cityRow = $allCitiesQuery->fetch(PDO::FETCH_ASSOC)) {
+          if ($cityRow['citymunCode'] == $cityCode) {
+            echo htmlentities($cityRow['citymunDesc']);
+            break;
+          }
+        }
+        ?>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Barangay:</strong></td>
+      <td>
+        <?php
+        $allBarangaysQuery = $dbh->query("SELECT * FROM refbrgy WHERE citymunCode = '{$cityCode}'");
+        while ($brgyRow = $allBarangaysQuery->fetch(PDO::FETCH_ASSOC)) {
+          if ($brgyRow['brgyCode'] == $brgyCode) {
+            echo htmlentities($brgyRow['brgyDesc']);
+            break;
+          }
+        }
+        ?>
+      </td>
+    </tr>
+    <tr>
+      <td><strong>Village & House No.:</strong></td>
+      <td><?php echo htmlentities($row['village-house-no']); ?></td>
+    </tr>
+  </table>
+
+  <div class="modal-footer ">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="generatePDF()">Print</button>
+  </div>
+
+  <!-- Modal for Viewing Certificates -->
+  <div class="modal fade" id="certificateModal" tabindex="-1" role="dialog" aria-labelledby="certificateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="certificateModalLabel">Certificates</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <?php
+          $certQuery = $dbh->prepare("SELECT id, image FROM student_cert WHERE student_id = :student_id");
+          $certQuery->bindParam(':student_id', $row['id'], PDO::PARAM_INT);
+          $certQuery->execute();
+          $certificates = $certQuery->fetchAll(PDO::FETCH_ASSOC);
+          foreach ($certificates as $cert) {
+          ?>
+            <div class="certificate-item">
+              <img src="student_cert/<?php echo htmlentities($cert['image']); ?>" class="img-fluid mb-2" alt="Student Certificate">
+              <form method="post" onsubmit="return confirmRemove();" style="display: inline;">
+                <input type="hidden" name="cert_id" value="<?php echo $cert['id']; ?>">
+                <button type="submit" name="remove_cert" class="btn btn-danger btn-sm">Remove</button>
+              </form>
+            </div>
+          <?php
+          }
+          ?>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeCertificateModal" class="btn btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Viewing Enrollment History -->
+  <div class="modal fade" id="enrollmentModal" tabindex="-1" role="dialog" aria-labelledby="enrollmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="enrollmentModalLabel">Enrollment History</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <?php
+          try {
+            // Ensure the connection to the database is successful
+            if (!$dbh) {
+              throw new Exception("Database connection failed");
+            }
+
+            // Ensure the student ID exists
+            $student_id = $row['studentno'];
+            if (!$student_id) {
+              throw new Exception("Student ID not found");
+            }
+
+            // Prepare and execute the query
+            $historyQuery = $dbh->prepare("SELECT eh.class_id, c.name, c.`educ-level`, c.teacher, eh.enrolled_at FROM enrollment_history eh JOIN classes c ON eh.class_id = c.code WHERE eh.student_id = :student_id");
+            $historyQuery->bindParam(':student_id', $student_id, PDO::PARAM_INT);
+            $historyQuery->execute();
+            $enrollments = $historyQuery->fetchAll(PDO::FETCH_ASSOC);
+
+            // Check if any enrollment records are found
+            if (!$enrollments) {
+              throw new Exception("No enrollment history found for the student");
+            }
+          ?>
+            <ul class="list-group">
+              <?php foreach ($enrollments as $enrollment) { ?>
+                <li class="list-group-item">
+                  <strong>Class Name:</strong> <?php echo htmlentities($enrollment['name']); ?><br>
+                  <strong>Education Level:</strong> <?php echo htmlentities($enrollment['educ-level']); ?><br>
+                  <strong>Instructor:</strong> <?php echo htmlentities($enrollment['teacher']); ?><br>
+                  <strong>Enrolled at:</strong> <?php echo htmlentities($enrollment['enrolled_at']); ?>
+                </li>
+              <?php } ?>
+            </ul>
+          <?php
+          } catch (Exception $e) {
+            echo "<p>Error: " . $e->getMessage() . "</p>";
+          }
+          ?>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="closeEnrollmentModal" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function generatePDF() {
+      var classId = "<?php echo $eid2; ?>";
+      window.location.href = "student_pdf.php?class_id=" + classId;
+    }
+
+    function confirmRemove() {
+      return confirm('Are you sure you want to remove this certificate?');
+    }
+
+    $(document).ready(function() {
+      $('#closeCertificateModal').click(function() {
+        $('#certificateModal').modal('hide');
+      });
+
+      $('#closeEnrollmentModal').click(function() {
+        $('#enrollmentModal').modal('hide');
+      });
+    });
+  </script>
+<?php
+}
+?>
