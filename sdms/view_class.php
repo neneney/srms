@@ -34,6 +34,14 @@ if (isset($_POST['update'])) {
             $updateStmt->bindParam(':class_code', $class_code, PDO::PARAM_STR);
             $updateStmt->bindParam(':studentno', $studentno, PDO::PARAM_STR);
             $updateStmt->execute();
+
+            $query1 = "UPDATE enrollment_history SET status = :status, remarks = :remarks WHERE class_id = :class_code AND student_id = :studentno";
+            $updateStmt1 = $dbh->prepare($query1);
+            $updateStmt1->bindParam(':status', $status, PDO::PARAM_STR);
+            $updateStmt1->bindParam(':remarks', $remarks, PDO::PARAM_STR);
+            $updateStmt1->bindParam(':class_code', $class_code, PDO::PARAM_STR);
+            $updateStmt1->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+            $updateStmt1->execute();
         }
 
         $dbh->commit();

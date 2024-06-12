@@ -102,11 +102,14 @@ if (isset($_POST['submit1'])) {
                 $query_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
                 $query_class->execute();
             }
+
             if (!empty($class)) {
-                $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id) VALUES (:studentno, :class_id)";
+                $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
                 $enrollment_class = $dbh->prepare($enrollment_sql);
                 $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
                 $enrollment_class->bindParam(':class_id', $class, PDO::PARAM_INT);
+                $enrollment_class->bindParam(':status', $status, PDO::PARAM_STR);
+                $enrollment_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
                 $enrollment_class->execute();
             }
             $dbh->commit();

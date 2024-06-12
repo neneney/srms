@@ -16,6 +16,16 @@ while ($row = mysqli_fetch_array($ret2)) {
 ?>
   <button style="float: right; margin-bottom: 20px" type="button" class="btn btn-info" data-toggle="modal" data-target="#certificateModal">View Certificate</button>
   <button style="float: right; margin-bottom: 20px; margin-right: 10px;" type="button" class="btn btn-info" data-toggle="modal" data-target="#enrollmentModal">View Enrollment History</button>
+  <?php
+  $enrollment_sql = "SELECT c.name, c.title, c.type, c.`educ-level`, c.strand, c.teacher, c.`start-date`, c.`end-date`, c.`start_time`, c.`end_time`, c.`code`
+                               FROM class_enrollment ce 
+                               JOIN classes c ON ce.class_id = c.code 
+                               WHERE ce.student_id = :student_id AND ce.status = 'active'";
+  $enrollment_query = $dbh->prepare($enrollment_sql);
+  $enrollment_query->bindParam(':student_id', $row['studentno'], PDO::PARAM_INT);
+  $enrollment_query->execute();
+  $enrollment = $enrollment_query->fetch(PDO::FETCH_ASSOC);
+  ?>
   <table class="table table-bordered">
     <tr>
       <td colspan="2" class="text-center">
@@ -26,6 +36,7 @@ while ($row = mysqli_fetch_array($ret2)) {
       <td><strong>Student ID:</strong></td>
       <td><?php echo htmlentities($row['studentno']); ?></td>
     </tr>
+
     <tr>
       <td><strong>Last Name:</strong></td>
       <td><?php echo htmlentities($row['last-name']); ?></td>
@@ -58,6 +69,55 @@ while ($row = mysqli_fetch_array($ret2)) {
     </tr>
   </table>
   </div>
+  <h4 style="margin-bottom: 10px; font-weight: 600;">Class Enrollment Details</h4>
+  <hr>
+  <table class="table table-bordered">
+    <?php if ($enrollment) { ?>
+      <tr>
+        <td><strong>Class Code:</strong></td>
+        <td><?php echo htmlentities($enrollment['code']); ?></td>
+
+        <td><strong>Class Name:</strong></td>
+        <td><?php echo htmlentities($enrollment['name']); ?></td>
+      </tr>
+      <tr>
+        <td><strong>Educational level:</strong></td>
+        <td><?php echo htmlentities($enrollment['educ-level']); ?></td>
+
+        <?php if (!empty($enrollment['strand'])) { ?>
+          <td><strong>Class Title:</strong></td>
+          <td><?php echo htmlentities($enrollment['strand']); ?></td>
+      </tr>
+    <?php } ?>
+    <?php if (!empty($enrollment['title'])) { ?>
+
+      <td><strong>Class Title:</strong></td>
+      <td><?php echo htmlentities($enrollment['title']); ?></td>
+      </tr>
+    <?php } ?>
+    <?php if (!empty($enrollment['type'])) { ?>
+      <td><strong>Class Title:</strong></td>
+      <td><?php echo htmlentities($enrollment['type']); ?></td>
+      </tr>
+    <?php } ?>
+    <tr>
+      <td><strong>Class start date:</strong></td>
+      <td><?php echo htmlentities($enrollment['start-date']); ?></td>
+      <td><strong>Class end date:</strong></td>
+      <td><?php echo htmlentities($enrollment['end-date']); ?></td>
+    </tr>
+    <tr>
+      <td><strong>Class start time:</strong></td>
+      <td><?php echo htmlentities($enrollment['start_time']); ?></td>
+      <td><strong>Class end time:</strong></td>
+      <td><?php echo htmlentities($enrollment['end_time']); ?></td>
+    </tr>
+  <?php } else { ?>
+    <tr>
+      <td colspan="2"><strong>Student is not enrolled in any class.</strong></td>
+    </tr>
+  <?php } ?>
+  </table>
   <h4 style="margin-bottom: 10px; font-weight: 600;">Parent/Guardian Information</h4>
   <hr>
 
@@ -167,7 +227,7 @@ while ($row = mysqli_fetch_array($ret2)) {
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="certificateModalLabel">Certificates</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" id="closeCertificateModal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -177,33 +237,53 @@ while ($row = mysqli_fetch_array($ret2)) {
           $certQuery->bindParam(':student_id', $row['id'], PDO::PARAM_INT);
           $certQuery->execute();
           $certificates = $certQuery->fetchAll(PDO::FETCH_ASSOC);
-          foreach ($certificates as $cert) {
           ?>
-            <div class="certificate-item">
-              <img src="student_cert/<?php echo htmlentities($cert['image']); ?>" class="img-fluid mb-2" alt="Student Certificate">
-              <form method="post" onsubmit="return confirmRemove();" style="display: inline;">
-                <input type="hidden" name="cert_id" value="<?php echo $cert['id']; ?>">
-                <button type="submit" name="remove_cert" class="btn btn-danger btn-sm">Remove</button>
-              </form>
-            </div>
-          <?php
-          }
-          ?>
-        </div>
-        <div class="modal-footer">
-          <button type="button" id="closeCertificateModal" class="btn btn-secondary">Close</button>
+          <div style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Certificate Image</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($certificates as $cert) { ?>
+                  <tr>
+                    <td>
+                      <a href="student_cert/<?php echo htmlentities($cert['image']); ?>" target="_blank">
+                        <img src="student_cert/<?php echo htmlentities($cert['image']); ?>" class="img-fluid mb-2" alt="Student Certificate" style="max-width: 150px;">
+                      </a>
+                    </td>
+                    <td>
+                      <form method="post" onsubmit="return confirmRemove();" style="display: inline;">
+                        <input type="hidden" name="cert_id" value="<?php echo $cert['id']; ?>">
+                        <button type="submit" name="remove_cert" class="btn btn-danger btn-sm">Remove</button>
+                      </form>
+                    </td>
+                  </tr>
+                <?php } ?>
+              </tbody>
+            </table>
+          </div>
+
+          <script>
+            function confirmRemove() {
+              return confirm('Are you sure you want to remove this certificate?');
+            }
+          </script>
+
         </div>
       </div>
     </div>
   </div>
 
   <!-- Modal for Viewing Enrollment History -->
-  <div class="modal fade" id="enrollmentModal" tabindex="-1" role="dialog" aria-labelledby="enrollmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+  <div class="modal fade " id="enrollmentModal" tabindex="-1" role="dialog" aria-labelledby="enrollmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="enrollmentModalLabel">Enrollment History</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" id="closeEnrollmentModal" class="close" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -222,61 +302,98 @@ while ($row = mysqli_fetch_array($ret2)) {
             }
 
             // Prepare and execute the query
-            $historyQuery = $dbh->prepare("SELECT eh.class_id, c.name, c.`educ-level`, c.teacher, eh.enrolled_at FROM enrollment_history eh JOIN classes c ON eh.class_id = c.code WHERE eh.student_id = :student_id");
+            $historyQuery = $dbh->prepare("
+            SELECT 
+                eh.class_id, 
+                c.name, 
+                c.`educ-level`, 
+                c.teacher, 
+                c.strand, 
+                c.title, 
+                c.type, 
+                eh.enrolled_at ,
+                eh.status,
+                eh.remarks
+            FROM 
+                enrollment_history eh 
+            JOIN 
+                classes c 
+            ON 
+                eh.class_id = c.code 
+            WHERE 
+                eh.student_id = :student_id
+        ");
             $historyQuery->bindParam(':student_id', $student_id, PDO::PARAM_INT);
             $historyQuery->execute();
             $enrollments = $historyQuery->fetchAll(PDO::FETCH_ASSOC);
+
+
 
             // Check if any enrollment records are found
             if (!$enrollments) {
               throw new Exception("No enrollment history found for the student");
             }
           ?>
-            <ul class="list-group">
-              <?php foreach ($enrollments as $enrollment) { ?>
-                <li class="list-group-item">
-                  <strong>Class Name:</strong> <?php echo htmlentities($enrollment['name']); ?><br>
-                  <strong>Education Level:</strong> <?php echo htmlentities($enrollment['educ-level']); ?><br>
-                  <strong>Instructor:</strong> <?php echo htmlentities($enrollment['teacher']); ?><br>
-                  <strong>Enrolled at:</strong> <?php echo htmlentities($enrollment['enrolled_at']); ?>
-                </li>
-              <?php } ?>
-            </ul>
+
+            <div style="max-height: 600px; overflow-y: auto;">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Class Name</th>
+                    <th>Education Level</th>
+                    <th>Instructor</th>
+                    <th>Enrolled at</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php foreach ($enrollments as $enrollment) { ?>
+                    <tr>
+                      <td><?php echo htmlentities($enrollment['name']); ?></td>
+                      <td><?php echo htmlentities($enrollment['educ-level']); ?></td>
+                      <td><?php echo htmlentities($enrollment['teacher']); ?></td>
+                      <td><?php echo htmlentities($enrollment['enrolled_at']); ?></td>
+                      <td><?php echo htmlentities($enrollment['remarks']); ?></td>
+                    </tr>
+                  <?php } ?>
+                </tbody>
+              </table>
+            </div>
+
           <?php
           } catch (Exception $e) {
             echo "<p>Error: " . $e->getMessage() . "</p>";
           }
           ?>
         </div>
-        <div class="modal-footer">
-          <button type="button" id="closeEnrollmentModal" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
       </div>
     </div>
   </div>
 
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function generatePDF() {
       var classId = "<?php echo $eid2; ?>";
-      window.location.href = "student_pdf.php?class_id=" + classId;
+      window.open("student_pdf.php?class_id=" + classId, '_blank');
     }
+
 
     function confirmRemove() {
       return confirm('Are you sure you want to remove this certificate?');
     }
 
+
     $(document).ready(function() {
       $('#closeCertificateModal').click(function() {
         $('#certificateModal').modal('hide');
       });
+    });
 
-      $('#closeEnrollmentModal').click(function() {
-        $('#enrollmentModal').modal('hide');
-      });
+    $('#closeEnrollmentModal').click(function() {
+      $('#enrollmentModal').modal('hide');
     });
   </script>
+
 <?php
 }
 ?>

@@ -119,15 +119,11 @@ if (isset($_GET['del'])) {
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <div class="modal-body" id="info_update2">
+                      <div class="modal-body" id="info_update2" style="max-height: 80vh; overflow-y: auto;">
                         <?php @include("view_student_info.php"); ?>
                       </div>
-
-
                     </div>
-
                   </div>
-
                 </div>
                 <div class="card-body mt-2 ">
                   <table id="example1" class="table table-bordered table-hover">
@@ -209,6 +205,7 @@ if (isset($_GET['del'])) {
       document.body.innerHTML = originalContents;
     }
   </script>
+
 
   <?php @include("includes/foot.php"); ?>
 </body>

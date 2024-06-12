@@ -107,16 +107,21 @@ if (isset($_POST['save2'])) {
 }
 if (isset($_POST['enroll'])) {
   $sid = $_SESSION['edid'];
-  $student_sql = "SELECT * FROM students WHERE id = :sid";
-  $student_query = $dbh->prepare($student_sql);
-  $student_query->bindParam(':sid', $sid, PDO::PARAM_INT);
-  $student_query->execute();
-  $student_data = $student_query->fetch(PDO::FETCH_ASSOC);
-  $studentno = $student_data['studentno'];
-  echo "<script>console.log('studentno: " . $studentno . "');</script>";
+  $class_id = $_POST['classes'];
+  $status = "active";
+  $remarks = "none";
 
-  if (isset($_POST['enroll'])) {
-    try {
+  try {
+    // Fetch student data
+    $student_sql = "SELECT * FROM students WHERE id = :sid";
+    $student_query = $dbh->prepare($student_sql);
+    $student_query->bindParam(':sid', $sid, PDO::PARAM_INT);
+    $student_query->execute();
+    $student_data = $student_query->fetch(PDO::FETCH_ASSOC);
+
+    if ($student_data) {
+      $studentno = $student_data['studentno'];
+
       // Check if the student is already enrolled in any class
       $sql1 = "SELECT * FROM class_enrollment WHERE student_id = :studentno";
       $query1 = $dbh->prepare($sql1);
@@ -124,37 +129,53 @@ if (isset($_POST['enroll'])) {
       $query1->execute();
       $enrollment = $query1->fetch(PDO::FETCH_ASSOC);
 
-      $class_id = $_POST['classes'];
-
       if ($enrollment) {
+        // If the student is changing class, set the previous enrollment status to 'withdrawn'
+        if ($enrollment['class_id'] != $class_id) {
+          $update_sql = "UPDATE class_enrollment SET status = 'withdrawn' WHERE student_id = :studentno AND class_id = :previous_class_id";
+          $update_query = $dbh->prepare($update_sql);
+          $update_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+          $update_query->bindParam(':previous_class_id', $enrollment['class_id'], PDO::PARAM_INT);
+          $update_query->execute();
+        }
+
         // Update the existing class enrollment
-        $class_sql = "UPDATE class_enrollment SET class_id = :class_id WHERE student_id = :studentno";
+        $class_sql = "UPDATE class_enrollment SET class_id = :class_id, status = :status, remarks = :remarks WHERE student_id = :studentno";
       } else {
         // Insert new class enrollment
-        $class_sql = "INSERT INTO class_enrollment (student_id, class_id) VALUES (:studentno, :class_id)";
+        $class_sql = "INSERT INTO class_enrollment (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
       }
 
       $query = $dbh->prepare($class_sql);
       $query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
       $query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+      $query->bindParam(':status', $status, PDO::PARAM_STR);
+      $query->bindParam(':remarks', $remarks, PDO::PARAM_STR);
       $result = $query->execute();
 
       if ($result) {
-        $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id) VALUES (:studentno, :class_id)";
+        // Insert the new enrollment into the enrollment_history table
+        $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
         $enrollment_class = $dbh->prepare($enrollment_sql);
-        $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-        $enrollment_class->bindParam(':class_id', $class, PDO::PARAM_INT);
+        $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_INT);
+        $enrollment_class->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+        $enrollment_class->bindParam(':status', $status, PDO::PARAM_STR);
+        $enrollment_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
         $enrollment_class->execute();
+
         echo "<script>alert('Enrollment updated successfully.');</script>";
         echo "<script>window.location.href ='student_list.php'</script>";
       } else {
         echo "<script>alert('Failed to update class enrollment.');</script>";
       }
-    } catch (PDOException $e) {
-      echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+    } else {
+      echo "<script>alert('Student not found.');</script>";
     }
+  } catch (PDOException $e) {
+    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
   }
 }
+
 if (isset($_POST['save3'])) {
   session_start();
   $sid = $_SESSION['edid'];
@@ -537,7 +558,15 @@ if (isset($_POST['save3'])) {
           data.forEach(classItem => {
             var option = document.createElement('option');
             option.value = classItem.code;
-            option.text = classItem.name;
+            if (classItem['educ-level'] === "Vocational Course") {
+              option.text = classItem.name + " (" + classItem.title + ")";
+            } else if (classItem['educ-level'] === "Others") {
+              option.text = classItem.name + " (" + classItem.type + ")";
+            } else if (classItem['educ-level'] === "Senior Highschool") {
+              option.text = classItem.name + " (" + classItem.strand + ")";
+            } else {
+              option.text = classItem.name;
+            }
             classesDropdown.appendChild(option);
           });
           classSelect.style.display = 'block';
