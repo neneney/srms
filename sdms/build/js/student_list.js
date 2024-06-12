@@ -1,6 +1,5 @@
 
 
-
 var images = document.querySelectorAll('img');
 images.forEach(function(image) {
   image.addEventListener('click', function(event) {

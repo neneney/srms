@@ -4,206 +4,6 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-
-
-if (isset($_POST['submit'])) {
-  $sid = $_SESSION['edid'];
-  $last_name = $_POST['last-name'];
-  $middle_name = $_POST['middle-name'];
-  $first_name = $_POST['first-name'];
-  $suffix = $_POST['suffix'];
-  $regno = $_POST['regno'];
-  $sex = $_POST['sex'];
-  $age = $_POST['age'];
-  $sql = "UPDATE students SET `last-name`=:last_name,`first-name`=:first_name,`middle-name`=:middle_name,suffix=:suffix , studentno=:regno, gender=:sex, age=:age WHERE id=:sid";
-  $query = $dbh->prepare($sql);
-  $query->bindParam(':last_name', $last_name, PDO::PARAM_STR);
-  $query->bindParam(':first_name', $first_name, PDO::PARAM_STR);
-  $query->bindParam(':middle_name', $middle_name, PDO::PARAM_STR);
-  $query->bindParam(':suffix', $suffix, PDO::PARAM_STR);
-  $query->bindParam(':regno', $regno, PDO::PARAM_STR);
-  $query->bindParam(':sex', $sex, PDO::PARAM_STR);
-  $query->bindParam(':age', $age, PDO::PARAM_STR);
-  $query->bindParam(':sid', $sid, PDO::PARAM_STR);
-  if ($query->execute()) {
-    echo "<script>alert('Updated successfully.');</script>";
-    echo "<script>window.location.href ='student_list.php'</script>";
-  } else {
-    echo "<script>alert('Something went wrong, please try again later');</script>";
-  }
-}
-
-
-if (isset($_POST['save'])) {
-  $pid = $_SESSION['parentID'];
-  $p_first_name = $_POST['p_first_name'];
-  $p_last_name = $_POST['p_last_name'];
-  $p_middle_name = $_POST['p_middle_name'];
-  $p_suffix = $_POST['p_suffix'];
-  $relationship = $_POST['relationship'];
-  $occupation = $_POST['occupation'];
-  $phone = $_POST['phone'];
-  $email = $_POST['email'];
-
-  $sql = "UPDATE parent SET last_name = :last_name, first_name = :first_name, middle_name = :middle_name, suffix = :suffix, relationship = :relationship, occupation = :occupation, `contact-no` = :phone, email = :email WHERE id = :pid";
-  $query = $dbh->prepare($sql);
-
-  $query->bindParam(':last_name', $p_last_name, PDO::PARAM_STR);
-  $query->bindParam(':first_name', $p_first_name, PDO::PARAM_STR);
-  $query->bindParam(':middle_name', $p_middle_name, PDO::PARAM_STR);
-  $query->bindParam(':suffix', $p_suffix, PDO::PARAM_STR);
-  $query->bindParam(':relationship', $relationship, PDO::PARAM_STR);
-  $query->bindParam(':occupation', $occupation, PDO::PARAM_STR);
-  $query->bindParam(':phone', $phone, PDO::PARAM_STR);
-  $query->bindParam(':email', $email, PDO::PARAM_STR);
-  $query->bindParam(':pid', $pid, PDO::PARAM_INT);
-
-  if ($query->execute()) {
-    echo "<script>alert('updated successfuly.');</script>";
-    echo "<script>window.location.href ='student_list.php'</script>";
-  } else {
-    echo "<script>alert('something went wrong, please try again later');</script>";
-  }
-}
-
-if (isset($_POST['pass'])) {
-  $sid = $_SESSION['edid'];
-  $province = $_POST['province1'];
-  $city = $_POST['city1'];
-  $barangay = $_POST['barangay1'];
-  $village = $_POST['village1'];
-
-  $sql = "UPDATE students SET province=:province, city=:city, barangay=:barangay, `village-house-no`=:village WHERE id=:sid";
-  $query = $dbh->prepare($sql);
-  $query->bindParam(':province', $province, PDO::PARAM_STR);
-  $query->bindParam(':city', $city, PDO::PARAM_STR);
-  $query->bindParam(':barangay', $barangay, PDO::PARAM_STR);
-  $query->bindParam(':village', $village, PDO::PARAM_STR);
-  $query->bindParam(':sid', $sid, PDO::PARAM_INT);
-
-  try {
-    $query->execute();
-    echo "<script>alert('Updated successfully.');</script>";
-    echo "<script>window.location.href ='student_list.php'</script>";
-  } catch (PDOException $e) {
-    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
-  }
-}
-
-if (isset($_POST['save2'])) {
-  $sid = $_SESSION['edid'];
-  $studentimage = $_FILES["studentimage"]["name"];
-  move_uploaded_file($_FILES["studentimage"]["tmp_name"], "studentimages/" . $_FILES["studentimage"]["name"]);
-  $sql = "update students set studentImage=:studentimage where id='$sid' ";
-  $query = $dbh->prepare($sql);
-  $query->bindParam(':studentimage', $studentimage, PDO::PARAM_STR);
-  $query->execute();
-  if ($query->execute()) {
-    echo "<script>alert('updated successfuly.');</script>";
-    echo "<script>window.location.href ='student_list.php'</script>";
-  } else {
-    echo "<script>alert('something went wrong, please try again later');</script>";
-  }
-}
-if (isset($_POST['enroll'])) {
-  $sid = $_SESSION['edid'];
-  $class_id = $_POST['classes'];
-  $status = "active";
-  $remarks = "none";
-
-  try {
-    // Fetch student data
-    $student_sql = "SELECT * FROM students WHERE id = :sid";
-    $student_query = $dbh->prepare($student_sql);
-    $student_query->bindParam(':sid', $sid, PDO::PARAM_INT);
-    $student_query->execute();
-    $student_data = $student_query->fetch(PDO::FETCH_ASSOC);
-
-    if ($student_data) {
-      $studentno = $student_data['studentno'];
-
-      // Check if the student is already enrolled in any class
-      $sql1 = "SELECT * FROM class_enrollment WHERE student_id = :studentno";
-      $query1 = $dbh->prepare($sql1);
-      $query1->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-      $query1->execute();
-      $enrollment = $query1->fetch(PDO::FETCH_ASSOC);
-
-      if ($enrollment) {
-        // If the student is changing class, set the previous enrollment status to 'withdrawn'
-        if ($enrollment['class_id'] != $class_id) {
-          $update_sql = "UPDATE class_enrollment SET status = 'withdrawn' WHERE student_id = :studentno AND class_id = :previous_class_id";
-          $update_query = $dbh->prepare($update_sql);
-          $update_query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-          $update_query->bindParam(':previous_class_id', $enrollment['class_id'], PDO::PARAM_INT);
-          $update_query->execute();
-        }
-
-        // Update the existing class enrollment
-        $class_sql = "UPDATE class_enrollment SET class_id = :class_id, status = :status, remarks = :remarks WHERE student_id = :studentno";
-      } else {
-        // Insert new class enrollment
-        $class_sql = "INSERT INTO class_enrollment (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
-      }
-
-      $query = $dbh->prepare($class_sql);
-      $query->bindParam(':class_id', $class_id, PDO::PARAM_INT);
-      $query->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-      $query->bindParam(':status', $status, PDO::PARAM_STR);
-      $query->bindParam(':remarks', $remarks, PDO::PARAM_STR);
-      $result = $query->execute();
-
-      if ($result) {
-        // Insert the new enrollment into the enrollment_history table
-        $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
-        $enrollment_class = $dbh->prepare($enrollment_sql);
-        $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_INT);
-        $enrollment_class->bindParam(':class_id', $class_id, PDO::PARAM_INT);
-        $enrollment_class->bindParam(':status', $status, PDO::PARAM_STR);
-        $enrollment_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
-        $enrollment_class->execute();
-
-        echo "<script>alert('Enrollment updated successfully.');</script>";
-        echo "<script>window.location.href ='student_list.php'</script>";
-      } else {
-        echo "<script>alert('Failed to update class enrollment.');</script>";
-      }
-    } else {
-      echo "<script>alert('Student not found.');</script>";
-    }
-  } catch (PDOException $e) {
-    echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
-  }
-}
-
-if (isset($_POST['save3'])) {
-  session_start();
-  $sid = $_SESSION['edid'];
-  $studentCert = $_FILES["studentCert"]["name"];
-
-  // Ensure the upload directory exists
-  $target_dir = "student_cert/";
-  if (!file_exists($target_dir)) {
-    mkdir($target_dir, 0777, true);
-  }
-
-  // Move the uploaded file
-  move_uploaded_file($_FILES["studentCert"]["tmp_name"], $target_dir . $studentCert);
-
-  // Insert the record into the database
-  $sql = "INSERT INTO student_cert (image, student_id) VALUES (:studentCert, :sid)";
-  $query = $dbh->prepare($sql);
-  $query->bindParam(':studentCert', $studentCert, PDO::PARAM_STR);
-  $query->bindParam(':sid', $sid, PDO::PARAM_INT);
-
-  if ($query->execute()) {
-    echo "<script>alert('Certification added successfully.');</script>";
-    echo "<script>window.location.href ='student_list.php'</script>";
-  } else {
-    echo "<script>alert('Something went wrong, please try again later.');</script>";
-  }
-}
-
 ?>
 
 
@@ -211,6 +11,10 @@ if (isset($_POST['save3'])) {
 <div class="card-body">
   <!-- Main content -->
   <section class="content">
+    <div class="alert alert-success" style="text-align:center; display: none;">
+    </div>
+    <div class="alert alert-danger" style="text-align:center; display: none;">
+    </div>
     <div class="container-fluid">
       <div class="row">
         <?php
@@ -257,6 +61,8 @@ if (isset($_POST['save3'])) {
           <!-- /.col -->
           <div class="col-md-9">
             <div class="card">
+
+
               <div class="card-header p-2">
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#companydetail" data-toggle="tab">Student Info</a></li>
@@ -271,12 +77,13 @@ if (isset($_POST['save3'])) {
                 <div class="tab-content">
                   <!-- tab pane -->
                   <div class="active tab-pane" id="companydetail">
-                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <form role="form" method="post" id=studentInfo enctype="multipart/form-data" class="form-horizontal">
+                      <input type="hidden" name="rowId" value="<?php echo $row['id']; ?>">
                       <div class="row">
                         <div class="col-md-4">
                           <div class="form-group">
                             <label for="regno">Student ID</label>
-                            <input name="regno" class="form-control" name="regno" id="regno" value="<?php echo $row['studentno']; ?>" required>
+                            <input name="regno" class="form-control" name="regno" id="regno" value="<?php echo $row['studentno']; ?>" required readonly>
                           </div>
                         </div>
                       </div>
@@ -327,13 +134,14 @@ if (isset($_POST['save3'])) {
                       </div>
 
                       <div class="modal-footer text-right">
-                        <button type="submit" name="submit" class="btn btn-primary">Update</button>
+                        <button id="submit" type="submit" name="submit" class="btn btn-primary">Update</button>
                       </div>
                     </form>
                   </div>
 
                   <div class="tab-pane" id="enrollment">
-                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <form role="form" id="enrollments" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <input type="hidden" name="rowNo" value="<?php echo $row['studentno']; ?>">
                       <div class="row">
                         <div class="form-group col-md-4">
                           <label for="grade">Student Educational Level</label>
@@ -361,10 +169,10 @@ if (isset($_POST['save3'])) {
                   <!-- /.tab-pane -->
                   <!-- tab pane -->
                   <div class=" tab-pane" id="companyaddress">
-                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <form role="form" id="parent_update" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <input type="hidden" name="parentID" value="<?php echo $row['parent_id']; ?>">
                       <?php
                       $parentID = $row['parent_id'];
-                      $_SESSION['parentID'] = $parentID;
                       $sql = "SELECT * FROM parent WHERE id = :parentID";
                       $parentQuery = $dbh->prepare($sql);
                       $parentQuery->bindParam(':parentID', $parentID, PDO::PARAM_INT);
@@ -443,7 +251,8 @@ if (isset($_POST['save3'])) {
 
                   ?>
                   <div class="tab-pane" id="settings">
-                    <form role="form" id="" method="post" enctype="multipart/form-data">
+                    <form role="form" id="address" method="post" enctype="multipart/form-data">
+                      <input type="hidden" name="rowId" value="<?php echo $row['id']; ?>">
                       <div class="row">
                         <div class="form-group col-md-6">
                           <label for="Province">Province</label>
@@ -499,7 +308,8 @@ if (isset($_POST['save3'])) {
                     </form>
                   </div>
                   <div class=" tab-pane" id="change">
-                    <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <form role="form" id="image" method="post" enctype="multipart/form-data" class="form-horizontal">
+                      <input type="hidden" name="rowId" value="<?php echo $row['id']; ?>">
                       <div class="row">
                         <div class="form-group col-md-8">
                           <label>Upload Image</label>
@@ -513,7 +323,7 @@ if (isset($_POST['save3'])) {
                     </form>
                   </div>
                   <div class="tab-pane" id="cert">
-                    <form role="form" method="post" enctype="multipart/form-data" class="form-horizontal">
+                    <form role="form" id="certificate" method="post" enctype="multipart/form-data" class="form-horizontal">
                       <div class="row">
                         <div class="form-group col-md-8">
                           <label>Upload certificate</label>
@@ -536,6 +346,92 @@ if (isset($_POST['save3'])) {
 </div>
 
 <script>
+  function getAjaxHandlerUrl(formId) {
+    switch (formId) {
+      case "studentInfo":
+        return "ajax/student_info.php";
+      case "parent_update":
+        return "ajax/parent_update.php";
+      case "enrollments":
+        return "ajax/enrollment_update.php";
+      case "address":
+        return "ajax/address_update.php";
+      case "image":
+        return "ajax/image_update.php";
+      case "certificate":
+        return "ajax/update_cert.php"
+      default:
+        return "";
+    }
+  }
+  document.querySelectorAll("form").forEach(function(form) {
+    form.addEventListener("submit", function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      var formData = new FormData(this);
+      formData.append("formId", this.id); // Append the form ID
+
+      var xhr = new XMLHttpRequest();
+      var ajaxHandler = getAjaxHandlerUrl(this.id); // Get the AJAX handler URL based on the form ID
+      xhr.open("POST", ajaxHandler, true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            try {
+              var response = JSON.parse(xhr.responseText);
+
+              if (response.status === "success") {
+                // Show success alert
+                var successAlert = document.querySelector(".alert-success");
+                successAlert.innerHTML = response.message;
+                successAlert.style.display = "block";
+                setTimeout(function() {
+                  successAlert.style.display = "none";
+                  location.reload();
+                }, 2000);
+              } else if (response.status === "error") {
+                // Show error alert
+                var errorAlert = document.querySelector(".alert-danger");
+                errorAlert.innerHTML = response.message;
+                errorAlert.style.display = "block";
+                setTimeout(function() {
+                  errorAlert.style.display = "none";
+                }, 3000);
+              } else {
+                // Show a generic error message if the response is not properly formatted
+                var genericErrorAlert = document.querySelector(".alert-danger");
+                genericErrorAlert.innerHTML = "Unexpected response from server. Please try again.";
+                genericErrorAlert.style.display = "block";
+                setTimeout(function() {
+                  genericErrorAlert.style.display = "none";
+                }, 3000);
+              }
+            } catch (error) {
+              // Show a generic error message if there's an issue parsing the JSON response
+              var parseErrorAlert = document.querySelector(".alert-danger");
+              parseErrorAlert.innerHTML = "Error occurred while processing server response: " + error.message;
+              parseErrorAlert.style.display = "block";
+              setTimeout(function() {
+                parseErrorAlert.style.display = "none";
+              }, 3000);
+            }
+          } else {
+            // Show error alert if there is any issue with the Ajax request
+            var requestErrorAlert = document.querySelector(".alert-danger");
+            requestErrorAlert.innerHTML = "Error occurred while processing your request. Please try again.";
+            requestErrorAlert.style.display = "block";
+            setTimeout(function() {
+              requestErrorAlert.style.display = "none";
+            }, 3000);
+          }
+        }
+      };
+      xhr.send(formData);
+    });
+  });
+
+
+
   document.getElementById('levels').addEventListener('change', function() {
     fetchAndPopulateClasses(this.value);
   });
