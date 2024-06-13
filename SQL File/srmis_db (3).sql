@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 09, 2024 at 07:22 PM
+-- Generation Time: Jun 13, 2024 at 01:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -52,7 +52,8 @@ INSERT INTO `classes` (`id`, `educ-level`, `strand`, `title`, `type`, `code`, `n
 (35, 'Elementary', '', '', '', '202471968', 'Papaya', 'Ed Chan', '2024-01-01', '2024-06-13', '06:00:00', '11:00:00', '2024-06-09 19:46:33'),
 (36, 'Junior Highschool', '', '', '', '202470577', 'Banana', 'Jerald Sabado', '2024-06-04', '2024-06-20', '10:00:00', '14:00:00', '2024-06-09 19:47:18'),
 (37, 'Senior Highschool', 'ict', '', '', '202474847', 'Peach', 'Ian Pacumio', '2024-06-07', '2024-06-21', '13:00:00', '17:00:00', '2024-06-09 19:48:18'),
-(38, 'Vocational Course', '', 'Welding', '', '202475458', 'Jumbo', 'Jaymark Villaviray', '2024-06-05', '2024-06-10', '05:00:00', '07:00:00', '2024-06-09 19:50:26');
+(38, 'Vocational Course', '', 'Welding', '', '202475458', 'Jumbo', 'Jaymark Villaviray', '2024-06-05', '2024-06-10', '05:00:00', '07:00:00', '2024-06-09 19:50:26'),
+(39, 'Junior Highschool', '', '', '', '202466399', 'Mangosadasaa', 'Ivan Comodaassss', '2023-06-07', '2024-07-10', '07:00:00', '10:00:00', '2024-06-10 15:01:31');
 
 -- --------------------------------------------------------
 
@@ -84,11 +85,54 @@ INSERT INTO `class_enrollment` (`id`, `student_id`, `class_id`, `status`, `remar
 (8, 2024229897, 202473875, NULL, NULL, '2024-06-01 10:28:59'),
 (9, 2024661308, NULL, NULL, NULL, '2024-06-02 04:29:21'),
 (10, 2024661308, 202444074, NULL, NULL, '2024-06-02 04:30:00'),
-(12, 2024196836, 202436252, NULL, NULL, '2024-06-03 15:42:16'),
-(15, 2024434357, 202424254, 'inactive', 'satisfactory', '2024-06-09 06:15:06'),
-(17, 2024772417, 202452718, 'active', 'excellent', '2024-06-09 10:56:45'),
-(18, 2024562570, 202452718, 'withdrawn', 'none', '2024-06-09 12:18:53'),
-(19, 2024290155, 202475458, 'active', 'none', '2024-06-09 17:04:37');
+(12, 2024196836, 202474847, 'active', 'none', '2024-06-03 15:42:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `enrollment_history`
+--
+
+CREATE TABLE `enrollment_history` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `class_id` int(11) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `remarks` varchar(255) NOT NULL,
+  `enrolled_at` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `enrollment_history`
+--
+
+INSERT INTO `enrollment_history` (`id`, `student_id`, `class_id`, `status`, `remarks`, `enrolled_at`) VALUES
+(1, 2024711700, 202466399, 'graduated', 'excellent', '2024-06-11'),
+(2, 2024760170, 202466399, 'active', 'none', '2024-06-12'),
+(3, 2024760170, 202470577, 'inactive', 'satisfactory', '2024-06-12'),
+(4, 2024760170, 202471968, 'active', 'none', '2024-06-12'),
+(5, 2024760170, 202474847, 'withdrawn', 'none', '2024-06-12'),
+(6, 2024434357, 202471968, 'withdrawn', 'none', '2024-06-12'),
+(7, 2024711700, 202471968, 'excellent', 'excellent', '2024-06-12'),
+(8, 2024711700, 202475458, 'withdrawn', 'none', '2024-06-12'),
+(9, 2024760170, 202470577, 'active', 'none', '2024-06-12'),
+(10, 2024760170, 202452718, 'active', 'none', '2024-06-12'),
+(11, 2024711700, 202474847, 'withdrawn', 'none', '2024-06-12'),
+(12, 2024760170, 202466399, 'withdrawn', 'none', '2024-06-12'),
+(13, 2024760170, 202474847, 'active', 'none', '2024-06-12'),
+(14, 2024760170, 202475458, 'active', 'none', '2024-06-12'),
+(15, 2024760170, 202470577, 'active', 'none', '2024-06-12'),
+(16, 2024760170, 202471968, 'active', 'none', '2024-06-12'),
+(17, 2024760170, 202466399, 'active', 'none', '2024-06-12'),
+(18, 2024760170, 202475458, 'active', 'none', '2024-06-12'),
+(19, 2024760170, 202474847, 'active', 'none', '2024-06-12'),
+(20, 2024760170, 202475458, 'active', 'none', '2024-06-12'),
+(21, 2024196836, 202470577, 'active', 'none', '2024-06-12'),
+(22, 2024196836, 202470577, 'active', 'none', '2024-06-12'),
+(23, 2024196836, 202475458, 'active', 'none', '2024-06-12'),
+(24, 2024196836, 202474847, 'active', 'none', '2024-06-12'),
+(25, 2024617662, 202466399, 'active', 'none', '2024-06-13'),
+(26, 2024446811, 202466399, 'active', 'none', '2024-06-13');
 
 -- --------------------------------------------------------
 
@@ -178,11 +222,7 @@ INSERT INTO `parent` (`id`, `last_name`, `first_name`, `middle_name`, `suffix`, 
 (110, 'Lovino', 'Ryniel', 'Mark', '', 'Mother', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
 (111, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'asdas', 'lovinorynielmark@gmail.com', 2147483647),
 (113, 'Lovino', 'Ryniel', 'Mark', '', 'Mother', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
-(114, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
-(115, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
-(117, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
-(118, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647),
-(119, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'drug dealer', 'lovinorynielmark@gmail.com', 2147483647);
+(136, 'Lovino', 'Ryniel', 'Mark', '', 'Father', 'Drug Dealer', 'lovinorynielmark@gmail.com', 2147483647);
 
 -- --------------------------------------------------------
 
@@ -44126,13 +44166,32 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`id`, `studentno`, `last-name`, `first-name`, `middle-name`, `suffix`, `age`, `gender`, `email`, `phone`, `province`, `city`, `barangay`, `village-house-no`, `studentImage`, `postingDate`, `parent_id`, `last_school`) VALUES
-(71, '2024909897', 'Chan', 'Ed Kristopher', 'Sundo', '', 1, 'Male', 'chanedkristopher@gmail.com', 2147483647, '0712', '071218', '071218015', 'asdasdsa', 'download.jpg', '2024-06-01 05:19:20', 39, 'askhjhsa'),
-(140, '2024196836', 'Macalawa', 'Mark Jayson', 'Cuenca', '', 22, 'Male', 'macalawamarkjayson@gmail.com', 91645783, '0421', '042108', '042108012', '111233', 'download (1).jpg', '2024-06-03 15:42:16', 108, 'pascam national high school'),
-(146, '2024782152', 'Lovino', 'Ryniel', 'Mark', '', 22, 'Male', 'lovinorynielmark@gmail.com', 2147483647, '0421', '042115', '0421', 'blk53 lot12 bella vista subd', '', '2024-06-09 06:11:26', 114, 'pascam national high school'),
-(147, '2024434357', 'Lovino', 'Ryniel', 'Mark', '', 22, 'Female', 'lovinorynielmark@gmail.com', 2147483647, '0421', '042117', '0421', 'asdas', '', '2024-06-09 06:15:06', 115, 'pascam national high school'),
-(149, '2024772417', 'Lovino', 'Ryniel', 'Mark', '', 22, 'Male', 'lovinorynielmark@gmail.com', 2147483647, '0421', '042117', '0421', 'asd', '', '2024-06-09 10:56:45', 117, 'pascam national high school'),
-(150, '2024562570', 'Gutierrez', 'Ivan Elijah', 'Lovino', '', 18, 'Male', '', 0, '0712', '071215', '0712', 'blk53 lot12 bella vista subd', '', '2024-06-09 12:18:53', 118, 'pascam national high school'),
-(151, '2024290155', 'villaviray', 'ian gabriel', 'cuneto', '', 23, 'Male', '', 0, '0215', '021518', '0215', 'asfdasd', '', '2024-06-09 17:04:37', 119, 'pascam national high school');
+(71, '2024909897', 'Chanewq', 'Ed Kristopher', 'Sundo', '', 1, 'Male', 'chanedkristopher@gmail.com', 2147483647, '0712', '071203', '071203003', '14234', 'download (1).jpg', '2024-06-01 05:19:20', 39, 'askhjhsa'),
+(140, '2024196836', 'Macalawa', 'Mark Jayson', 'Cuenca', '', 22, 'Female', 'macalawamarkjayson@gmail.com', 91645783, '0421', '042108', '042108012', 'b;lasas', 'certificate.jpg', '2024-06-03 15:42:16', 108, 'pascam national high school'),
+(168, '2024834433', 'Lovino`2`1', 'Ryniel', 'Mark', '', 22, 'Male', 'lovinorynielmark@gmail.com', 2147483647, '0421', '042108', '042108015', 'Blk53 Lot12 Bella Vista Subd', '', '2024-06-13 11:36:57', 136, 'Pascam National High School');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_cert`
+--
+
+CREATE TABLE `student_cert` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `image` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_cert`
+--
+
+INSERT INTO `student_cert` (`id`, `student_id`, `image`) VALUES
+(162, 155, 'certificate.jpg'),
+(163, 155, 'certificate.jpg'),
+(164, 155, 'certificate.jpg'),
+(165, 140, 'certificate.jpg'),
+(166, 140, 'certificate.jpg');
 
 -- --------------------------------------------------------
 
@@ -44208,7 +44267,17 @@ INSERT INTO `userlog` (`id`, `username`, `name`, `lastname`, `userID`, `userip`,
 (479, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-07 08:09:20', NULL, 1),
 (480, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-09 05:20:00', NULL, 1),
 (481, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-09 16:28:50', '10-06-2024 12:56:03 AM', 1),
-(482, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-09 16:56:16', NULL, 1);
+(482, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-09 16:56:16', '10-06-2024 03:03:13 AM', 1),
+(483, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 06:18:29', NULL, 1),
+(484, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 06:18:29', NULL, 1),
+(485, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 06:18:29', '10-06-2024 02:58:27 PM', 1),
+(486, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 06:59:20', NULL, 1),
+(487, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 13:49:11', '10-06-2024 11:02:30 PM', 1),
+(488, 'ianian', 'Ian Pacumio', 'Natividad', 29, 0x3a3a3100000000000000000000000000, '2024-06-10 15:02:40', '10-06-2024 11:04:30 PM', 1),
+(489, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-10 15:07:52', NULL, 1),
+(490, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-11 05:04:45', NULL, 1),
+(491, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-12 05:09:16', NULL, 1),
+(492, 'rynielmark', 'Ryniel', 'Lovino', 21, 0x3a3a3100000000000000000000000000, '2024-06-13 10:31:25', NULL, 1);
 
 --
 -- Indexes for dumped tables
@@ -44224,6 +44293,12 @@ ALTER TABLE `classes`
 -- Indexes for table `class_enrollment`
 --
 ALTER TABLE `class_enrollment`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `enrollment_history`
+--
+ALTER TABLE `enrollment_history`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -44264,6 +44339,12 @@ ALTER TABLE `students`
   ADD UNIQUE KEY `studentno` (`studentno`);
 
 --
+-- Indexes for table `student_cert`
+--
+ALTER TABLE `student_cert`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `tblusers`
 --
 ALTER TABLE `tblusers`
@@ -44283,19 +44364,25 @@ ALTER TABLE `userlog`
 -- AUTO_INCREMENT for table `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `class_enrollment`
 --
 ALTER TABLE `class_enrollment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+
+--
+-- AUTO_INCREMENT for table `enrollment_history`
+--
+ALTER TABLE `enrollment_history`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `parent`
 --
 ALTER TABLE `parent`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
 
 --
 -- AUTO_INCREMENT for table `refbrgy`
@@ -44325,7 +44412,13 @@ ALTER TABLE `refregion`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
+
+--
+-- AUTO_INCREMENT for table `student_cert`
+--
+ALTER TABLE `student_cert`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=167;
 
 --
 -- AUTO_INCREMENT for table `tblusers`
@@ -44337,7 +44430,7 @@ ALTER TABLE `tblusers`
 -- AUTO_INCREMENT for table `userlog`
 --
 ALTER TABLE `userlog`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=483;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=493;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
