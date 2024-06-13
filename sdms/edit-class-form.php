@@ -3,66 +3,10 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-if (isset($_POST['edit-submit'])) {
-    $eid = $_SESSION['edid'];
-    $code = $_POST['edit-code'];
-    $name = $_POST['edit-name'];
-    $educ_level = $_POST['edit-levels'];
-    $teacher = $_POST['edit-teacher'];
-    $start_date = $_POST['edit-start_date'];
-    $end_date = $_POST['edit-end_date'];
-    $strand = $_POST['strand'];
-    $title = $_POST['e-title'];
-    $type = $_POST['e-type'];
-    $start_time = $_POST['e-start_time'];
-    $end_time = $_POST['e-end_time'];
-    try {
-        $sql = "UPDATE classes 
-        SET `educ-level` = :educ_level, 
-            strand = :strand, 
-            title = :title,
-            type = :type,
-            `code` = :code, 
-            `name` = :name, 
-            `teacher` = :teacher, 
-            `start-date` = :start_date, 
-            `end-date` = :end_date,
-            start_time = :start_time,
-            end_time = :end_time
-        WHERE id = :eid";
-
-        $query = $dbh->prepare($sql);
-        $query->bindParam(':educ_level', $educ_level, PDO::PARAM_STR);
-        $query->bindParam(':strand', $strand, PDO::PARAM_STR);
-        $query->bindParam(':title', $title, PDO::PARAM_STR);
-        $query->bindParam(':type', $type, PDO::PARAM_STR);
-        $query->bindParam(':code', $code, PDO::PARAM_STR);
-        $query->bindParam(':name', $name, PDO::PARAM_STR);
-        $query->bindParam(':teacher', $teacher, PDO::PARAM_STR);
-        $query->bindParam(':start_date', $start_date, PDO::PARAM_STR);
-        $query->bindParam(':end_date', $end_date, PDO::PARAM_STR);
-        $query->bindParam(':start_time', $start_time, PDO::PARAM_STR);
-        $query->bindParam(':end_time', $end_time, PDO::PARAM_STR);
-        $query->bindParam(':eid', $eid, PDO::PARAM_INT);
-
-        $query->execute();
-
-        if ($query->rowCount() > 0) {
-            echo "<script>alert('Edited successfully');</script>";
-            echo "<script>window.location.href ='classes.php'</script>";
-        } else {
-            $errorInfo = $query->errorInfo();
-            echo "<script>alert('Something went wrong: " . $errorInfo[2] . "');</script>";
-        }
-    } catch (PDOException $e) {
-        $error_message = $e->getMessage();
-        echo "<script>alert('Something went wrong: $error_message');</script>";
-    }
-}
 ?>
 
 
-<form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+<form role="form" id="editClassForm" method="post" enctype="multipart/form-data" class="form-horizontal">
     <?php
     $eid = $_POST['edit_id'];
     $sql = "SELECT * FROM classes WHERE ID=:eid";
@@ -71,11 +15,15 @@ if (isset($_POST['edit-submit'])) {
     $query->execute();
     $row = $query->fetch(PDO::FETCH_ASSOC);
     if ($row) {
-        $_SESSION['edid'] = $row['id'];
     ?>
         <div class="card-body">
+            <div class="alert alert-success" style="display: none; text-align: center;">
+            </div>
+            <div class="alert alert-danger" style="display: none; text-align: center;">
+            </div>
             <div class="row">
                 <div class="form-group col-md-6">
+                    <input type="hidden" name="rowId" value="<?php echo $row['id']; ?>">
                     <label for="code">Class Code</label>
                     <input type="text" name="edit-code" class="form-control" placeholder="<?php echo $row['code']; ?>" value="<?php echo $row['code']; ?>" required readonly>
                 </div>
@@ -199,5 +147,67 @@ if (isset($_POST['edit-submit'])) {
             e_type.style.display = 'block';
             e_type.setAttribute('required', 'required');
         }
+    });
+    document.getElementById("editClassForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+        var formData = new FormData(this);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "ajax/edit_class.php", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.status === "success") {
+                            // Show success alert
+                            var successAlert = document.querySelectorAll(".alert-success");
+                            successAlert[1].innerHTML = response.message;
+                            successAlert[1].style.display = "block";
+                            setTimeout(function() {
+                                successAlert[1].style.display = "none";
+                                location.reload();
+                            }, 2000);
+                        } else if (response.status === "error") {
+                            // Show error alert
+                            var errorAlert = document.querySelectorAll(".alert-danger");
+                            errorAlert[1].innerHTML = response.message;
+                            errorAlert[1].style.display = "block";
+                            setTimeout(function() {
+                                errorAlert[1].style.display = "none";
+                            }, 3000);
+                        } else {
+                            // Show a generic error message if the response is not properly formatted
+                            var genericErrorAlert = document.querySelectorAll(".alert-danger");
+                            genericErrorAlert[1].innerHTML = "Unexpected response from server. Please try again.";
+                            genericErrorAlert[1].style.display = "block";
+                            setTimeout(function() {
+                                genericErrorAlert[1].style.display = "none";
+                            }, 3000);
+                        }
+                    } catch (error) {
+                        // Log the error to the console
+                        console.error("Error parsing JSON response:", error);
+
+                        // Show a generic error message if there's an issue parsing the JSON response
+                        var parseErrorAlert = document.querySelectorAll(".alert-danger");
+                        parseErrorAlert[1].innerHTML = "Error occurred while processing server response: " + error.message;
+                        parseErrorAlert[1].style.display = "block";
+                        setTimeout(function() {
+                            parseErrorAlert[1].style.display = "none";
+                        }, 3000);
+                    }
+                } else {
+                    // Show error alert if there is any issue with the Ajax request
+                    var requestErrorAlert = document.querySelector(".alert-danger");
+                    requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+                    requestErrorAlert.style.display = "block";
+                    setTimeout(function() {
+                        requestErrorAlert.style.display = "none";
+                    }, 3000);
+                }
+            }
+        };
+        xhr.send(formData);
     });
 </script>

@@ -3,54 +3,17 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-if (isset($_POST['submit'])) {
-    $educ_level = $_POST['levels'];
-    $code = $_POST['code'];
-    $name = $_POST['name'];
-    $title = $_POST['title'];
-    $type = $_POST['type'];
-    $teacher = $_POST['teacher'];
-    $start_date = $_POST['start_date'];
-    $end_date = $_POST['end_date'];
-    $strand = $_POST['strand'];
-    $start_time = $_POST['start_time'];
-    $end_time = $_POST['end_time'];
 
-    try {
-        $sql = "INSERT INTO classes (`educ-level`, `strand`, `title`, `type`, `code`, `name`, `teacher`, `start-date`, `end-date`, `start_time`, `end_time`) 
-        VALUES (:educ_level, :strand, :title, :type, :code, :name, :teacher, :start_date, :end_date, :start_time, :end_time)";
-
-        $query = $dbh->prepare($sql);
-        $query->bindParam(':educ_level', $educ_level, PDO::PARAM_STR);
-        $query->bindParam(':strand', $strand, PDO::PARAM_STR);
-        $query->bindParam(':title', $title, PDO::PARAM_STR);
-        $query->bindParam(':type', $type, PDO::PARAM_STR);
-        $query->bindParam(':code', $code, PDO::PARAM_STR);
-        $query->bindParam(':name', $name, PDO::PARAM_STR);
-        $query->bindParam(':teacher', $teacher, PDO::PARAM_STR);
-        $query->bindParam(':start_date', $start_date, PDO::PARAM_STR);
-        $query->bindParam(':end_date', $end_date, PDO::PARAM_STR);
-        $query->bindParam(':start_time', $start_time, PDO::PARAM_STR);
-        $query->bindParam(':end_time', $end_time, PDO::PARAM_STR);
-        $query->execute();
-        $lastInsertId = $dbh->lastInsertId();
-
-        if ($lastInsertId) {
-            echo "<script>alert('Registered successfully');</script>";
-            echo "<script>window.location.href ='classes.php'</script>";
-        } else {
-            echo "<script>alert('Something went wrong. Please try again');</script>";
-        }
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
-}
 ?>
 
 
 
-<form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+<form role="form" id="newClassForm" method="post" enctype="multipart/form-data" class="form-horizontal">
     <div class="card-body">
+        <div class="alert alert-success" style="display: none; text-align: center;">
+        </div>
+        <div class="alert alert-danger" style="display: none; text-align: center;">
+        </div>
         <div class="row">
             <div class="form-group col-md-6">
                 <label for="code">Class Code</label>
@@ -77,12 +40,12 @@ if (isset($_POST['submit'])) {
                 <label for="strand">Strand</label>
                 <select class="form-control" id="strand" name="strand">
                     <option value="">Select Strand</option>
-                    <option value="abm">ABM - Accountancy, Business and Management </option>
-                    <option value="stem">STEM - Science, Technology, Engineering and Mathematics (STEM)</option>
-                    <option value="humss">HUMSS - Humanities and Social Sciences </option>
-                    <option value="gas">GAS - General Academic Strand </option>
-                    <option value="ict">ICT - Information Communication Technology </option>
-                    <option value="he">HE - Home Economics </option>
+                    <option value="ABM">ABM - Accountancy, Business and Management </option>
+                    <option value="STEM">STEM - Science, Technology, Engineering and Mathematics (STEM)</option>
+                    <option value="HUMSS">HUMSS - Humanities and Social Sciences </option>
+                    <option value="GAS">GAS - General Academic Strand </option>
+                    <option value="ICT">ICT - Information Communication Technology </option>
+                    <option value="HE">HE - Home Economics </option>
                 </select>
             </div>
             <div class="form-group col-md-6" id="title" style="display: none;">
@@ -130,3 +93,68 @@ if (isset($_POST['submit'])) {
         <button type="submit" name="submit" class="btn btn-primary">Submit</button>
     </div>
 </form>
+
+<script>
+    document.getElementById("newClassForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+        var formData = new FormData(this);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "ajax/new_class.php", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.status === "success") {
+                            // Show success alert
+                            var successAlert = document.querySelector(".alert-success");
+                            successAlert.innerHTML = response.message;
+                            successAlert.style.display = "block";
+                            setTimeout(function() {
+                                successAlert.style.display = "none";
+                                location.reload();
+                            }, 3000);
+                        } else if (response.status === "error") {
+                            // Show error alert
+                            var errorAlert = document.querySelector(".alert-danger");
+                            errorAlert.innerHTML = response.message;
+                            errorAlert.style.display = "block";
+                            setTimeout(function() {
+                                errorAlert.style.display = "none";
+                            }, 3000);
+                        } else {
+                            // Show a generic error message if the response is not properly formatted
+                            var genericErrorAlert = document.querySelector(".alert-danger");
+                            genericErrorAlert.innerHTML = "Unexpected response from server. Please try again.";
+                            genericErrorAlert.style.display = "block";
+                            setTimeout(function() {
+                                genericErrorAlert.style.display = "none";
+                            }, 3000);
+                        }
+                    } catch (error) {
+                        // Log the error to the console
+                        console.error("Error parsing JSON response:", error);
+
+                        // Show a generic error message if there's an issue parsing the JSON response
+                        var parseErrorAlert = document.querySelector(".alert-danger");
+                        parseErrorAlert.innerHTML = "Error occurred while processing server response: " + error.message;
+                        parseErrorAlert.style.display = "block";
+                        setTimeout(function() {
+                            parseErrorAlert.style.display = "none";
+                        }, 3000);
+                    }
+                } else {
+                    // Show error alert if there is any issue with the Ajax request
+                    var requestErrorAlert = document.querySelector(".alert-danger");
+                    requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+                    requestErrorAlert.style.display = "block";
+                    setTimeout(function() {
+                        requestErrorAlert.style.display = "none";
+                    }, 3000);
+                }
+            }
+        };
+        xhr.send(formData);
+    });
+</script>

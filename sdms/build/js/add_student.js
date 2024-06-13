@@ -20,7 +20,15 @@ function fetchAndPopulateClasses(gradeLevel) {
           data.forEach(classItem => {
               var option = document.createElement('option');
               option.value = classItem.code;
-              option.text = classItem.title;
+              if (classItem['educ-level'] === "Vocational Course") {
+                option.text = classItem.name + " (" + classItem.title + ")";
+              } else if (classItem['educ-level'] === "Others") {
+                option.text = classItem.name + " (" + classItem.type + ")";
+              } else if (classItem['educ-level'] === "Senior Highschool") {
+                option.text = classItem.name + " (" + classItem.strand + ")";
+              } else {
+                option.text = classItem.name;
+              }
               classesDropdown.appendChild(option);
           });
           classSelect.style.display = 'block';

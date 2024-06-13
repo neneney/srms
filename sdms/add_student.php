@@ -234,7 +234,6 @@ if (strlen($_SESSION['sid']) == 0) {
                   </div>
                   <!-- /.card-body -->
                   <div class="alert alert-success" style="display: none;">
-
                   </div>
                   <div class="alert alert-danger" style="display: none;">
                   </div>
