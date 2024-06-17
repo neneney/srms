@@ -14,7 +14,6 @@ if (isset($_GET['delid'])) {
   $query = $dbh->prepare($sql);
   $query->bindParam(':rid', $rid, PDO::PARAM_STR);
   $query->execute();
-  echo "<script>alert(' blocked successfuly');</script>";
   echo "<script>window.location.href = 'userregister.php'</script>";
 }
 ?>
@@ -208,6 +207,27 @@ if (isset($_GET['delid'])) {
                 </div>
 
                 <div class="card-body">
+                  <!-- Block User Modal -->
+                  <div class="modal fade" id="blockModal" tabindex="-1" role="dialog" aria-labelledby="blockModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="blockModalLabel">Confirm Block</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          Do you really want to block this user?
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                          <a href="#" id="confirmBlock" class="btn btn-danger">Block</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <table id="example1" class="table table-bordered table-striped">
                     <thead>
                       <tr>
@@ -236,7 +256,7 @@ if (isset($_GET['delid'])) {
                             <td class="text-center"><?php echo htmlentities($row->permission); ?></td>
                             <td class="text-center">
                               <a style="color:white;" class="btn btn-primary btn-sm edit_data" id="<?php echo ($row->id); ?>" title="click for edit">Edit</a>
-                              <a class="btn btn-danger btn-sm" href="userregister.php?delid=<?php echo ($row->id); ?>" title="click for block" onclick="return confirm('sure to block ?')">Block</i></a>
+                              <a class="btn btn-danger btn-sm text-center block-btn" href="#" data-id="<?php echo ($row->id); ?>" title="click for block">Block</a>
                             </td>
                           </tr>
 
@@ -313,7 +333,22 @@ if (isset($_GET['delid'])) {
         });
       });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Attach click event listener to all block buttons
+      document.querySelectorAll('.block-btn').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+          event.preventDefault(); // Prevent default link behavior
+          var userId = this.getAttribute('data-id');
+          // Update the confirmBlock button href with the correct user ID
+          document.getElementById('confirmBlock').setAttribute('href', 'userregister.php?delid=' + userId);
+          // Show the modal
+          $('#blockModal').modal('show');
+        });
+      });
+    });
   </script>
+
 </body>
 
 </html>

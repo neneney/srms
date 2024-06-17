@@ -144,7 +144,6 @@ if (strlen($_SESSION['sid']) == 0) {
                         <label for="classes">Student Class</label>
                         <select class="form-control" id="classes" name="classes">
                           <option value="">Select Educational Level</option>
-
                         </select>
                       </div>
                     </div>

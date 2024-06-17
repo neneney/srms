@@ -112,7 +112,7 @@ function fetchAndPopulateClasses(gradeLevel) {
 
     IDfield.value = StudentId;
   })
-  document.addEventListener('DOMContentLoaded', function() {
+  
     const birthdateField = document.getElementById('birthdate');
     const ageField = document.getElementById('age');
 
@@ -127,7 +127,6 @@ function fetchAndPopulateClasses(gradeLevel) {
         } else {
             ageField.value = age;
         }
-    });
 
     function calculateAge(birthdate) {
         const today = new Date();

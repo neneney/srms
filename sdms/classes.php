@@ -128,6 +128,27 @@ if (isset($_GET['dels'])) {
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Confirm Delete Modal -->
+                                <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Confirm Deletion</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete this Class?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                <a class="btn btn-danger btn-ok">Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
 
 
                                 <!-- /.card-header -->
@@ -162,7 +183,7 @@ if (isset($_GET['dels'])) {
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
                                                         <a class="btn btn-sm btn-info editdata3" style="color: white;" id="<?php echo ($row["id"]); ?>">Enroll</a>
                                                         <?php if ($_SESSION['permission'] == "Admin") { ?>
-                                                            <a href="classes.php?ID=<?php echo $row['id'] ?>&dels=delete" onClick="return confirm('Are you sure you want to delete?')" class=" btn btn-danger btn-sm ">Delete</a>
+                                                            <a href="#" data-href="classes.php?ID=<?php echo $row['id']; ?>&dels=delete" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-sm">Delete</a>
                                                         <?php } ?>
                                                     </td>
                                                 </tr>
@@ -194,6 +215,15 @@ if (isset($_GET['dels'])) {
     </div>
     <!-- ./wrapper -->
     <?php @include("includes/foot.php"); ?>
+    <!-- Ensure jQuery and Bootstrap JS are included -->
+
+
+    <script>
+        $('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+        });
+    </script>
+
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -381,25 +411,59 @@ if (isset($_GET['dels'])) {
             }
         });
 
-
+        // Validate that the end date is not before the start date
         function validateEndDate() {
             var startDate = document.getElementById("start_date").value;
             var endDate = document.getElementById("end_date").value;
-
 
             var startDateObj = new Date(startDate);
             var endDateObj = new Date(endDate);
 
             // Compare the dates
             if (endDateObj < startDateObj) {
-
                 alert("End date cannot be before the start date");
-
                 document.getElementById("end_date").value = "";
             }
         }
 
-        document.getElementById("end_date").addEventListener("change", validateEndDate);
+        // Validate that the start date is not in the past
+        function validateStartDate() {
+            var startDate = document.getElementById("start_date").value;
+            var startDateObj = new Date(startDate);
+            var today = new Date();
+
+            // Set time to 00:00:00 to compare only dates, not times
+            today.setHours(0, 0, 0, 0);
+
+            // Compare the dates
+            if (startDateObj < today) {
+                alert("Enter a valid starting date");
+                document.getElementById("start_date").value = "";
+            }
+        }
+
+        // Update the minimum value of the end date based on the start date
+        function updateEndDateMin() {
+            var startDate = document.getElementById("start_date").value;
+            document.getElementById("end_date").min = startDate;
+        }
+
+        function updateStartDateMin() {
+            var today = new Date();
+
+
+            var yyyy = today.getFullYear();
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var dd = String(today.getDate()).padStart(2, '0');
+
+            var formattedToday = `${yyyy}-${mm}-${dd}`;
+
+            document.getElementById('start_date').min = formattedToday;
+        }
+        updateStartDateMin();
+        document.getElementById("end_date").addEventListener("blur", validateEndDate);
+        document.getElementById("start_date").addEventListener("blur", validateStartDate);
+        document.getElementById("start_date").addEventListener("input", updateEndDateMin);
 
 
 

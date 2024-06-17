@@ -5,25 +5,6 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['sid'] == 0)) {
   header('location:logout.php');
 } else {
-  if (isset($_POST['submit'])) {
-    $eid = $_SESSION['sid'];
-    $email = $_POST['email'];
-    $mobile = $_POST['mobile'];
-    $name = $_POST['firstname'];
-    $lastname = $_POST['lastname'];
-    $username = $_POST['username'];
-    $sql = "update tblusers set name=:name,username=:username,mobile=:mobile,email=:email,lastname=:lastname where id=:eid";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':name', $name, PDO::PARAM_STR);
-    $query->bindParam(':lastname', $lastname, PDO::PARAM_STR);
-    $query->bindParam(':username', $username, PDO::PARAM_STR);
-    $query->bindParam(':email', $email, PDO::PARAM_STR);
-    $query->bindParam(':mobile', $mobile, PDO::PARAM_STR);
-    $query->bindParam(':eid', $eid, PDO::PARAM_STR);
-    $query->execute();
-    echo '<script>alert("updated successfuly")</script>';
-    echo "<script>window.location.href ='profile.php'</script>";
-  }
 ?>
 
   <?php @include("includes/head.php"); ?>
@@ -46,7 +27,8 @@ if (strlen($_SESSION['sid'] == 0)) {
               <h6 class="m-0 font-weight-bold text-primary">Update User Profile</h6>
             </div>
             <div class="card-body">
-              <form method="post">
+              <form method="post" id="profileForm">
+
                 <?php
                 $eid = $_SESSION['sid'];
                 $sql = "SELECT * from tblusers   where id=:eid ";
@@ -83,6 +65,10 @@ if (strlen($_SESSION['sid'] == 0)) {
                               </div>
                               <a href="changepassword.php" class="text-right">Change Password</a>
                             </div>
+                            <div class="alert alert-success" style="display: none;">
+                            </div>
+                            <div class="alert alert-danger" style="display: none;">
+                            </div>
                             <div class="row mt-2">
                               <div class="col-md-6"><input type="text" class="form-control" name="firstname" value="<?php echo $row->name; ?>" required='true'></div>
                               <div class="col-md-6"><input type="text" class="form-control" value="<?php echo $row->lastname; ?> " name="lastname" required></div>
@@ -116,6 +102,70 @@ if (strlen($_SESSION['sid'] == 0)) {
       <!-- /.content-wrapper -->
       <?php @include("includes/foot.php"); ?>
       <?php @include("includes/footer.php"); ?>
+      <script>
+        document.getElementById("profileForm").addEventListener("submit", function(event) {
+          event.preventDefault(); // Prevent form submission
+          var formData = new FormData(this);
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "ajax/profile_update.php", true);
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                try {
+                  var response = JSON.parse(xhr.responseText);
+                  if (response.status === "success") {
+                    // Show success alert
+                    var successAlert = document.querySelector(".alert-success");
+                    successAlert.innerHTML = response.message;
+                    successAlert.style.display = "block";
+                    setTimeout(function() {
+                      successAlert.style.display = "none";
+                      location.reload();
+                    }, 3000);
+                  } else if (response.status === "error") {
+                    // Show error alert
+                    var errorAlert = document.querySelector(".alert-danger");
+                    errorAlert.innerHTML = response.message;
+                    errorAlert.style.display = "block";
+                    setTimeout(function() {
+                      errorAlert.style.display = "none";
+                    }, 3000);
+                  } else {
+                    // Show a generic error message if the response is not properly formatted
+                    var genericErrorAlert = document.querySelector(".alert-danger");
+                    genericErrorAlert.innerHTML = "Unexpected response from server. Please try again.";
+                    genericErrorAlert.style.display = "block";
+                    setTimeout(function() {
+                      genericErrorAlert.style.display = "none";
+                    }, 3000);
+                  }
+                } catch (error) {
+                  // Log the error to the console
+                  console.error("Error parsing JSON response:", error);
+
+                  // Show a generic error message if there's an issue parsing the JSON response
+                  var parseErrorAlert = document.querySelector(".alert-danger");
+                  parseErrorAlert.innerHTML = "Error occurred while processing server response: " + error.message;
+                  parseErrorAlert.style.display = "block";
+                  setTimeout(function() {
+                    parseErrorAlert.style.display = "none";
+                  }, 3000);
+                }
+              } else {
+                // Show error alert if there is any issue with the Ajax request
+                var requestErrorAlert = document.querySelector(".alert-danger");
+                requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+                requestErrorAlert.style.display = "block";
+                setTimeout(function() {
+                  requestErrorAlert.style.display = "none";
+                }, 3000);
+              }
+            }
+          };
+          xhr.send(formData);
+        });
+      </script>
   </body>
 
   </html>

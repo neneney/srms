@@ -183,7 +183,7 @@ $_SESSION['class-code'] = $classes[0]['code'];
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="nextphone">Phone Number</label>
-                                <input type="text" class="form-control" id="nextphone" name="phone" placeholder="Phone Number">
+                                <input type="number" class="form-control" id="nextphone" name="phone" placeholder="Phone Number">
                             </div>
                             <div class="form-group col-md-2">
                                 <label for="occupation">Ocupation</label>

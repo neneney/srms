@@ -9,48 +9,6 @@ include('includes/dbconnection.php');
     }
 </style>
 <?php
-if (isset($_POST['update'])) {
-    $class_code = $_POST['class_code'];
-
-    try {
-        $dbh->beginTransaction();
-
-        // Fetch all students enrolled in the class
-        $stmt = $dbh->prepare("SELECT student_id FROM class_enrollment WHERE class_id = :class_code");
-        $stmt->bindParam(':class_code', $class_code, PDO::PARAM_STR);
-        $stmt->execute();
-        $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($students as $student) {
-            $studentno = $student['student_id'];
-            $status = $_POST['status_' . $studentno];
-            $remarks = $_POST['remarks_' . $studentno];
-
-            // Update status and remarks in the database
-            $query = "UPDATE class_enrollment SET status = :status, remarks = :remarks WHERE class_id = :class_code AND student_id = :studentno";
-            $updateStmt = $dbh->prepare($query);
-            $updateStmt->bindParam(':status', $status, PDO::PARAM_STR);
-            $updateStmt->bindParam(':remarks', $remarks, PDO::PARAM_STR);
-            $updateStmt->bindParam(':class_code', $class_code, PDO::PARAM_STR);
-            $updateStmt->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $updateStmt->execute();
-
-            $query1 = "UPDATE enrollment_history SET status = :status, remarks = :remarks WHERE class_id = :class_code AND student_id = :studentno";
-            $updateStmt1 = $dbh->prepare($query1);
-            $updateStmt1->bindParam(':status', $status, PDO::PARAM_STR);
-            $updateStmt1->bindParam(':remarks', $remarks, PDO::PARAM_STR);
-            $updateStmt1->bindParam(':class_code', $class_code, PDO::PARAM_STR);
-            $updateStmt1->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $updateStmt1->execute();
-        }
-
-        $dbh->commit();
-        echo "<script>alert('Student records updated successfully');</script>";
-    } catch (Exception $e) {
-        $dbh->rollBack();
-        echo "<script>alert('Error updating records: " . $e->getMessage() . "');</script>";
-    }
-}
 
 $eid2 = $_POST['edit_id2'];
 $ret2 = $dbh->prepare("SELECT * FROM classes WHERE id = :id");
@@ -112,7 +70,11 @@ if ($class) {
                     <h5 style="margin-top: 50px"></h5>
                 </div>
             </div>
-            <form method="POST">
+            <form method="POST" id="studentRec">
+                <div class="alert alert-success" style="display: none;">
+                </div>
+                <div class="alert alert-danger" style="display: none;">
+                </div>
                 <table class="table" id="students_table">
                     <thead>
                         <tr>
@@ -184,6 +146,68 @@ if ($class) {
     </div>
 
     <script>
+        document.getElementById("studentRec").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent form submission
+            var formData = new FormData(this);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "ajax/student_records.php", true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.status === "success") {
+                                // Show success alert
+                                var successAlert = document.querySelectorAll(".alert-success");
+                                successAlert[1].innerHTML = response.message;
+                                successAlert[1].style.display = "block";
+                                setTimeout(function() {
+                                    successAlert[1].style.display = "none";
+                                    location.reload();
+                                }, 2000);
+                            } else if (response.status === "error") {
+                                // Show error alert
+                                var errorAlert = document.querySelectorAll(".alert-danger");
+                                errorAlert[1].innerHTML = response.message;
+                                errorAlert[1].style.display = "block";
+                                setTimeout(function() {
+                                    errorAlert[1].style.display = "none";
+                                }, 3000);
+                            } else {
+                                // Show a generic error message if the response is not properly formatted
+                                var genericErrorAlert = document.querySelectorAll(".alert-danger");
+                                genericErrorAlert[1].innerHTML = "Unexpected response from server. Please try again.";
+                                genericErrorAlert[1].style.display = "block";
+                                setTimeout(function() {
+                                    genericErrorAlert[1].style.display = "none";
+                                }, 3000);
+                            }
+                        } catch (error) {
+                            // Log the error to the console
+                            console.error("Error parsing JSON response:", error);
+
+                            // Show a generic error message if there's an issue parsing the JSON response
+                            var parseErrorAlert = document.querySelectorAll(".alert-danger");
+                            parseErrorAlert[1].innerHTML = "Error occurred while processing server response: " + error.message;
+                            parseErrorAlert[1].style.display = "block";
+                            setTimeout(function() {
+                                parseErrorAlert[1].style.display = "none";
+                            }, 3000);
+                        }
+                    } else {
+                        // Show error alert if there is any issue with the Ajax request
+                        var requestErrorAlert = document.querySelector(".alert-danger");
+                        requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+                        requestErrorAlert.style.display = "block";
+                        setTimeout(function() {
+                            requestErrorAlert.style.display = "none";
+                        }, 3000);
+                    }
+                }
+            };
+            xhr.send(formData);
+        });
         document.getElementById('status_filter').addEventListener('change', filterStudents);
         document.getElementById('remarks_filter').addEventListener('change', filterStudents);
 

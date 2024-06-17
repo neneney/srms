@@ -34,15 +34,7 @@ $photo = $_FILES["photo"]["name"];
 move_uploaded_file($_FILES["photo"]["tmp_name"], "studentimages/" . $_FILES["photo"]["name"]);
 
 
-if (!empty($_POST['elementary-class'])) {
-    $class_id = $_POST['elementary-class'];
-} else if (!empty($_POST['jhs-class'])) {
-    $class_id = $_POST['jhs-class'];
-} else if (!empty($_POST['shs-class'])) {
-    $class_id = $_POST['shs-class'];
-} else {
-    $class_id = null;
-}
+$class_id = $_POST['classes'];
 $program = $_POST['program'];
 
 $check_sql = "SELECT COUNT(*) AS count FROM students WHERE `last-name` = :lastname AND `first-name` = :firstname AND `middle-name` = :middlename AND suffix = :suffix";

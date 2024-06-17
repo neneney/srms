@@ -3,53 +3,10 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-if (isset($_POST['update'])) {
-  $eid = $_SESSION['edid'];
-  $permission = $_POST['permission'];
-  $username = $_POST['username'];
-  $name = $_POST['name'];
-  $lastname = $_POST['lastname'];
-  $sex = $_POST['sex'];
 
-  // Check if a new password is provided
-  if (!empty($_POST['password'])) {
-    $password = md5($_POST['password']);
-    $password1 = md5($_POST['password1']);
-
-    // Check if passwords match
-    if ($password != $password1) {
-      echo '<script>alert("Passwords do not match")</script>';
-      echo "<script>window.location.href ='userregister.php'</script>";
-      exit();
-    }
-
-    // Update the user profile with the new password
-    $sql = "UPDATE tblusers SET name=:name, username=:username, lastname=:lastname, permission=:permission, password=:password, sex=:sex WHERE id=:eid";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':password', $password, PDO::PARAM_STR);
-  } else {
-    // Update the user profile without changing the password
-    $sql = "UPDATE tblusers SET name=:name, username=:username, lastname=:lastname, permission=:permission, sex=:sex WHERE id=:eid";
-    $query = $dbh->prepare($sql);
-  }
-
-  // Bind parameters and execute the query
-  $query->bindParam(':name', $name, PDO::PARAM_STR);
-  $query->bindParam(':lastname', $lastname, PDO::PARAM_STR);
-  $query->bindParam(':username', $username, PDO::PARAM_STR);
-  $query->bindParam(':permission', $permission, PDO::PARAM_STR);
-  $query->bindParam(':sex', $sex, PDO::PARAM_STR);
-  $query->bindParam(':eid', $eid, PDO::PARAM_STR);
-  $query->execute();
-
-  echo '<script>alert("Updated successfully")</script>';
-  echo "<script>window.location.href ='userregister.php'</script>";
-  exit();
-}
 ?>
 <div class="card-body">
-  <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
-
+  <form role="form" id="editUser" method="post" enctype="multipart/form-data" class="form-horizontal">
     <?php
     $eid = $_POST['edit_id'];
     $sql = "SELECT * from tblusers   where id=:eid ";
@@ -61,9 +18,14 @@ if (isset($_POST['update'])) {
       foreach ($results as $row) {
         $_SESSION['edid'] = $row->id;
     ?>
+        <div class="alert alert-success" style="display: none;">
+        </div>
+        <div class="alert alert-danger" style="display: none;">
+        </div>
         <div class="row">
           <div class="form-group col-md-6 ">
             <label for="name">First Name</label>
+            <input type="hidden" name="rowId" value="<?php echo $row->id ?>">
             <input type="text" name="name" class="form-control" id="name" value="<?php echo $row->name; ?>" required>
           </div>
           <div class="form-group col-md-6 ">
@@ -110,3 +72,67 @@ if (isset($_POST['update'])) {
     </div>
   </form>
 </div>
+<script>
+  document.getElementById("editUser").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+    var formData = new FormData(this);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "ajax/edituser.php", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if (response.status === "success") {
+              // Show success alert
+              var successAlert = document.querySelectorAll(".alert-success");
+              successAlert[1].innerHTML = response.message;
+              successAlert[1].style.display = "block";
+              setTimeout(function() {
+                successAlert[1].style.display = "none";
+                location.reload();
+              }, 3000);
+            } else if (response.status === "error") {
+              // Show error alert
+              var errorAlert = document.querySelectorAll(".alert-danger");
+              errorAlert[1].innerHTML = response.message;
+              errorAlert[1].style.display = "block";
+              setTimeout(function() {
+                errorAlert[1].style.display = "none";
+              }, 3000);
+            } else {
+              // Show a generic error message if the response is not properly formatted
+              var genericErrorAlert = document.querySelectorAll(".alert-danger");
+              genericErrorAlert[1].innerHTML = "Unexpected response from server. Please try again.";
+              genericErrorAlert[1].style.display = "block";
+              setTimeout(function() {
+                genericErrorAlert[1].style.display = "none";
+              }, 3000);
+            }
+          } catch (error) {
+            // Log the error to the console
+            console.error("Error parsing JSON response:", error);
+
+            // Show a generic error message if there's an issue parsing the JSON response
+            var parseErrorAlert = document.querySelectorAll(".alert-danger");
+            parseErrorAlert[1].innerHTML = "Error occurred while processing server response: " + error.message;
+            parseErrorAlert[1].style.display = "block";
+            setTimeout(function() {
+              parseErrorAlert.style.display = "none";
+            }, 3000);
+          }
+        } else {
+          // Show error alert if there is any issue with the Ajax request
+          var requestErrorAlert = document.querySelectorAll(".alert-danger");
+          requestErrorAlert[1].innerHTML = "Error occurred while processings your request. Please try again.";
+          requestErrorAlert[1].style.display = "block";
+          setTimeout(function() {
+            requestErrorAlert[1].style.display = "none";
+          }, 3000);
+        }
+      }
+    };
+    xhr.send(formData);
+  });
+</script>

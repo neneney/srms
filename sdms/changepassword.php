@@ -6,27 +6,6 @@ if (strlen($_SESSION['sid'] == 0)) {
   header('location:logout.php');
 } else {
   if (isset($_POST['submit'])) {
-    $adminid = $_SESSION['cpmsaid'];
-    $cpassword = md5($_POST['password']);
-    $newpassword = md5($_POST['password1']);
-    $sql = "SELECT id FROM tblusers WHERE id=:adminid and Password=:cpassword";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':adminid', $adminid, PDO::PARAM_STR);
-    $query->bindParam(':cpassword', $cpassword, PDO::PARAM_STR);
-    $query->execute();
-    $results = $query->fetchAll(PDO::FETCH_OBJ);
-
-    if ($query->rowCount() > 0) {
-      $con = "update tblusers set Password=:newpassword where id=:adminid";
-      $chngpwd1 = $dbh->prepare($con);
-      $chngpwd1->bindParam(':adminid', $adminid, PDO::PARAM_STR);
-      $chngpwd1->bindParam(':newpassword', $newpassword, PDO::PARAM_STR);
-      $chngpwd1->execute();
-
-      echo '<script>alert("Your password successully changed")</script>';
-    } else {
-      echo '<script>alert("Your current password is wrong")</script>';
-    }
   }
 ?>
 
@@ -55,11 +34,16 @@ if (strlen($_SESSION['sid'] == 0)) {
                 </div>
                 <!-- Date -->
 
-                <form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <form role="form" id="changePass" method="post" enctype="multipart/form-data" class="form-horizontal">
 
                   <div class="card-body">
+                    <div class="alert alert-success" style="display: none;">
+                    </div>
+                    <div class="alert alert-danger" style="display: none;">
+                    </div>
                     <div class="form-group  ">
-                      <label for="exampleInputPassword1">Old Password</label>
+                      <label for="exampleInputPassword1">Current Password</label>
+                      <input type="hidden" name="Id" value="<?php echo $_SESSION['sid'] ?>">
                       <input type="password" name="password" class="form-control" id="exampleInputPassword1" required>
                     </div>
                     <div class="form-group  ">
@@ -73,7 +57,7 @@ if (strlen($_SESSION['sid'] == 0)) {
                   </div>
               </div>
               <div class="modal-footer text-right">
-                <button class="btn btn-info" onclick="goBack()">Back</button>
+                <!-- <button class="btn btn-info" onclick="goBack()">Back</button> -->
                 <button type="submit" name="submit" class="btn btn-primary">Submit</button>
               </div>
 
@@ -98,6 +82,69 @@ if (strlen($_SESSION['sid'] == 0)) {
       function goBack() {
         window.history.back();
       }
+
+      document.getElementById("changePass").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+        var formData = new FormData(this);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "ajax/changepass.php", true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              try {
+                var response = JSON.parse(xhr.responseText);
+                if (response.status === "success") {
+                  // Show success alert
+                  var successAlert = document.querySelector(".alert-success");
+                  successAlert.innerHTML = response.message;
+                  successAlert.style.display = "block";
+                  setTimeout(function() {
+                    successAlert.style.display = "none";
+                    location.reload();
+                  }, 3000);
+                } else if (response.status === "error") {
+                  // Show error alert
+                  var errorAlert = document.querySelector(".alert-danger");
+                  errorAlert.innerHTML = response.message;
+                  errorAlert.style.display = "block";
+                  setTimeout(function() {
+                    errorAlert.style.display = "none";
+                  }, 3000);
+                } else {
+                  // Show a generic error message if the response is not properly formatted
+                  var genericErrorAlert = document.querySelector(".alert-danger");
+                  genericErrorAlert.innerHTML = "Unexpected response from server. Please try again.";
+                  genericErrorAlert.style.display = "block";
+                  setTimeout(function() {
+                    genericErrorAlert.style.display = "none";
+                  }, 3000);
+                }
+              } catch (error) {
+                // Log the error to the console
+                console.error("Error parsing JSON response:", error);
+
+                // Show a generic error message if there's an issue parsing the JSON response
+                var parseErrorAlert = document.querySelector(".alert-danger");
+                parseErrorAlert.innerHTML = "Error occurred while processing server response: " + error.message;
+                parseErrorAlert.style.display = "block";
+                setTimeout(function() {
+                  parseErrorAlert.style.display = "none";
+                }, 3000);
+              }
+            } else {
+              // Show error alert if there is any issue with the Ajax request
+              var requestErrorAlert = document.querySelector(".alert-danger");
+              requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+              requestErrorAlert.style.display = "block";
+              setTimeout(function() {
+                requestErrorAlert.style.display = "none";
+              }, 3000);
+            }
+          }
+        };
+        xhr.send(formData);
+      });
     </script>
   </body>
 

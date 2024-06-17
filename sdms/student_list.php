@@ -125,6 +125,26 @@ if (isset($_GET['del'])) {
                     </div>
                   </div>
                 </div>
+                <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Are you sure you want to delete this Student?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <a class="btn btn-danger btn-ok">Delete</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="card-body mt-2 ">
                   <table id="example1" class="table table-bordered table-hover">
                     <thead>
@@ -162,7 +182,7 @@ if (isset($_GET['del'])) {
                             <button class="btn btn-primary btn-sm edit_data" id="<?php echo $row['id']; ?>" title="click for edit">Edit</button>
                             <button class="btn btn-success btn-sm edit_data2" id="<?php echo $row['id']; ?>" title="click for edit">View</button>
                             <?php if ($_SESSION['permission'] == "Admin") { ?>
-                              <a href="student_list.php?id=<?php echo $row['id']; ?>&del=delete" onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm">Delete</a>
+                              <a href="#" data-href="student_list.php?id=<?php echo $row['id']; ?>&del=delete" data-toggle="modal" data-target="#confirm-delete" class="btn btn-danger btn-sm">Delete</a>
                             <?php } ?>
                           </td>
                         </tr>
@@ -193,7 +213,7 @@ if (isset($_GET['del'])) {
     <!-- /.control-sidebar -->
   </div>
   <!-- ./wrapper -->
-
+  <?php @include("includes/foot.php"); ?>
 
   <script defer src="build/js/student_list.js"></script>
   <script>
@@ -204,10 +224,14 @@ if (isset($_GET['del'])) {
       window.print();
       document.body.innerHTML = originalContents;
     }
+
+    $('#confirm-delete').on('show.bs.modal', function(e) {
+      $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+    });
   </script>
 
 
-  <?php @include("includes/foot.php"); ?>
+
 </body>
 
 </html>

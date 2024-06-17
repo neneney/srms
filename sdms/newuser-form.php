@@ -3,57 +3,15 @@ session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
 
-if (isset($_POST['submit'])) {
-  $password1 = ($_POST['password']);
-  $password2 = ($_POST['password1']);
 
-  if ($password1 != $password2) {
-    echo "<script>alert('Password and Confirm Password Field do not match  !!');</script>";
-  } else {
-    $name = $_POST['name'];
-    $lastname = $_POST['lastname'];
-    $username = $_POST['username'];
-    $permission = $_POST['permission'];
-    $sex = $_POST['sex']; // New line for handling sex input
-    $password = md5($_POST['password']);
-    $status = 1;
-
-    // Check if username already exists
-    $sql_check_username = "SELECT COUNT(*) FROM tblusers WHERE username = :username";
-    $query_check_username = $dbh->prepare($sql_check_username);
-    $query_check_username->bindParam(':username', $username, PDO::PARAM_STR);
-    $query_check_username->execute();
-    $count_username = $query_check_username->fetchColumn();
-
-    if ($count_username > 0) {
-      echo "<script>alert('Username already exists. Please choose a different username');</script>";
-    } else {
-      // Insert new user if username is available
-      $sql = "INSERT INTO tblusers(name, username, password, status, sex, lastname, permission) VALUES(:name, :username, :password, :status, :sex, :lastname, :permission)";
-      $query = $dbh->prepare($sql);
-      $query->bindParam(':name', $name, PDO::PARAM_STR);
-      $query->bindParam(':lastname', $lastname, PDO::PARAM_STR);
-      $query->bindParam(':sex', $sex, PDO::PARAM_STR);
-      $query->bindParam(':status', $status, PDO::PARAM_STR);
-      $query->bindParam(':username', $username, PDO::PARAM_STR);
-      $query->bindParam(':permission', $permission, PDO::PARAM_STR);
-      $query->bindParam(':password', $password, PDO::PARAM_STR);
-      $query->execute();
-      $lastInsertId = $dbh->lastInsertId();
-
-      if ($lastInsertId) {
-        echo "<script>alert('Registered successfully');</script>";
-        echo "<script>window.location.href ='userregister.php'</script>";
-      } else {
-        echo "<script>alert('Something went wrong. Please try again');</script>";
-      }
-    }
-  }
-}
 ?>
 
 
-<form role="form" id="" method="post" enctype="multipart/form-data" class="form-horizontal">
+<form role="form" id="newUser" method="post" enctype="multipart/form-data" class="form-horizontal">
+  <div class="alert alert-success" style="display: none;">
+  </div>
+  <div class="alert alert-danger" style="display: none;">
+  </div>
   <div class="card-body">
     <div class="row">
       <div class="form-group col-md-6">
@@ -104,3 +62,67 @@ if (isset($_POST['submit'])) {
     <button type="submit" name="submit" class="btn btn-primary">Submit</button>
   </div>
 </form>
+<script>
+  document.getElementById("newUser").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+    var formData = new FormData(this);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "ajax/newuser.php", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if (response.status === "success") {
+              // Show success alert
+              var successAlert = document.querySelector(".alert-success");
+              successAlert.innerHTML = response.message;
+              successAlert.style.display = "block";
+              setTimeout(function() {
+                successAlert.style.display = "none";
+                location.reload();
+              }, 3000);
+            } else if (response.status === "error") {
+              // Show error alert
+              var errorAlert = document.querySelector(".alert-danger");
+              errorAlert.innerHTML = response.message;
+              errorAlert.style.display = "block";
+              setTimeout(function() {
+                errorAlert.style.display = "none";
+              }, 3000);
+            } else {
+              // Show a generic error message if the response is not properly formatted
+              var genericErrorAlert = document.querySelector(".alert-danger");
+              genericErrorAlert.innerHTML = "Unexpected response from server. Please try again.";
+              genericErrorAlert.style.display = "block";
+              setTimeout(function() {
+                genericErrorAlert.style.display = "none";
+              }, 3000);
+            }
+          } catch (error) {
+            // Log the error to the console
+            console.error("Error parsing JSON response:", error);
+
+            // Show a generic error message if there's an issue parsing the JSON response
+            var parseErrorAlert = document.querySelector(".alert-danger");
+            parseErrorAlert.innerHTML = "Error occurred while processing server response: " + error.message;
+            parseErrorAlert.style.display = "block";
+            setTimeout(function() {
+              parseErrorAlert.style.display = "none";
+            }, 3000);
+          }
+        } else {
+          // Show error alert if there is any issue with the Ajax request
+          var requestErrorAlert = document.querySelector(".alert-danger");
+          requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
+          requestErrorAlert.style.display = "block";
+          setTimeout(function() {
+            requestErrorAlert.style.display = "none";
+          }, 3000);
+        }
+      }
+    };
+    xhr.send(formData);
+  });
+</script>
