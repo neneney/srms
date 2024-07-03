@@ -35,7 +35,7 @@ move_uploaded_file($_FILES["photo"]["tmp_name"], "studentimages/" . $_FILES["pho
 
 
 $class_id = $_POST['classes'];
-$program = $_POST['program'];
+
 
 $check_sql = "SELECT COUNT(*) AS count FROM students WHERE `last-name` = :lastname AND `first-name` = :firstname AND `middle-name` = :middlename AND suffix = :suffix";
 $check_query = $dbh->prepare($check_sql);
@@ -103,16 +103,16 @@ if ($count > 0) {
             $query_class->bindParam(':status', $status, PDO::PARAM_STR); // Bind status parameter
             $query_class->bindParam(':remarks', $remarks, PDO::PARAM_STR); // Bind remarks parameter
             $query_class->execute();
+
+            $enrollment_sql = "INSERT INTO enrollment_history (student_id, class_id, status, remarks) VALUES (:studentno, :class_id, :status, :remarks)";
+            $enrollment_class = $dbh->prepare($enrollment_sql);
+            $enrollment_class->bindParam(':studentno', $studentno, PDO::PARAM_STR);
+            $enrollment_class->bindParam(':class_id', $class_id, PDO::PARAM_INT);
+            $enrollment_class->bindParam(':status', $status, PDO::PARAM_STR);
+            $enrollment_class->bindParam(':remarks', $remarks, PDO::PARAM_STR);
+            $enrollment_class->execute();
         }
 
-        if (!empty($program)) {
-            // Insert course enrollment record
-            $course_sql = "INSERT INTO course_enrollment (student_id, course_code) VALUES (:studentno, :program)";
-            $query_course = $dbh->prepare($course_sql);
-            $query_course->bindParam(':studentno', $studentno, PDO::PARAM_STR);
-            $query_course->bindParam(':program', $program, PDO::PARAM_STR);
-            $query_course->execute();
-        }
 
         $dbh->commit(); // Commit transaction if all queries succeed
         $response['status'] = 'success';

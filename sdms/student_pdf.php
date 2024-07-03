@@ -44,6 +44,13 @@ $brgyCode = $row['barangay'];
 $provQuery = mysqli_query($con, "SELECT * FROM refprovince WHERE provCode='$provCode'");
 $provRow = mysqli_fetch_array($provQuery);
 
+// Fetch graduated programs/classes
+$studentno = $row['studentno'];
+$graduatedProgramsQuery = mysqli_query($con, "SELECT DISTINCT c.`educ-level`, c.title, c.type, c.strand, ce.graduated_at, ce.remarks 
+                                              FROM enrollment_history ce 
+                                              JOIN classes c ON ce.class_id = c.code 
+                                              WHERE ce.student_id='$studentno' AND ce.status='graduated' AND ce.remarks='Completed'");
+$graduatedPrograms = mysqli_fetch_all($graduatedProgramsQuery, MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -70,6 +77,7 @@ $provRow = mysqli_fetch_array($provQuery);
         }
 
         table {
+            font-size: 12px;
             border-collapse: collapse;
             width: 100%;
         }
@@ -183,7 +191,7 @@ $provRow = mysqli_fetch_array($provQuery);
 
     <h4 style="margin-bottom: 10px; font-weight: 600;">Address</h4>
     <hr>
-    <table>
+    <table style="margin-bottom: 160px;">
         <tr>
             <th>Province</th>
             <td><?php echo htmlentities($provRow['provDesc']); ?></td>
@@ -214,6 +222,34 @@ $provRow = mysqli_fetch_array($provQuery);
         </tr>
     </table>
 
+    <?php if (!empty($graduatedPrograms)) { ?>
+        <h4 style="margin-bottom: 10px; font-weight: 600;">Completed Programs</h4>
+        <hr>
+        <table>
+            <tr>
+                <th>Program/Class</th>
+                <th>Graduation Date</th>
+            </tr>
+            <?php foreach ($graduatedPrograms as $programRow) { ?>
+                <tr>
+                    <td>
+                        <?php
+                        if (!empty($programRow['title'])) {
+                            echo htmlentities($programRow['educ-level'] . ' (' . $programRow['title'] . ')');
+                        } elseif (!empty($programRow['strand'])) {
+                            echo htmlentities($programRow['educ-level'] . ' (' . $programRow['strand'] . ')');
+                        } elseif (!empty($programRow['type'])) {
+                            echo htmlentities($programRow['educ-level'] . ' (' . $programRow['type'] . ')');
+                        } else {
+                            echo htmlentities($programRow['educ-level']);
+                        }
+                        ?>
+                    </td>
+                    <td><?php echo htmlentities($programRow['graduated_at']); ?></td>
+                </tr>
+            <?php } ?>
+        </table>
+    <?php } ?>
 </body>
 
 </html>

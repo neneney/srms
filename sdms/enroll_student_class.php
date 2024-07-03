@@ -85,11 +85,11 @@ $_SESSION['class-code'] = $classes[0]['code'];
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label for="semail">Email</label>
-                                <input type="text" class="form-control" id="semail" name="semail" placeholder="Email">
+                                <input type="email" class="form-control" id="semail" name="semail" placeholder="Email">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="sphone">Phone Number</label>
-                                <input type="text" class="form-control" id="sphone" name="sphone" placeholder="Phone Number">
+                                <input type="number" class="form-control" id="sphone" name="sphone" placeholder="Phone Number">
                             </div>
                         </div>
 
@@ -101,7 +101,7 @@ $_SESSION['class-code'] = $classes[0]['code'];
                         </div>
                         <div class="row">
                             <div class="form-group col-md-3" id="programs" style="display: block;">
-                                <label for="program">Class/Section</label>
+                                <label for="program">Program</label>
                                 <!-- <input value="<?php echo $_SESSION['class-code'] ?>" type="text" class="form-control" id="program3" name="class" required readonly> -->
                                 <select class="form-control" id="program" name="class" readonly>
 
@@ -179,7 +179,7 @@ $_SESSION['class-code'] = $classes[0]['code'];
                             </div>
                             <div class="form-group col-md-4">
                                 <label for="age">Email</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                             </div>
                             <div class="form-group col-md-3">
                                 <label for="nextphone">Phone Number</label>
@@ -226,27 +226,27 @@ $_SESSION['class-code'] = $classes[0]['code'];
                         if (response.status === "success") {
                             // Show success alert
                             var successAlert = document.querySelectorAll(".alert-success");
-                            successAlert[1].innerHTML = response.message;
-                            successAlert[1].style.display = "block";
+                            successAlert[2].innerHTML = response.message;
+                            successAlert[2].style.display = "block";
                             setTimeout(function() {
-                                successAlert[1].style.display = "none";
+                                successAlert[2].style.display = "none";
                                 location.reload();
                             }, 2000);
                         } else if (response.status === "error") {
                             // Show error alert
                             var errorAlert = document.querySelectorAll(".alert-danger");
-                            errorAlert[1].innerHTML = response.message;
-                            errorAlert[1].style.display = "block";
+                            errorAlert[2].innerHTML = response.message;
+                            errorAlert[2].style.display = "block";
                             setTimeout(function() {
-                                errorAlert[1].style.display = "none";
+                                errorAlert[2].style.display = "none";
                             }, 3000);
                         } else {
                             // Show a generic error message if the response is not properly formatted
                             var genericErrorAlert = document.querySelectorAll(".alert-danger");
-                            genericErrorAlert[1].innerHTML = "Unexpected response from server. Please try again.";
-                            genericErrorAlert[1].style.display = "block";
+                            genericErrorAlert[2].innerHTML = "Unexpected response from server. Please try again.";
+                            genericErrorAlert[2].style.display = "block";
                             setTimeout(function() {
-                                genericErrorAlert[1].style.display = "none";
+                                genericErrorAlert[2].style.display = "none";
                             }, 3000);
                         }
                     } catch (error) {
@@ -255,10 +255,10 @@ $_SESSION['class-code'] = $classes[0]['code'];
 
                         // Show a generic error message if there's an issue parsing the JSON response
                         var parseErrorAlert = document.querySelectorAll(".alert-danger");
-                        parseErrorAlert[1].innerHTML = "Error occurred while processing server response: " + error.message;
-                        parseErrorAlert[1].style.display = "block";
+                        parseErrorAlert[2].innerHTML = "Error occurred while processing server response: " + error.message;
+                        parseErrorAlert[2].style.display = "block";
                         setTimeout(function() {
-                            parseErrorAlert[1].style.display = "none";
+                            parseErrorAlert[2].style.display = "none";
                         }, 3000);
                     }
                 } else {
@@ -267,11 +267,31 @@ $_SESSION['class-code'] = $classes[0]['code'];
                     requestErrorAlert.innerHTML = "Error occurred while processings your request. Please try again.";
                     requestErrorAlert.style.display = "block";
                     setTimeout(function() {
-                        requestErrorAlert.style.display = "none";
+                        requestErrorAlert[2].style.display = "none";
                     }, 3000);
                 }
             }
         };
         xhr.send(formData);
     });
+    var textInputs = document.querySelectorAll('input[type="text"]');
+
+    // Function to capitalize the first letter of each word
+    function capitalizeWords(input) {
+        let words = input.value.split(' ');
+        for (let i = 0; i < words.length; i++) {
+            if (words[i].length > 0) {
+                words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+            }
+        }
+        input.value = words.join(' ');
+    }
+
+    // Add event listeners to each text input element
+    textInputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+            capitalizeWords(input);
+        });
+    });
+    // Get all input elements of type text
 </script>

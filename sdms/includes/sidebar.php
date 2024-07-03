@@ -62,19 +62,12 @@
              </p>
            </a>
          </li>
-         <!-- <li class="nav-item">
-           <a href="program_list.php" class="nav-link">
-             <i class="nav-icon far fa-solid fa-book"></i>
-             <p>
-               Vocational Course
-             </p>
-           </a>
-         </li> -->
+
          <li class="nav-item">
            <a href="classes.php" class="nav-link">
              <i class="nav-icon fas fa-chalkboard"></i>
              <p>
-               Classes
+               Manage Programs
              </p>
            </a>
          </li>

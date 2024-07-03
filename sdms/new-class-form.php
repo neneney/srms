@@ -16,11 +16,11 @@ include('includes/dbconnection.php');
         </div>
         <div class="row">
             <div class="form-group col-md-6">
-                <label for="code">Class Code</label>
+                <label for="code">Program Code</label>
                 <input id="code" type="text" name="code" class="form-control" placeholder="Class Code" value="" required readonly>
             </div>
             <div class="form-group col-md-6">
-                <label for="name">Class Name</label>
+                <label for="name">Program Name</label>
                 <input type="text" name="name" class="form-control" placeholder="Class Name" value="" required>
             </div>
         </div>

@@ -250,8 +250,8 @@ while ($row = mysqli_fetch_array($ret2)) {
                 <?php foreach ($certificates as $cert) { ?>
                   <tr>
                     <td>
-                      <a href="student_cert/<?php echo htmlentities($cert['image']); ?>" target="_blank">
-                        <img src="student_cert/<?php echo htmlentities($cert['image']); ?>" class="img-fluid mb-2" alt="Student Certificate" style="max-width: 150px;">
+                      <a href="ajax/student_cert/<?php echo htmlentities($cert['image']); ?>" target="_blank">
+                        <img src="ajax/student_cert/<?php echo htmlentities($cert['image']); ?>" class="img-fluid mb-2" alt="Student Certificate" style="max-width: 150px;">
                       </a>
                     </td>
                     <td>

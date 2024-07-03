@@ -313,7 +313,7 @@ include('includes/dbconnection.php');
                       <div class="row">
                         <div class="form-group col-md-8">
                           <label>Upload Image</label>
-                          <input type="file" class="" name="studentimage" value="" required>
+                          <input type="file" class="form-control" name="studentimage" value="" accept="image/*" required>
                         </div>
 
                       </div>
@@ -326,14 +326,15 @@ include('includes/dbconnection.php');
                     <form role="form" id="certificate" method="post" enctype="multipart/form-data" class="form-horizontal">
                       <div class="row">
                         <div class="form-group col-md-8">
-                          <label>Upload certificate</label>
-                          <input type="file" class="" name="studentCert" required>
+                          <label class="form-label">Upload certificates</label>
+                          <input type="file" class="form-control" name="studentCert[]" accept=".pdf,image/*" multiple required>
                         </div>
                       </div>
                       <div class="modal-footer text-right">
                         <button type="submit" name="save3" class="btn btn-primary">Update</button>
                       </div>
                     </form>
+
                   </div>
                   <!-- /.tab-pane -->
                 <?php

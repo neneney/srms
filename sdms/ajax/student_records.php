@@ -16,10 +16,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($students as $student) {
             $studentno = $student['student_id'];
             $status = $_POST['status_' . $studentno];
-            $remarks = $_POST['remarks_' . $studentno];
+            $remarks = $status == 'graduated' ? 'Completed' : $_POST['remarks_' . $studentno];
 
-            // Update status and remarks in the database
-            $query = "UPDATE class_enrollment SET status = :status, remarks = :remarks WHERE class_id = :class_code AND student_id = :studentno";
+            // Prepare the query with the additional `graduated_at` column
+            if ($status == 'graduated') {
+                $query = "UPDATE class_enrollment 
+                          SET status = :status, remarks = :remarks, graduated_at = NOW() 
+                          WHERE class_id = :class_code AND student_id = :studentno";
+                $query1 = "UPDATE enrollment_history 
+                           SET status = :status, remarks = :remarks, graduated_at = NOW() 
+                           WHERE class_id = :class_code AND student_id = :studentno";
+            } else {
+                $query = "UPDATE class_enrollment 
+                          SET status = :status, remarks = :remarks 
+                          WHERE class_id = :class_code AND student_id = :studentno";
+                $query1 = "UPDATE enrollment_history 
+                           SET status = :status, remarks = :remarks 
+                           WHERE class_id = :class_code AND student_id = :studentno";
+            }
+
             $updateStmt = $dbh->prepare($query);
             $updateStmt->bindParam(':status', $status, PDO::PARAM_STR);
             $updateStmt->bindParam(':remarks', $remarks, PDO::PARAM_STR);
@@ -27,7 +42,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateStmt->bindParam(':studentno', $studentno, PDO::PARAM_STR);
             $updateStmt->execute();
 
-            $query1 = "UPDATE enrollment_history SET status = :status, remarks = :remarks WHERE class_id = :class_code AND student_id = :studentno";
             $updateStmt1 = $dbh->prepare($query1);
             $updateStmt1->bindParam(':status', $status, PDO::PARAM_STR);
             $updateStmt1->bindParam(':remarks', $remarks, PDO::PARAM_STR);

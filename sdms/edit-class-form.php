@@ -24,11 +24,11 @@ include('includes/dbconnection.php');
             <div class="row">
                 <div class="form-group col-md-6">
                     <input type="hidden" name="rowId" value="<?php echo $row['id']; ?>">
-                    <label for="code">Class Code</label>
+                    <label for="code">Program Code</label>
                     <input type="text" name="edit-code" class="form-control" placeholder="<?php echo $row['code']; ?>" value="<?php echo $row['code']; ?>" required readonly>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="name">Class Name</label>
+                    <label for="name">Program Name</label>
                     <input type="text" name="edit-name" class="form-control" placeholder="<?php echo $row['name']; ?>" value="<?php echo $row['name']; ?>" required>
                 </div>
             </div>
@@ -209,5 +209,24 @@ include('includes/dbconnection.php');
             }
         };
         xhr.send(formData);
+    });
+    var textInputs = document.querySelectorAll('input[type="text"]');
+
+    // Function to capitalize the first letter of each word
+    function capitalizeWords(input) {
+        let words = input.value.split(' ');
+        for (let i = 0; i < words.length; i++) {
+            if (words[i].length > 0) {
+                words[i] = words[i][0].toUpperCase() + words[i].substring(1);
+            }
+        }
+        input.value = words.join(' ');
+    }
+
+    // Add event listeners to each text input element
+    textInputs.forEach(function(input) {
+        input.addEventListener('input', function() {
+            capitalizeWords(input);
+        });
     });
 </script>

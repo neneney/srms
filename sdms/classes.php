@@ -9,7 +9,14 @@ if (isset($_GET['dels'])) {
     mysqli_query($con, "delete from classes where ID = '" . $_GET['ID'] . "'");
     $_SESSION['delmsg'] = "class deleted !!";
 }
+$levels = mysqli_query($con, "SELECT DISTINCT `educ-level` FROM classes");
+
+// Fetch graduated students
+$graduated_students = mysqli_query($con, "SELECT * FROM enrollment_history WHERE status = 'Graduated'");
 ?>
+
+
+
 <!DOCTYPE html>
 <html>
 <?php @include("includes/head.php"); ?>
@@ -30,12 +37,12 @@ if (isset($_GET['dels'])) {
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>Classes</h1>
+                            <h1>Programs</h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="dashboard.php">Home</a></li>
-                                <li class="breadcrumb-item active">Manage Classes</li>
+                                <li class="breadcrumb-item active">Manage Programs</li>
                             </ol>
                         </div>
                     </div>
@@ -49,17 +56,32 @@ if (isset($_GET['dels'])) {
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">Manage Classes</h3>
+                                    <h3 class="card-title">Manage Programs</h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deposit"><i class="fas fa-plus"></i> New class
+                                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deposit"><i class="fas fa-plus"></i> New program
                                         </button>
                                     </div>
+                                    <div class="card-tools mr-3">
+                                        <form method="GET" action="classes.php" class="form-inline">
+                                            <label for="educ_level" class="mr-2">Filter by:</label>
+                                            <select name="educ_level" class="form-control" onchange="this.form.submit()">
+                                                <option value="">All</option>
+                                                <?php while ($level = mysqli_fetch_array($levels)) { ?>
+                                                    <option value="<?php echo htmlentities($level['educ-level']); ?>" <?php if ($_GET['educ_level'] == $level['educ-level']) echo 'selected'; ?>>
+                                                        <?php echo htmlentities($level['educ-level']); ?>
+                                                    </option>
+                                                <?php } ?>
+                                            </select>
+                                        </form>
+                                    </div>
                                 </div>
+
+
                                 <div class="modal fade" id="deposit">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h4 class="modal-title">New Classes</h4>
+                                                <h4 class="modal-title">New Program</h4>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -78,7 +100,7 @@ if (isset($_GET['dels'])) {
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Edit Classes Details</h5>
+                                                <h5 class="modal-title">Edit Program Details</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -98,7 +120,7 @@ if (isset($_GET['dels'])) {
                                     <div class="modal-dialog modal-xl">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title">Classes Details</h5>
+                                                <h5 class="modal-title">Programs Details</h5>
                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
@@ -122,7 +144,7 @@ if (isset($_GET['dels'])) {
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            <div class="modal-body" id="info_update3">
+                                            <div class="modal-body" id="info_update3" style="max-height: 600px; overflow-y: auto;">
                                                 <?php @include("enroll_student_class.php"); ?>
                                             </div>
                                         </div>
@@ -139,7 +161,7 @@ if (isset($_GET['dels'])) {
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                Are you sure you want to delete this Class?
+                                                Are you sure you want to delete this program?
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -148,6 +170,51 @@ if (isset($_GET['dels'])) {
                                         </div>
                                     </div>
                                 </div>
+                                <div class="modal fade" id="enrollModal" tabindex="-1" role="dialog" aria-labelledby="enrollModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="enrollModalLabel">Are you enrolling an existing student or a new one?</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body text-center">
+                                                <button type="button" class="btn btn-primary" id="existingStudent">Existing Student</button>
+                                                <button type="button" class="btn btn-secondary" id="newStudent">New Student</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Modal for selecting existing students -->
+                                <div class="modal fade" id="existingStudentModal" tabindex="-1" role="dialog" aria-labelledby="existingStudentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="existingStudentModalLabel">Enroll Existing Students</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                                                <div class="alert alert-success alert1" style="display: none;">
+                                                </div>
+                                                <div class="alert alert-danger alert2" style="display: none;">
+                                                </div>
+                                                <form id="existingStudentForm">
+                                                    <div id="existingStudentsList">
+                                                        <!-- Checkboxes for existing students will be populated here -->
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary" form="existingStudentForm">Enroll Selected Students</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
 
 
 
@@ -159,16 +226,24 @@ if (isset($_GET['dels'])) {
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th class="text-center">Class Code</th>
-                                                <th class="text-center">Class Name</th>
-                                                <th class="text-center">Class Teacher</th>
+                                                <th class="text-center">Program Code</th>
+                                                <th class="text-center">Program Name</th>
+                                                <th class="text-center">Program Teacher</th>
                                                 <th class="text-center">Educational Level</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $query = mysqli_query($con, "select * from classes order by id desc");
+                                            $educ_level_filter = isset($_GET['educ_level']) ? $_GET['educ_level'] : '';
+                                            $query_string = "SELECT * FROM classes";
+
+                                            if (!empty($educ_level_filter)) {
+                                                $query_string .= " WHERE `educ-level` = '" . mysqli_real_escape_string($con, $educ_level_filter) . "'";
+                                            }
+
+                                            $query_string .= " ORDER BY id DESC";
+                                            $query = mysqli_query($con, $query_string);
                                             $cnt = 1;
                                             while ($row = mysqli_fetch_array($query)) {
                                             ?>
@@ -177,7 +252,15 @@ if (isset($_GET['dels'])) {
                                                     <td style="text-align: center;"><?php echo htmlentities($row['code']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['name']); ?></td>
                                                     <td style="text-align: center;"><?php echo htmlentities($row['teacher']); ?></td>
-                                                    <td style="text-align: center;"><?php echo htmlentities($row['educ-level']); ?></td>
+                                                    <td style="text-align: center; text-transform:capitalize"><?php echo htmlentities($row['educ-level']);
+                                                                                                                if (isset($row['strand']) && !empty($row['strand'])) {
+                                                                                                                    echo " (" . htmlentities($row['strand']) . ")";
+                                                                                                                } else  if (isset($row['title']) && !empty($row['title'])) {
+                                                                                                                    echo " (" . htmlentities($row['title']) . ")";
+                                                                                                                } else if (isset($row['type']) && !empty($row['type'])) {
+                                                                                                                    echo " (" . htmlentities($row['type']) . ")";
+                                                                                                                }
+                                                                                                                ?></td>
                                                     <td style="text-align: center;">
                                                         <a class="edit_data btn btn-primary btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for edit">Edit</a>
                                                         <a class="edit_data2 btn btn-success btn-sm" style="color: white;" id="<?php echo ($row["id"]); ?>" title="click for view">View</a>
@@ -227,6 +310,7 @@ if (isset($_GET['dels'])) {
 
     <script type="text/javascript">
         $(document).ready(function() {
+
             $(document).on('click', '.edit_data', function() {
                 var edit_id = $(this).attr('id');
                 $.ajax({
@@ -258,21 +342,97 @@ if (isset($_GET['dels'])) {
                 });
             });
         });
-        $(document).on('click', '.editdata3', function() {
-            var edit_id3 = $(this).attr('id');
-            $.ajax({
-                url: "enroll_student_class.php",
-                type: "post",
-                data: {
-                    edit_id3: edit_id3
-                },
-                success: function(data) {
-                    $("#info_update3").html(data);
-                    $("#editData3").modal('show');
-                    populateProvinceDropdown();
+
+        function handleSelectAll() {
+            $('#selectAll').on('change', function() {
+                $('input[name="existing_students[]"]').prop('checked', this.checked);
+            });
+
+            $('body').on('change', 'input[name="existing_students[]"]', function() {
+                if (!this.checked) {
+                    $('#selectAll').prop('checked', false);
                 }
             });
+        }
+
+        // Attach click event to the .editdata3 buttons
+        $(document).on('click', '.editdata3', function() {
+            var edit_id3 = $(this).attr('id');
+
+            // Show the modal to ask the user if they are enrolling an existing or new student
+            $('#enrollModal').modal('show');
+
+            $('#existingStudent').on('click', function() {
+                $('#enrollModal').modal('hide');
+                $.ajax({
+                    url: "getters-php/fetch_existing_students.php",
+                    type: "post",
+                    data: {
+                        edit_id3: edit_id3
+                    },
+                    success: function(data) {
+                        // Populate the existing students modal with the fetched data
+                        $('#existingStudentsList').html(data);
+                        $('#existingStudentModal').modal('show');
+
+                        // Initialize DataTables after HTML content is loaded
+                        $('#studentsTable').DataTable();
+
+                        // Handle the "Select All" functionality
+                        handleSelectAll();
+                    }
+                });
+            });
+
+            $('#newStudent').on('click', function() {
+                $('#enrollModal').modal('hide');
+                $.ajax({
+                    url: "enroll_student_class.php",
+                    type: "post",
+                    data: {
+                        edit_id3: edit_id3,
+                        student_type: 'new'
+                    },
+                    success: function(data) {
+                        $("#info_update3").html(data);
+                        $("#editData3").modal('show');
+                        populateProvinceDropdown();
+                    }
+                });
+            });
+
+            $('#existingStudentForm').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "ajax/existing_enrollment.php",
+                    type: "post",
+                    data: $(this).serialize() + '&edit_id3=' + edit_id3,
+                    success: function(data) {
+                        var response = JSON.parse(data);
+                        if (response.status === 'success') {
+                            $('.alert1').text(response.message).show();
+                            setTimeout(function() {
+                                $('.alert1').hide();
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            $('.alert2').text(response.message).show();
+                            setTimeout(function() {
+                                $('.alert2').hide();
+                            }, 3000);
+                        }
+                    },
+                    error: function() {
+                        $('.alert2').text('An error occurred. Please try again.').show();
+                        setTimeout(function() {
+                            $('.alert2').hide();
+                        }, 3000);
+                    }
+                });
+            });
         });
+
+
         // Populate dropdown function
         function populateDropdown(select, options, placeholder = "Select an option") {
             select.innerHTML = `<option value="">${placeholder}</option>`;

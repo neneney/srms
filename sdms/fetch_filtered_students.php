@@ -55,11 +55,8 @@ foreach ($students as $student) {
         </td>
         <td>
             <select class="form-control" name="remarks_<?php echo htmlentities($student['studentno']); ?>">
-                <option value="excellent" <?php if ($student['remarks'] == 'excellent') echo 'selected'; ?>>Excellent</option>
-                <option value="good" <?php if ($student['remarks'] == 'good') echo 'selected'; ?>>Good</option>
-                <option value="satisfactory" <?php if ($student['remarks'] == 'satisfactory') echo 'selected'; ?>>Satisfactory</option>
-                <option value="needs improvement" <?php if ($student['remarks'] == 'needs improvement') echo 'selected'; ?>>Needs Improvement</option>
-                <option value="none" <?php if ($student['remarks'] == 'none') echo 'selected' ?>>None</option>
+                <option value="Completed" <?php if (empty($student['remarks']) || $student['remarks'] == 'Completed') echo 'selected'; ?>>Completed</option>
+                <option value="Incomplete" <?php if ($student['remarks'] == 'Incomplete') echo 'selected'; ?>>Incomplete</option>
             </select>
         </td>
     </tr>

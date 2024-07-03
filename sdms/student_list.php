@@ -5,6 +5,7 @@ include('includes/dbconnection.php');
 if (strlen($_SESSION['sid'] == 0)) {
   header('location:logout.php');
 }
+$graduated_students = mysqli_query($con, "SELECT * FROM enrollment_history WHERE status = 'graduated'");
 if (isset($_GET['del'])) {
   $student_id = $_GET['id'];
 
@@ -45,6 +46,14 @@ if (isset($_GET['del'])) {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    /* Ensure the background color matches the table or page background */
+    z-index: 1;
   }
 </style>
 
@@ -87,6 +96,92 @@ if (isset($_GET['del'])) {
                   <div class="card-tools">
                     <a href="add_student.php"><button type="button" class="btn btn-sm btn-primary"><span style="color: #fff;"><i class="fas fa-plus"></i> New Students</span>
                       </button> </a>
+                  </div>
+                  <div class="card-tools mr-3">
+                    <button type="button" class="btn btn-sm btn-secondary" data-toggle="modal" data-target="#graduatedModal"><i class="fas fa-graduation-cap"></i> Graduated Students
+                    </button>
+                  </div>
+                </div>
+
+                <div class="modal fade" id="graduatedModal" tabindex="-1" role="dialog" aria-labelledby="graduatedModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="graduatedModalLabel">Graduated Students</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <!-- Button to open the filter modal -->
+                        <div class="text-right">
+                          <button type="button" class="btn btn-primary mb-3 text-right" data-toggle="modal" data-target="#filterModal">
+                            Filter
+                          </button>
+                        </div>
+                        <div class="alert alert-success alert1" style="display: none;"></div>
+                        <div class="alert alert-danger alert2" style="display: none;"></div>
+                        <div style="max-height: 400px; overflow-y: auto; overflow-x: hidden;">
+                          <table id="graduated-students-table" class="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Student Number</th>
+                                <th>Program</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Graduated at</th>
+                              </tr>
+                            </thead>
+                            <tbody id="graduated-students-list">
+                              <!-- Rows will be appended here by JavaScript -->
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Filter Modal -->
+                <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="filterModalLabel">Filter Graduated Students</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <form id="filter-form">
+                          <div class="form-group">
+                            <label for="filter-educ-level">Educational Level</label>
+                            <select class="form-control" id="filter-educ-level">
+                              <option value="">Select educational level</option>
+                              <option value="Elementary">Elementary</option>
+                              <option value="Junior Highschool">Junior High School</option>
+                              <option value="senior highschool">Senior High School</option>
+                              <option value="vocational">Vocational Course</option>
+                              <option value="others">Others</option>
+                            </select>
+                          </div>
+                          <div class="form-group">
+                            <label for="filter-date-from">Graduated From</label>
+                            <input type="date" class="form-control" id="filter-date-from">
+                          </div>
+                          <div class="form-group">
+                            <label for="filter-date-to">Graduated To</label>
+                            <input type="date" class="form-control" id="filter-date-to">
+                          </div>
+                          <button type="button" class="btn btn-primary" id="apply-filter">Apply Filter</button>
+                          <button type="button" class="btn btn-secondary" id="reset-filter">Reset</button>
+                        </form>
+                        </form>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -229,7 +324,84 @@ if (isset($_GET['del'])) {
       $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
     });
   </script>
+  <script>
+    $(document).ready(function() {
+      // Initialize DataTable
+      var table = $('#graduated-students-table').DataTable();
 
+      function fetchGraduatedStudents(filters = {}) {
+        $.ajax({
+          url: 'ajax/fetch_graduates.php', // Replace with your PHP file
+          type: 'POST',
+          data: filters,
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'success') {
+              table.clear();
+              response.data.forEach(function(student) {
+                var row = [];
+                row.push(student.studentno);
+                if (student.title && student.title.trim() !== '') {
+                  row.push(student.educ_level + ' (' + student.title + ')');
+                } else if (student.strand && student.strand.trim() !== '') {
+                  row.push(student.educ_level + ' (' + student.strand + ')');
+                } else if (student.type && student.type.trim() !== '') {
+                  row.push(student.educ_level + ' (' + student.type + ')');
+                } else {
+                  row.push(student.educ_level);
+                }
+                row.push(student.first_name);
+                row.push(student.last_name);
+                row.push(student.graduated_at);
+                table.row.add(row).draw();
+              });
+              // Show success alert
+            } else if (response.status === 'no_results') {
+              table.clear().draw();
+            } else {
+              // Show error alert
+              $('.alert2').text(response.message + ' ' + response.error).show();
+              $('.alert1').hide();
+            }
+          },
+          error: function() {
+            // Show error alert
+            $('.alert2').text('Failed to fetch graduated students.').show();
+            $('.alert1').hide();
+          }
+        });
+      }
+
+      // Fetch initial data when the main modal is shown
+      $('#graduatedModal').on('show.bs.modal', function(e) {
+        fetchGraduatedStudents();
+      });
+
+      // Apply filters and fetch data when the filter form is submitted
+      $('#apply-filter').on('click', function() {
+        var educLevel = $('#filter-educ-level').val();
+        var dateFrom = $('#filter-date-from').val();
+        var dateTo = $('#filter-date-to').val();
+
+        var filters = {
+          educ_level: educLevel,
+          date_from: dateFrom,
+          date_to: dateTo
+        };
+
+        // Close the filter modal
+        $('#filterModal').modal('hide');
+
+        // Fetch filtered data
+        fetchGraduatedStudents(filters);
+      });
+
+      // Reset filters
+      $('#reset-filter').on('click', function() {
+        $('#filter-form')[0].reset();
+      });
+    });
+  </script>
 
 
 </body>

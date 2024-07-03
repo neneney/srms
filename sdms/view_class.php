@@ -34,7 +34,9 @@ if ($class) {
 
                 </div>
                 <div class="col-md-6">
-                    <p><b>Title:</b> <?php echo htmlentities($class['title']); ?></p>
+                    <?php if (isset($class["title"]) && !empty($class["title"])) { ?>
+                        <p><b>Title:</b> <?php echo htmlentities($class['title']); ?></p>
+                    <?php } ?>
                     <?php if (isset($class["type"]) && !empty($class["type"])) { ?>
                         <p><strong>Type:</strong> <?php echo htmlentities($class['type']); ?></p>
                     <?php } ?>
@@ -58,11 +60,8 @@ if ($class) {
                     <label for="remarks_filter">Filter by Remarks:</label>
                     <select class="form-control" id="remarks_filter" name="remarks_filter">
                         <option value="">All</option>
-                        <option value="excellent">Excellent</option>
-                        <option value="good">Good</option>
-                        <option value="satisfactory">Satisfactory</option>
-                        <option value="needs improvement">Needs Improvement</option>
-                        <option value="none">None</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Incomplete">Incomplete</option>
                     </select>
                 </div>
 
@@ -75,66 +74,65 @@ if ($class) {
                 </div>
                 <div class="alert alert-danger" style="display: none;">
                 </div>
-                <table class="table" id="students_table">
-                    <thead>
-                        <tr>
-                            <th>Student Number</th>
-                            <th>Full Name</th>
-                            <th>Age</th>
-                            <th>Gender</th>
-                            <th>Status</th>
-                            <th>Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        // Default query to fetch students
-                        $query = "SELECT s.studentno, s.`first-name`, s.`middle-name`, s.`last-name`, s.suffix, s.age, s.gender, ce.status, ce.remarks
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table" id="students_table">
+                        <thead>
+                            <tr>
+                                <th>Student Number</th>
+                                <th>Full Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            // Default query to fetch students
+                            $query = "SELECT s.studentno, s.`first-name`, s.`middle-name`, s.`last-name`, s.suffix, s.age, s.gender, ce.status, ce.remarks
                               FROM class_enrollment ce
                               JOIN students s ON ce.student_id = s.studentno
                               WHERE ce.class_id = :class_code";
 
-                        $ret3 = $dbh->prepare($query);
-                        $ret3->bindParam(':class_code', $class['code'], PDO::PARAM_STR);
-                        $ret3->execute();
-                        $students = $ret3->fetchAll(PDO::FETCH_ASSOC);
+                            $ret3 = $dbh->prepare($query);
+                            $ret3->bindParam(':class_code', $class['code'], PDO::PARAM_STR);
+                            $ret3->execute();
+                            $students = $ret3->fetchAll(PDO::FETCH_ASSOC);
 
-                        foreach ($students as $student) {
-                            // Fetch and concatenate the student's name parts
-                            $fullName = htmlentities($student['first-name']) . ' ' .
-                                htmlentities($student['middle-name']) . ' ' .
-                                htmlentities($student['last-name']) . ' ' .
-                                htmlentities($student['suffix']);
-                        ?>
-                            <tr>
-                                <td><?php echo htmlentities($student['studentno']); ?></td>
-                                <td><?php echo $fullName; ?></td>
-                                <td><?php echo htmlentities($student['age']); ?></td>
-                                <td><?php echo htmlentities($student['gender']); ?></td>
-                                <td>
-                                    <select class="form-control" name="status_<?php echo htmlentities($student['studentno']); ?>">
+                            foreach ($students as $student) {
+                                // Fetch and concatenate the student's name parts
+                                $fullName = htmlentities($student['first-name']) . ' ' .
+                                    htmlentities($student['middle-name']) . ' ' .
+                                    htmlentities($student['last-name']) . ' ' .
+                                    htmlentities($student['suffix']);
+                            ?>
+                                <tr>
+                                    <td><?php echo htmlentities($student['studentno']); ?></td>
+                                    <td><?php echo $fullName; ?></td>
+                                    <td><?php echo htmlentities($student['age']); ?></td>
+                                    <td><?php echo htmlentities($student['gender']); ?></td>
+                                    <td>
+                                        <select class="form-control" name="status_<?php echo htmlentities($student['studentno']); ?>">
 
-                                        <option value="active" <?php if ($student['status'] == 'active') echo 'selected'; ?>>Active</option>
-                                        <option value="inactive" <?php if ($student['status'] == 'inactive') echo 'selected'; ?>>Inactive</option>
-                                        <option value="graduated" <?php if ($student['status'] == 'graduated') echo 'selected'; ?>>Graduated</option>
-                                        <option value="withdrawn" <?php if ($student['status'] == 'withdrawn') echo 'selected'; ?>>Withdrawn</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control" name="remarks_<?php echo htmlentities($student['studentno']); ?>">
-                                        <option value="excellent" <?php if (empty($student['remarks']) || $student['remarks'] == 'excellent') echo 'selected'; ?>>Excellent</option>
-                                        <option value="good" <?php if ($student['remarks'] == 'good') echo 'selected'; ?>>Good</option>
-                                        <option value="satisfactory" <?php if ($student['remarks'] == 'satisfactory') echo 'selected'; ?>>Satisfactory</option>
-                                        <option value="needs improvement" <?php if ($student['remarks'] == 'needs improvement') echo 'selected'; ?>>Needs Improvement</option>
-                                        <option value="none" <?php if ($student['remarks'] == 'none') echo 'selected' ?>>None</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        <?php
-                        }
-                        ?>
-                    </tbody>
-                </table>
+                                            <option value="active" <?php if ($student['status'] == 'active') echo 'selected'; ?>>Active</option>
+                                            <option value="inactive" <?php if ($student['status'] == 'inactive') echo 'selected'; ?>>Inactive</option>
+                                            <option value="graduated" <?php if ($student['status'] == 'graduated') echo 'selected'; ?>>Graduated</option>
+                                            <option value="withdrawn" <?php if ($student['status'] == 'withdrawn') echo 'selected'; ?>>Withdrawn</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select class="form-control" name="remarks_<?php echo htmlentities($student['studentno']); ?>">
+                                            <option value="Incomplete" <?php if (empty($student['remarks']) || $student['remarks'] == 'Incomplete') echo 'selected'; ?>>Incomplete</option>
+                                            <option value="Completed" <?php if ($student['remarks'] == 'Completed') echo 'selected'; ?>>Completed</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            <?php
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="modal-footer">
                     <input type="hidden" name="class_code" value="<?php echo htmlentities($class['code']); ?>">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
